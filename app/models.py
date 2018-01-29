@@ -1,5 +1,5 @@
 from app import db
-from passlib.apps import custom_app_context as pwd_context
+#from passlib.apps import custom_app_context as pwd_context
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -27,5 +27,3 @@ class User(db.Model):
         except NameError:
             return str(self.id)  # python 3
 
-    def hask_password(self, password):
-        return pwd_context.verify(password, self.hashed_password)
