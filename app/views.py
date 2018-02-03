@@ -3,10 +3,16 @@ from flask import render_template, flash, redirect, session
 from .forms import LoginForm, RegisterForm
 from .models import User
 from flask_wtf import Form as BaseForm
+from functools import wraps
+from flask import Flask, url_for
 
 @app.route('/index')
 def index():
-    return "Hello, World!"
+    return render_template('index.html')
+
+@app.route('/event')
+def event():
+    return render_template('event.html')
 
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
@@ -15,8 +21,35 @@ def login():
     if form.validate_on_submit():
         error = try_login(form.username.data, form.password.data)
         if not error:
+            session['logged_in'] = True
             return redirect('/index')
     return render_template('login.html', form=form)
+
+# Check if user logged in
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Unauthorized, Please login', 'danger')
+            return redirect(url_for('login'))
+    return wrap
+
+
+# Logout
+@app.route('/logout')
+@is_logged_in
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
+
+
+
+
+
+
 
 def try_login(name,password):
     user = User.query.filter_by(username=name).first()
@@ -54,11 +87,3 @@ def try_register(email,name,password,confirm_pass):
     db.session.add(user)
     db.session.commit()
     return False
-
-
-
-
-
-
-
-

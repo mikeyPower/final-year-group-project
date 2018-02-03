@@ -1,3 +1,6 @@
+{% extends 'index.html'%}
+
+{% block body %}
 <h1>Sign In</h1>
 <form action="" method="post" name="login">
     {{ form.hidden_tag() }}
@@ -9,7 +12,7 @@
     </p>
     <p>{{ form.remember_me }} Remember Me</p>
     <p><input type="submit" value="Sign In"></p>
-    <p> 
-        Not registered? Click here <p>
-        <a href="/register">here</a>
+
+  <p>Not registered? Click<a href="/register"> here</a></p>
 </form>
+{% endblock %}
