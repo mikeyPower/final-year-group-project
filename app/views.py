@@ -5,6 +5,10 @@ from .models import User
 from flask_wtf import Form as BaseForm
 from functools import wraps
 from flask import Flask, url_for
+from passlib.hash import sha256_crypt
+
+
+
 
 @app.route('/index')
 def index():
@@ -64,6 +68,8 @@ def register():
     if form.validate_on_submit():
         error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data)
         if not error:
+
+            #Need to decide on Database
             flash('you have sucessfully registered')
             return redirect('/login')
     return render_template('register.html', form = form)
@@ -82,7 +88,7 @@ def try_register(email,name,password,confirm_pass):
     user = User(
       username = name,
       email = email,
-      hashed_password = password #will add the hashing at some point
+      hashed_password = sha256_crypt.encrypt(str(password)) #Hashing added
     )
     db.session.add(user)
     db.session.commit()
