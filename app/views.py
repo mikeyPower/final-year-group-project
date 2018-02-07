@@ -60,7 +60,8 @@ def logout():
 def try_login(name,password):
     user = User.query.filter_by(username=name).first()
     if user is not None:
-        if user.hashed_password == password:
+        #if user.hashed_password == sha256_crypt.encrypt(str(password)):#password:
+        if sha256_crypt.verify(str(password), user.hashed_password):
             return False
     return True
 
@@ -95,7 +96,7 @@ def try_register(email,name,password,confirm_pass):
     user = User(
       username = name,
       email = email,
-      hashed_password = sha256_crypt.encrypt(str(password)) #Hashing added
+      hashed_password = sha256_crypt.hash(str(password)) #password , #Hashing added
     )
     db.session.add(user)
     db.session.commit()
