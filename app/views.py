@@ -1,3 +1,4 @@
+from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db
 from flask import render_template, flash, redirect, session
 from .forms import LoginForm, RegisterForm
@@ -15,6 +16,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/event')
+@login_required
 def event():
     return render_template('event.html')
 
@@ -30,20 +32,20 @@ def login():
     return render_template('login.html', form=form)
 
 # Check if user logged in
-def is_logged_in(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return f(*args, **kwargs)
-        else:
-            flash('Unauthorized, Please login', 'danger')
-            return redirect(url_for('login'))
-    return wrap
+#def is_logged_in(f):
+#    @wraps(f)
+#    def wrap(*args, **kwargs):
+#        if 'logged_in' in session:
+#            return f(*args, **kwargs)
+#        else:
+#            flash('Unauthorized, Please login', 'danger')
+#            return redirect(url_for('login'))
+#    return wrap
 
 
 # Logout
 @app.route('/logout')
-@is_logged_in
+@login_required
 def logout():
     session.clear()
     flash('You are now logged out', 'success')
@@ -61,6 +63,11 @@ def try_login(name,password):
         if user.hashed_password == password:
             return False
     return True
+
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
