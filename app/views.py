@@ -1,5 +1,5 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
-from app import app, db
+from app import app, db, lm
 from flask import render_template, flash, redirect, session
 from .forms import LoginForm, RegisterForm
 from .models import User
@@ -12,6 +12,7 @@ from passlib.hash import sha256_crypt
 
 
 @app.route('/index')
+@login_required
 def index():
     return render_template('index.html')
 
@@ -27,32 +28,16 @@ def login():
     if form.validate_on_submit():
         error = try_login(form.username.data, form.password.data)
         if not error:
-            session['logged_in'] = True
             return redirect('/index')
     return render_template('login.html', form=form)
 
-# Check if user logged in
-#def is_logged_in(f):
-#    @wraps(f)
-#    def wrap(*args, **kwargs):
-#        if 'logged_in' in session:
-#            return f(*args, **kwargs)
-#        else:
-#            flash('Unauthorized, Please login', 'danger')
-#            return redirect(url_for('login'))
-#    return wrap
-
 
 # Logout
-@app.route('/logout')
+@app.route("/logout")
 @login_required
 def logout():
-    session.clear()
-    flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
-
-
-
+    logout_user()
+    return redirect('/login')
 
 
 
@@ -62,6 +47,7 @@ def try_login(name,password):
     if user is not None:
         #if user.hashed_password == sha256_crypt.encrypt(str(password)):#password:
         if sha256_crypt.verify(str(password), user.hashed_password):
+            login_user(user)
             return False
     return True
 
