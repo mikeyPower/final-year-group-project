@@ -1,8 +1,8 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
 from flask import render_template, flash, redirect, session
-from .forms import LoginForm, RegisterForm, MailingForm
-from .models import User, Recipient
+from .forms import LoginForm, RegisterForm, MailingForm, MenuForm
+from .models import User, Recipient, Menu
 from flask_wtf import Form as BaseForm
 from functools import wraps
 from flask import Flask, url_for
@@ -15,6 +15,7 @@ import email.mime.text
 import email.mime.base
 import mimetools
 import base64
+from flask import Flask, url_for
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -155,3 +156,75 @@ def try_register(email,name,password,confirm_pass):
     db.session.add(user)
     db.session.commit()
     return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/menu', methods=['GET', 'POST'])
+@login_required
+def menu():
+    form = MenuForm()
+    if form.validate_on_submit():#
+        print("your in")
+        title = form.title.data
+        body = form.body.data
+
+        menu = Menu(
+          title = title,
+          body = body
+        )
+        db.session.add(menu)
+        db.session.commit()
+
+        flash('Menu Created', 'success')
+        print("added")
+        return redirect('/menulist')
+    return render_template('menu.html', form = form)
+
+
+
+
+
+
+
+@app.route('/menu/<string:id>/')
+@login_required
+def menu_details(id):
+
+    menu = Menu.query.filter_by(id=id).first()
+
+    return render_template('menu_details.html', menu=menu)
+
+
+
+
+
+
+
+
+@app.route('/menulist')
+def menus():
+    menus = Menu.query.all()
+    return render_template("menulist.html",
+                           title="Menu List",
+                           menus=menus)

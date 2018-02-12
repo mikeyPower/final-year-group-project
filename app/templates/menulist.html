@@ -1,0 +1,14 @@
+{% extends 'index.html'%}
+
+{% block body %}
+  <h1>Menus List</h1>
+    {% for menu in menus %}
+     <ul>
+      <li style="display:inline-block" ><a href="menu/{{menu.id}}">{{menu.title}}</a></li>
+      <li style="display:inline-block" ><a href="edit_menu/{{menu.id}}">Edit</a></li>
+    <li style="display:inline-block" ><a href="delete_menu/{{menu.id}}">Delete</a></li>
+     </form>
+           </ul>
+    {% endfor %}
+
+{% endblock %}
