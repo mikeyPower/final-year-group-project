@@ -1,12 +1,22 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
 from flask import render_template, flash, redirect, session
-from .forms import LoginForm, RegisterForm
-from .models import User
+from .forms import LoginForm, RegisterForm, MailingForm
+from .models import User, Recipient
 from flask_wtf import Form as BaseForm
 from functools import wraps
 from flask import Flask, url_for
 from passlib.hash import sha256_crypt
+from flask import request
+import smtplib
+import os
+import email.encoders
+import email.mime.text
+import email.mime.base
+import mimetools
+import base64
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 
@@ -15,6 +25,64 @@ from passlib.hash import sha256_crypt
 @login_required
 def index():
     return render_template('index.html')
+
+# Manage mailing list
+@app.route('/email', methods=['GET', 'POST'])
+@login_required
+def email():
+    #db.session.query(Recipient).delete()
+    #db.session.commit()
+    form = MailingForm()
+    #myRecipient = recipient.query.all()
+    recipient = Recipient(
+        email = form.email.data,
+        last_name = form.last_name.data,
+        first_name = form.first_name.data
+    )
+    if request.method == 'POST':
+        form = MailingForm()
+        flash('Added')
+        print("Added!!")
+        db.session.add(recipient)
+        db.session.commit()
+        myRecipient = recipient.query.all()
+        return render_template('email.html', form = form, myRecipient = myRecipient)
+    else:
+        myRecipient = recipient.query.all()
+        return render_template('email.html', form = form, myRecipient = myRecipient)
+
+
+# Send emails
+@app.route('/send_emails', methods=['GET', 'POST'])
+@login_required
+def send_email():
+    me = "Event Company"
+    you = "Wessam Gholam"
+    APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+    APP_STATIC = os.path.join(APP_ROOT, 'templates')
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = "Invitation"
+    msg['From'] = me
+    msg['To'] = you
+    text = "Hello!!!!!"
+    with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
+        html = f.read()
+    part1 = MIMEText(text, 'plain')
+    part2 = MIMEText(html, 'html')
+    msg.attach(part1)
+    msg.attach(part2)
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.ehlo()
+    server.starttls()
+    server.login("event.management.tcd@gmail.com", "tcdtcd12")
+    myRecipient = Recipient.query.all()
+    for i in range(len(myRecipient)):
+        server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
+        check = myRecipient[i].last_name
+        print("Look here:**:", check)
+    return render_template('send_emails.html', myRecipient=myRecipient)
+
+
 
 @app.route('/event')
 @login_required

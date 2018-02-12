@@ -27,3 +27,19 @@ class User(db.Model):
         except NameError:
             return str(self.id)  # python 3
 
+
+
+class Recipient(db.Model):
+    __tablename__ = 'recipients'
+    #id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(64), index=True, unique=True)
+    last_name = db.Column(db.String(20), index=True)
+    first_name = db.Column(db.String(20), index=True)
+
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3

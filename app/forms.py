@@ -13,4 +13,7 @@ class RegisterForm(Form):
     password = PasswordField('Password:', validators=[DataRequired()])
     confirm = PasswordField('Confirm Password:', validators=[DataRequired()])
 
-
+class MailingForm(Form):
+    email = StringField('Email Address:', validators=[DataRequired()])
+    last_name = StringField('Last name:', validators=[DataRequired()])
+    first_name = StringField('First name:', validators=[DataRequired()])
