@@ -13,4 +13,8 @@ class RegisterForm(Form):
     password = PasswordField('Password:', validators=[DataRequired()])
     confirm = PasswordField('Confirm Password:', validators=[DataRequired()])
 
+class ChangePassForm(Form):
+    oldPassword = StringField('Old Password:', validators=[DataRequired()])
+    newPassword = StringField('New Password:', validators=[DataRequired()])
+    confirmPassword = StringField('Confirm Password:', validators=[DataRequired()])
 

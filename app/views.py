@@ -1,7 +1,7 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
 from flask import render_template, flash, redirect, session
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ChangePassForm
 from .models import User
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -87,3 +87,28 @@ def try_register(email,name,password,confirm_pass):
     db.session.add(user)
     db.session.commit()
     return False
+
+@app.route('/setting', methods=['GET','POST'])
+@login_required
+def settings():
+    form = ChangePassForm()
+    error = None
+    if form.validate_on_submit():
+        old = form.oldPassword
+        new_pass = form.newPassword
+        confirm = form.confirmPassword
+        error = changePass(old, new_pass, confirm)
+    return render_template('settings.html', form = form )
+
+def changePass(old, new, confirm):
+    usr = g.user
+    error = "Old password is incorrect"
+    if sha256_crypt.verify(str(old), usr.hashed_password):
+        if new!=confirm:
+            error = "passwords do not match"
+            return error
+        error=None
+        password = sha256_crypt.hash(str(password))
+        usr.hashed_password = password
+    return error       
+
