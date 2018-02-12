@@ -1,6 +1,7 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
-from flask import render_template, flash, redirect, session
+from flask import render_template, flash, redirect, session, request
+from flask_table import Table, Col, LinkCol
 from .forms import LoginForm, RegisterForm
 from .models import User
 from flask_wtf import Form as BaseForm
@@ -87,3 +88,20 @@ def try_register(email,name,password,confirm_pass):
     db.session.add(user)
     db.session.commit()
     return False
+
+
+@app.route('/guests', methods=['GET', 'POST'])
+def guest_list():
+    if request.method == 'POST':
+        print('hi')
+    usrs = User.query.all()
+    return render_template('guests.html', guests=usrs)
+
+
+@app.route('/guests/<id>')
+def remove_guest(id):
+    user = User.query.filter_by(id=id).first_or_404()
+    db.session.delete(user)
+    db.session.commit()
+    usrs = User.query.all()
+    return render_template('guests.html', guests=usrs)
