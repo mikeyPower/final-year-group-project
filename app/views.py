@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm
 from flask import render_template, flash, redirect, session, Flask, url_for, request
 from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm
-from .models import User, Recipient, Menu
+from .models import User, Recipient, Menu, Total
 from flask_wtf import Form as BaseForm
 from functools import wraps
 from passlib.hash import sha256_crypt
@@ -175,7 +175,7 @@ def changePass(old, new, confirm):
         error=None
         password = sha256_crypt.hash(str(password))
         usr.hashed_password = password
-    return error       
+    return error
 
 @app.route('/menu', methods=['GET', 'POST'])
 @login_required
@@ -214,3 +214,28 @@ def menus():
     return render_template("menulist.html",
                            title="Menu List",
                            menus=menus)
+
+@app.route('/total-raised')
+@login_required
+def totalraised():
+    total = get_total_raised().total
+    print total
+    return render_template('total-raised.html', total=total)
+
+def get_total_raised():
+    t = Total.query.get(1)
+    if t is None:
+        return 0
+    else:
+        return t
+
+#@app.route('/updater')
+#def updater():
+#    print "okay"
+#    try:
+#        t = Total.query.get(1)
+#        if t is None:
+#            t = 0
+#        return jsonify(current=t.total)
+#    except Exception, e:
+#        return(str(e))
