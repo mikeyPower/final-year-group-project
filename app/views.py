@@ -3,10 +3,15 @@ from app import app, db, lm
 from flask import render_template, flash, redirect, session
 from .forms import LoginForm, RegisterForm
 from .models import User
+from .models import Total
 from flask_wtf import Form as BaseForm
 from functools import wraps
 from flask import Flask, url_for
 from passlib.hash import sha256_crypt
+#import atexit
+#from apscheduler.schedulers.background import BackgroundScheduler
+#from apscheduler.triggers.interval import IntervalTrigger
+#from flask import jsonify
 
 
 
@@ -87,3 +92,29 @@ def try_register(email,name,password,confirm_pass):
     db.session.add(user)
     db.session.commit()
     return False
+
+@app.route('/total-raised')
+@login_required
+def totalraised():
+    total = get_total_raised().total
+    print total
+    return render_template('total-raised.html', total=total)
+
+def get_total_raised():
+
+    t = Total.query.get(1)
+    if t is None:
+        return 0
+    else:
+        return t
+
+#@app.route('/updater')
+#def updater():
+#    print "okay"
+#    try:
+#        t = Total.query.get(1)
+#        if t is None:
+#            t = 0
+#        return jsonify(current=t.total)
+#    except Exception, e:
+#        return(str(e))

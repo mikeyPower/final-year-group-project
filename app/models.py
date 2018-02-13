@@ -27,3 +27,10 @@ class User(db.Model):
         except NameError:
             return str(self.id)  # python 3
 
+class Total(db.Model):
+    __tablename__ = 'totalraised'
+    id = db.Column(db.Integer, primary_key=True)
+    total = db.Column(db.Float,index=True)
+
+    def __repr__(self):
+        return '<Total %r>' % (self.total)

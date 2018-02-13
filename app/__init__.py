@@ -1,6 +1,7 @@
 from flask.ext.login import LoginManager
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -21,3 +22,7 @@ if not app.debug:
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.info('microblog startup')
+
+socketio = SocketIO(app)
+if __name__ == '__main__':
+    socketio.run(app)
