@@ -218,16 +218,17 @@ def menus():
 @app.route('/total-raised')
 @login_required
 def totalraised():
-    total = get_total_raised().total
+    total = get_total_raised()
     print total
     return render_template('total-raised.html', total=total)
 
 def get_total_raised():
     t = Total.query.get(1)
+    print t
     if t is None:
-        return 0
+        return 0.0
     else:
-        return t
+        return t.total
 
 #@app.route('/updater')
 #def updater():
