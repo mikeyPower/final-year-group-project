@@ -11,7 +11,6 @@ import os
 import email.encoders
 import email.mime.text
 import email.mime.base
-import mimetools
 import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
