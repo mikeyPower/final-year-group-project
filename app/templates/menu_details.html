@@ -1,0 +1,9 @@
+{% extends 'index.html' %}
+
+{% block body %}
+  <h1>{{menu.title}}</h1>
+  <hr>
+  <div>
+    {{menu.body | safe}}
+  </div>
+{% endblock %}

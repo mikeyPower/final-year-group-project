@@ -1,6 +1,5 @@
 from app import db
 #from passlib.apps import custom_app_context as pwd_context
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -27,13 +26,8 @@ class User(db.Model):
             return unicode(self.id)  # python 2
         except NameError:
             return str(self.id)  # python 3
-class Total(db.Model):
-    __tablename__ = 'totalraised'
-    id = db.Column(db.Integer, primary_key=True)
-    total = db.Column(db.Float,index=True)
 
-    def __repr__(self):
-        return '<Total %r>' % (self.total)
+
 
 class Recipient(db.Model):
     __tablename__ = 'recipients'
@@ -49,11 +43,3 @@ class Recipient(db.Model):
             return unicode(self.id)  # python 2
         except NameError:
             return str(self.id)  # python 3
-
-
-
-class Menu(db.Model):
-    __tablename__ = 'menu'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64), index=True, unique=True)
-    body = db.Column(db.String(64), index=True, unique=True)
