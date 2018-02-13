@@ -8,9 +8,15 @@
 //{
 //    setInterval(function(){ run_update(); }, 1000);
 //});
-//function run_update(){
-//$.getJSON('/updater', function(data) {
-//    $("#current").text(data.current);
+(function run_update(){
+    $( document ).ready(function(){
+        $.getJSON('/updater', function(data) {
+            $("#current").text(data.current);
+        });
+    });
+    setTimeout(run_update, 1000);
+}());
+
 
 
 </script>
@@ -19,8 +25,10 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <h2 class = "text-center">€{{ total }}</h2>
-                <!--p id=current></p-->
+                <h2 class = "text-center">
+                    €<a id=current>test</a>
+                </h2>
+
             </div>
         </div>
     </div>
