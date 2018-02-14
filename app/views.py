@@ -94,6 +94,7 @@ def login():
     if form.validate_on_submit():
         error = try_login(form.username.data, form.password.data)
         if not error:
+            session['logged_in'] = True
             return redirect('/index')
     return render_template('login.html', form=form)
 
@@ -103,6 +104,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    session['logged_in'] = False
     return redirect('/login')
 
 
@@ -180,21 +182,27 @@ def settings():
     form = ChangePassForm()
     error = None
     if form.validate_on_submit():
-        old = form.oldPassword
-        new_pass = form.newPassword
-        confirm = form.confirmPassword
+        old = form.oldPassword.data
+        new_pass = form.newPassword.data
+        confirm = form.confirmPassword.data
         error = changePass(old, new_pass, confirm)
+        if error is None:
+            return redirect('/index')
+        else:
+            flash(error)
     return render_template('settings.html', form = form )
 
 def changePass(old, new, confirm):
     usr = g.user
     error = "Old password is incorrect"
     if sha256_crypt.verify(str(old), usr.hashed_password):
+        
         if new!=confirm:
-            error = "passwords do not match"
+            error = "new passwords do not match"
+            flash(error)
             return error
         error=None
-        password = sha256_crypt.hash(str(password))
+        password = sha256_crypt.hash(str(new))
         usr.hashed_password = password
         db.session.commit()
     return error
