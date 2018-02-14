@@ -14,6 +14,7 @@ import email.mime.base
 import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from flask import jsonify
 
 
 
@@ -239,24 +240,17 @@ def menus():
 @app.route('/total-raised')
 @login_required
 def totalraised():
-    total = get_total_raised().total
-    print total
-    return render_template('total-raised.html', total=total)
+    return render_template('total-raised.html')
 
-def get_total_raised():
-    t = Total.query.get(1)
-    if t is None:
-        return 0
-    else:
-        return t
-
-#@app.route('/updater')
-#def updater():
-#    print "okay"
-#    try:
-#        t = Total.query.get(1)
-#        if t is None:
-#            t = 0
-#        return jsonify(current=t.total)
-#    except Exception, e:
-#        return(str(e))
+@app.route('/updater')
+def updater():
+    print "okay"
+    try:
+        t = Total.query.get(1)
+        if t is None:
+            t2 = 0.0
+        else:
+            t2 = t.total
+        return jsonify(current=t2)
+    except Exception, e:
+        return(str(e))
