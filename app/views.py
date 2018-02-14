@@ -1,6 +1,6 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
-from flask import render_template, flash, redirect, session, Flask, url_for, request
+from flask import g,render_template, flash, redirect, session, Flask, url_for, request
 from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm
 from .models import User, Recipient, Menu, Total
 from flask_wtf import Form as BaseForm
@@ -153,6 +153,26 @@ def try_register(email,name,password,confirm_pass):
     db.session.commit()
     return False
 
+#######admin stuff########
+
+#def requires_roles(*roles):
+#    def wrapper(f):
+#        @wraps(f)
+#        def wrapped(*args, **kwargs):
+#            if g.user.get_role not in roles:
+#                return error_response()
+#            return f(*args, **kwargs)
+#        return wrapped
+#    return wrapper
+
+
+
+#######end admin##########
+
+@app.before_request
+def before_request():
+    g.user = current_user
+
 @app.route('/setting', methods=['GET','POST'])
 @login_required
 def settings():
@@ -175,6 +195,7 @@ def changePass(old, new, confirm):
         error=None
         password = sha256_crypt.hash(str(password))
         usr.hashed_password = password
+        db.session.commit()
     return error
 
 @app.route('/menu', methods=['GET', 'POST'])
