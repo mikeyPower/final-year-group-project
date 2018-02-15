@@ -2,35 +2,30 @@
 
 {% block body %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script type=text/javascript>
+<script src="static/odometer/odometer.min.js"></script>
+<link rel="stylesheet" href="static/odometer/odometer-theme-default.css" />
 
+<script type=text/javascript>
 (function run_update(){
     $( document ).ready(function(){
         $.getJSON('/updater', function(data) {
-            $("#current").text(data.current);
+            console.log($("#odom-checker").text());
+            if (data.current != ($("#odom-checker").text())){
+                $("#current").text(data.current);
+                $("#odom-checker").text(data.current);
+            }
         });
     });
     setTimeout(run_update, 1000);
 }());
 </script>
 
-<!--link rel="stylesheet" href="static/odometer/odometer-theme-default.css" />
-<style>
-.odometer {
-  font-size: 40px;
-}
-</style>
-<style>
-.odometer {
-  font-size: 40px;
-}
-</style>
-<script src="static/odometer/odometer.min.js"></script>
 <script>
 window.odometerOptions = {
-  format: '(ddd).dd'
+    duration: 1000,
+    animation: 'count'
 };
-</script-->
+</script>
 
 <h1> Total Raised</h1>
 <body>
@@ -38,9 +33,10 @@ window.odometerOptions = {
         <div class="row">
             <div class="col-lg-12">
                 <h2 class = "text-center">
-                    €<a id=current>test</a>
+                    €<div id="current" class="odometer"></div>
+                    <p hidden id="odom-checker">0</p>
                 </h2>
-                <div class="odometer">3252</div>
+
             </div>
         </div>
     </div>
