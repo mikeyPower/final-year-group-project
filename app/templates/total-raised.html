@@ -3,11 +3,7 @@
 {% block body %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
-//run_update();
-//$(document).ready(function()
-//{
-//    setInterval(function(){ run_update(); }, 1000);
-//});
+
 (function run_update(){
     $( document ).ready(function(){
         $.getJSON('/updater', function(data) {
@@ -16,10 +12,26 @@
     });
     setTimeout(run_update, 1000);
 }());
-
-
-
 </script>
+
+<!--link rel="stylesheet" href="static/odometer/odometer-theme-default.css" />
+<style>
+.odometer {
+  font-size: 40px;
+}
+</style>
+<style>
+.odometer {
+  font-size: 40px;
+}
+</style>
+<script src="static/odometer/odometer.min.js"></script>
+<script>
+window.odometerOptions = {
+  format: '(ddd).dd'
+};
+</script-->
+
 <h1> Total Raised</h1>
 <body>
     <div class="container">
@@ -28,7 +40,7 @@
                 <h2 class = "text-center">
                     €<a id=current>test</a>
                 </h2>
-
+                <div class="odometer">3252</div>
             </div>
         </div>
     </div>

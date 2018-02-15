@@ -196,7 +196,7 @@ def changePass(old, new, confirm):
     usr = g.user
     error = "Old password is incorrect"
     if sha256_crypt.verify(str(old), usr.hashed_password):
-        
+
         if new!=confirm:
             error = "new passwords do not match"
             flash(error)
@@ -252,7 +252,6 @@ def totalraised():
 
 @app.route('/updater')
 def updater():
-    print "okay"
     try:
         t = Total.query.get(1)
         if t is None:
