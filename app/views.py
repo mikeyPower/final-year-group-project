@@ -54,6 +54,8 @@ def email():
 @app.route('/send_emails', methods=['GET', 'POST'])
 @login_required
 def send_email():
+    index = 0
+    myRecipient = Recipient.query.all()
     me = "Event Company"
     you = "Wessam Gholam"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -63,21 +65,23 @@ def send_email():
     msg['From'] = me
     msg['To'] = you
     text = "Hello!!!!!"
-    with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
-        html = f.read()
-    part1 = MIMEText(text, 'plain')
-    part2 = MIMEText(html, 'html')
-    msg.attach(part1)
-    msg.attach(part2)
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login("event.management.tcd@gmail.com", "tcdtcd12")
     myRecipient = Recipient.query.all()
     for i in range(len(myRecipient)):
+        with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
+            html = f.read()
+        part1 = MIMEText(text, 'plain')
+        part2 = MIMEText(render_template("invitation.html",
+                               myRecipient=myRecipient[i]), 'html')
+        msg.attach(part1)
+        msg.attach(part2)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login("event.management.tcd@gmail.com", "tcdtcd12")
         server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
         check = myRecipient[i].last_name
         print("Look here:**:", check)
+        index = i
     return render_template('send_emails.html', myRecipient=myRecipient)
 
 
