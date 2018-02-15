@@ -15,9 +15,9 @@ class RegisterForm(Form):
     confirm = PasswordField('Confirm Password:', validators=[DataRequired()])
 
 class ChangePassForm(Form):
-    oldPassword = StringField('Old Password:', validators=[DataRequired()])
-    newPassword = StringField('New Password:', validators=[DataRequired()])
-    confirmPassword = StringField('Confirm Password:', validators=[DataRequired()])
+    oldPassword = PasswordField('Old Password:', validators=[DataRequired()])
+    newPassword = PasswordField('New Password:', validators=[DataRequired()])
+    confirmPassword = PasswordField('Confirm Password:', validators=[DataRequired()])
 
 class MailingForm(Form):
     email = StringField('Email Address:', validators=[DataRequired()])
