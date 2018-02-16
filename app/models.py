@@ -39,7 +39,8 @@ class Recipient(db.Model):
     __tablename__ = 'recipients'
     #id = db.Column(db.Integer, primary_key=True)
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(64), index=True)
+    #email = db.Column(db.String(64), index=True, unique=True)
     last_name = db.Column(db.String(20), index=True)
     first_name = db.Column(db.String(20), index=True)
 

@@ -1,7 +1,7 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm
+from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, GroupEmailForm
 from .models import User, Recipient, Menu, Total
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -31,6 +31,8 @@ def email():
     #db.session.query(Recipient).delete()
     #db.session.commit()
     form = MailingForm()
+    #db.session.query(Recipient).delete()
+    #db.session.commit()
     #myRecipient = recipient.query.all()
     recipient = Recipient(
         email = form.email.data,
@@ -39,12 +41,20 @@ def email():
     )
     if request.method == 'POST':
         form = MailingForm()
-        flash('Added')
-        print("Added!!")
-        db.session.add(recipient)
-        db.session.commit()
         myRecipient = recipient.query.all()
-        return render_template('email.html', form = form, myRecipient = myRecipient)
+        #flash('Added')
+        #print("Added!!")
+        user = Recipient.query.filter_by(email=form.email.data).first()
+        if user is None:
+            db.session.add(recipient)
+            db.session.commit()
+            myRecipient = recipient.query.all()
+            return render_template('email.html', form = form, myRecipient = myRecipient)
+            #return render_template('email.html', form = form, myRecipient = myRecipient)
+        else:
+            flash(u'Email is already registered in mailing list', category='error')
+            myRecipient = recipient.query.all()
+            return render_template('email.html', form = form, myRecipient = myRecipient)
     else:
         myRecipient = recipient.query.all()
         return render_template('email.html', form = form, myRecipient = myRecipient)
@@ -136,7 +146,7 @@ def register():
         if not error:
 
             #Need to decide on Database
-            flash('you have sucessfully registered')
+            #flash('you have sucessfully registered')
             return redirect('/login')
     return render_template('register.html', form = form)
 
@@ -211,6 +221,46 @@ def changePass(old, new, confirm):
         db.session.commit()
     return error
 
+
+@app.route('/group_email', methods=['GET', 'POST'])
+@login_required
+def group_email():
+    form = GroupEmailForm()
+    if form.validate_on_submit():#
+        print("your in")
+        title = form.title.data
+        body = form.body.data
+        myRecipient = Recipient.query.all()
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = title
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello!!!!!"
+        print(title)
+        print(body)
+        myRecipient = Recipient.query.all()
+        for i in range(len(myRecipient)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
+                html = f.read()
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(body, 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
+        #flash('Email Sent', 'success')
+        print("added")
+        #return redirect('/menulist')
+    return render_template('group_email.html', form = form)
+
+
 @app.route('/menu', methods=['GET', 'POST'])
 @login_required
 def menu():
@@ -227,7 +277,7 @@ def menu():
         db.session.add(menu)
         db.session.commit()
 
-        flash('Menu Created', 'success')
+        #flash('Menu Created', 'success')
         print("added")
         return redirect('/menulist')
     return render_template('menu.html', form = form)

@@ -2,7 +2,6 @@
 {% block body %}
 
 
-
 <style>
 body {
     font-family: Arial;
@@ -41,6 +40,22 @@ body {
 
 <h1>Add email to mailing list</h1>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+{% if error %}
+      <p><strong>Error:</strong> {{ error }}
+      {% endif %}
+
+
 <form action="" method="post" name="register">
     {{ form.hidden_tag() }}
     <p>
@@ -55,13 +70,15 @@ body {
 
     <p>
 </form>
-
-
+<p></p>
+<input type="button" onclick="location.href='/group_email';" value="Send group emails" />
+<input type="button" onclick="location.href='/send_emails';" value="Send Invitations" />
 </div>
 
 <div class="split right">   <!-- Set Div As your requirement -->
 
 <h1>mailing list<h1>
+<body>
   {% for recipient in myRecipient %}
     <li>
       <font size="2">
@@ -69,6 +86,7 @@ body {
       </font>
     </li>
   {% endfor %}
+</body>
 </div>
 
 

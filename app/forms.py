@@ -27,3 +27,7 @@ class MailingForm(Form):
 class MenuForm(Form):
     title = StringField('Title:', validators=[DataRequired()])
     body = TextAreaField('Body',validators=[DataRequired()])
+
+class GroupEmailForm(Form):
+    title = StringField('Title:', validators=[DataRequired()])
+    body = TextAreaField('Body',validators=[DataRequired()])
