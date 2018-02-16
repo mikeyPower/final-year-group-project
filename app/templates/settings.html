@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+<h1> Settings </h1>
+<form action='' method ='post' name ='setting'>
+  {{ form.hidden_tag() }}
+  <p> 
+      Please enter your old Password:   
+      {{ form.oldPassword(size=30) }}<br>
+      please enter your new password:
+      {{ form.newPassword(size=30)}}<br>
+      please enter repeat your new password:
+      {{ form.confirmPassword(size=30) }}<br>
+      <p><input type = "submit" value="Change Password"></p>
+  </p>
+</form>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% endblock %}

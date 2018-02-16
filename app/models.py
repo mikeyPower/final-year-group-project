@@ -28,6 +28,31 @@ class User(db.Model):
         except NameError:
             return str(self.id)  # python 3
 
+class Total(db.Model):
+    __tablename__ = 'totalraised'
+    id = db.Column(db.Integer, primary_key=True)
+    total = db.Column(db.Float,index=True)
+
+    def __repr__(self):
+        return '<Total %r>' % (self.total)
+
+class Recipient(db.Model):
+    __tablename__ = 'recipients'
+    #id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(64), index=True)
+    #email = db.Column(db.String(64), index=True, unique=True)
+    last_name = db.Column(db.String(20), index=True)
+    first_name = db.Column(db.String(20), index=True)
+
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
+
+
 
 guests = db.Table('guests',
     db.Column('event_id', db.Integer, db.ForeignKey('event.id'), primary_key=True),
@@ -42,23 +67,6 @@ class Event(db.Model):
     description = db.Column(db.String(1000))
     guests = db.relationship('User', secondary=guests, lazy='subquery',
                            backref=db.backref('events', lazy=True))
-
-class Recipient(db.Model):
-    __tablename__ = 'recipients'
-    #id = db.Column(db.Integer, primary_key=True)
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), index=True, unique=True)
-    last_name = db.Column(db.String(20), index=True)
-    first_name = db.Column(db.String(20), index=True)
-
-
-    def get_id(self):
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
-
-
 
 class Menu(db.Model):
     __tablename__ = 'menu'

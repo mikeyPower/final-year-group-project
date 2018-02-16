@@ -1,8 +1,8 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
-from flask import render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, EventForm
-from .models import User, Recipient, Menu, Event
+from flask import g,render_template, flash, redirect, session, Flask, url_for, request
+from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
+from .models import User, Recipient, Menu, Total, Event
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -12,10 +12,10 @@ import os
 import email.encoders
 import email.mime.text
 import email.mime.base
-import mimetools
 import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from flask import jsonify
 
 
 
@@ -32,6 +32,8 @@ def email():
     #db.session.query(Recipient).delete()
     #db.session.commit()
     form = MailingForm()
+    #db.session.query(Recipient).delete()
+    #db.session.commit()
     #myRecipient = recipient.query.all()
     recipient = Recipient(
         email = form.email.data,
@@ -40,12 +42,20 @@ def email():
     )
     if request.method == 'POST':
         form = MailingForm()
-        flash('Added')
-        print("Added!!")
-        db.session.add(recipient)
-        db.session.commit()
         myRecipient = recipient.query.all()
-        return render_template('email.html', form = form, myRecipient = myRecipient)
+        #flash('Added')
+        #print("Added!!")
+        user = Recipient.query.filter_by(email=form.email.data).first()
+        if user is None:
+            db.session.add(recipient)
+            db.session.commit()
+            myRecipient = recipient.query.all()
+            return render_template('email.html', form = form, myRecipient = myRecipient)
+            #return render_template('email.html', form = form, myRecipient = myRecipient)
+        else:
+            flash(u'Email is already registered in mailing list', category='error')
+            myRecipient = recipient.query.all()
+            return render_template('email.html', form = form, myRecipient = myRecipient)
     else:
         myRecipient = recipient.query.all()
         return render_template('email.html', form = form, myRecipient = myRecipient)
@@ -55,6 +65,8 @@ def email():
 @app.route('/send_emails', methods=['GET', 'POST'])
 @login_required
 def send_email():
+    index = 0
+    myRecipient = Recipient.query.all()
     me = "Event Company"
     you = "Wessam Gholam"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -64,21 +76,23 @@ def send_email():
     msg['From'] = me
     msg['To'] = you
     text = "Hello!!!!!"
-    with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
-        html = f.read()
-    part1 = MIMEText(text, 'plain')
-    part2 = MIMEText(html, 'html')
-    msg.attach(part1)
-    msg.attach(part2)
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login("event.management.tcd@gmail.com", "tcdtcd12")
     myRecipient = Recipient.query.all()
     for i in range(len(myRecipient)):
+        with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
+            html = f.read()
+        part1 = MIMEText(text, 'plain')
+        part2 = MIMEText(render_template("invitation.html",
+                               myRecipient=myRecipient[i]), 'html')
+        msg.attach(part1)
+        msg.attach(part2)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login("event.management.tcd@gmail.com", "tcdtcd12")
         server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
         check = myRecipient[i].last_name
         print("Look here:**:", check)
+        index = i
     return render_template('send_emails.html', myRecipient=myRecipient)
 
 
@@ -95,6 +109,7 @@ def login():
     if form.validate_on_submit():
         error = try_login(form.username.data, form.password.data)
         if not error:
+            session['logged_in'] = True
             return redirect('/index')
     return render_template('login.html', form=form)
 
@@ -104,6 +119,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    session['logged_in'] = False
     return redirect('/login')
 
 
@@ -131,7 +147,7 @@ def register():
         if not error:
 
             #Need to decide on Database
-            flash('you have sucessfully registered')
+            #flash('you have sucessfully registered')
             return redirect('/login')
     return render_template('register.html', form = form)
 
@@ -155,29 +171,96 @@ def try_register(email,name,password,confirm_pass):
     db.session.commit()
     return False
 
+#######admin stuff########
+
+#def requires_roles(*roles):
+#    def wrapper(f):
+#        @wraps(f)
+#        def wrapped(*args, **kwargs):
+#            if g.user.get_role not in roles:
+#                return error_response()
+#            return f(*args, **kwargs)
+#        return wrapped
+#    return wrapper
+
+
+
+#######end admin##########
+
+@app.before_request
+def before_request():
+    g.user = current_user
+
 @app.route('/setting', methods=['GET','POST'])
 @login_required
 def settings():
     form = ChangePassForm()
     error = None
     if form.validate_on_submit():
-        old = form.oldPassword
-        new_pass = form.newPassword
-        confirm = form.confirmPassword
+        old = form.oldPassword.data
+        new_pass = form.newPassword.data
+        confirm = form.confirmPassword.data
         error = changePass(old, new_pass, confirm)
+        if error is None:
+            return redirect('/index')
+        else:
+            flash(error)
     return render_template('settings.html', form = form )
 
 def changePass(old, new, confirm):
     usr = g.user
     error = "Old password is incorrect"
     if sha256_crypt.verify(str(old), usr.hashed_password):
+
         if new!=confirm:
-            error = "passwords do not match"
+            error = "new passwords do not match"
+            flash(error)
             return error
         error=None
-        password = sha256_crypt.hash(str(password))
+        password = sha256_crypt.hash(str(new))
         usr.hashed_password = password
-    return error       
+        db.session.commit()
+    return error
+
+
+@app.route('/group_email', methods=['GET', 'POST'])
+@login_required
+def group_email():
+    form = GroupEmailForm()
+    if form.validate_on_submit():#
+        print("your in")
+        title = form.title.data
+        body = form.body.data
+        myRecipient = Recipient.query.all()
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = title
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello!!!!!"
+        print(title)
+        print(body)
+        myRecipient = Recipient.query.all()
+        for i in range(len(myRecipient)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
+                html = f.read()
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(body, 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
+        #flash('Email Sent', 'success')
+        print("added")
+        #return redirect('/menulist')
+    return render_template('group_email.html', form = form)
+
 
 @app.route('/menu', methods=['GET', 'POST'])
 @login_required
@@ -195,7 +278,7 @@ def menu():
         db.session.add(menu)
         db.session.commit()
 
-        flash('Menu Created', 'success')
+        #flash('Menu Created', 'success')
         print("added")
         return redirect('/menulist')
     return render_template('menu.html', form = form)
@@ -216,8 +299,6 @@ def menus():
     return render_template("menulist.html",
                            title="Menu List",
                            menus=menus)
-
-
 
 @app.route('/events', methods=['GET', 'POST'])
 @login_required
@@ -260,3 +341,20 @@ def remove_guest(id):
     db.session.commit()
     usrs = User.query.all()
     return render_template('guests.html', guests=usrs)
+
+@app.route('/total-raised')
+@login_required
+def totalraised():
+    return render_template('total-raised.html')
+
+@app.route('/updater')
+def updater():
+    try:
+        t = Total.query.get(1)
+        if t is None:
+            t2 = 0.0
+        else:
+            t2 = t.total
+        return jsonify(current=t2)
+    except Exception, e:
+        return(str(e))

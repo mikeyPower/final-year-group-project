@@ -1,0 +1,44 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="static/odometer/odometer.min.js"></script>
+<link rel="stylesheet" href="static/odometer/odometer-theme-default.css" />
+
+<script type=text/javascript>
+(function run_update(){
+    $( document ).ready(function(){
+        $.getJSON('/updater', function(data) {
+            console.log($("#odom-checker").text());
+            if (data.current != ($("#odom-checker").text())){
+                $("#current").text(data.current);
+                $("#odom-checker").text(data.current);
+            }
+        });
+    });
+    setTimeout(run_update, 1000);
+}());
+</script>
+
+<script>
+window.odometerOptions = {
+    duration: 1000,
+    animation: 'count'
+};
+</script>
+
+<h1> Total Raised</h1>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class = "text-center">
+                    €<div id="current" class="odometer"></div>
+                    <p hidden id="odom-checker">0</p>
+                </h2>
+
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
