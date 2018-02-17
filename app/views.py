@@ -97,11 +97,6 @@ def send_email():
 
 
 
-@app.route('/event')
-@login_required
-def event():
-    return render_template('event.html')
-
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -300,33 +295,58 @@ def menus():
                            title="Menu List",
                            menus=menus)
 
-@app.route('/events', methods=['GET', 'POST'])
+
+#### Event page functions ########
+
+
+@app.route('/events')
+@login_required
+def events():
+    events = Event.query.all()
+    return render_template('events.html', events=events)
+
+
+@app.route('/event', methods=['GET', 'POST'])
 @login_required
 def event():
-    if request.method == 'GET':
-        print('hello')
-    else:
-        form = EventForm()
-        render_template('add_event.html', form=form)
-        if form.validate_on_submit():
-            title = form.title.data
-            location = form.location.data
-            description = form.description.data
+    form = EventForm()
 
-            event = Event(
-                title=title,
-                location=location,
-                description=description
-            )
-            db.session.add(event)
-            db.session.commit()
+    if form.validate_on_submit():
+        title = form.title.data
+        location = form.location.data
+        description = form.description.data
 
-    return render_template('event.html')
+        event = Event(
+            title=title,
+            location=location,
+            description=description
+        )
+        db.session.add(event)
+        db.session.commit()
+        events = Event.query.all()
+        return render_template('events.html', events=events)
+    return render_template('add_event.html', form=form)
 
-
-@app.route('/guests', methods=['GET', 'POST'])
+@app.route('/event/<id>', methods=['GET', 'POST'])
 @login_required
-def guest_list():
+def event_details(id):
+    event = Event.query.filter_by(id=id).first_or_404()
+    return render_template('event.html', event=event)
+
+@app.route('/event_del/<id>')
+@login_required
+def event_del(id):
+    event = Event.query.filter_by(id=id).first_or_404()
+    db.session.delete(event)
+    db.session.commit()
+    return redirect('/events')
+
+
+### Guest list functs ###
+
+@app.route('/event/<int:id>/guests')
+@login_required
+def guest_list(id):
     if request.method == 'POST':
         print('hi')
     usrs = User.query.all()
@@ -341,6 +361,8 @@ def remove_guest(id):
     db.session.commit()
     usrs = User.query.all()
     return render_template('guests.html', guests=usrs)
+
+
 
 @app.route('/total-raised')
 @login_required
