@@ -18,6 +18,16 @@ from email.mime.text import MIMEText
 from flask import jsonify
 
 
+import re
+def verifyEmailSynatax(addressToVerify):
+    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', addressToVerify)
+
+    if match == None:
+	    return False
+    else:
+        return True
+
+
 
 
 @app.route('/index')
@@ -36,22 +46,22 @@ def email():
     #db.session.commit()
     #myRecipient = recipient.query.all()
     recipient = Recipient(
-        email = form.email.data,
-        last_name = form.last_name.data,
-        first_name = form.first_name.data
-    )
+            email = form.email.data,
+            last_name = form.last_name.data,
+            first_name = form.first_name.data
+        )
     if request.method == 'POST':
         form = MailingForm()
         myRecipient = recipient.query.all()
-        #flash('Added')
-        #print("Added!!")
+                #flash('Added')
+                #print("Added!!")
         user = Recipient.query.filter_by(email=form.email.data).first()
-        if user is None:
+        if user is not None or verifyEmailSynatax(form.email.data) == True:
             db.session.add(recipient)
             db.session.commit()
             myRecipient = recipient.query.all()
             return render_template('email.html', form = form, myRecipient = myRecipient)
-            #return render_template('email.html', form = form, myRecipient = myRecipient)
+                    #return render_template('email.html', form = form, myRecipient = myRecipient)
         else:
             flash(u'Email is already registered in mailing list', category='error')
             myRecipient = recipient.query.all()

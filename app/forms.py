@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form
 from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms.fields.html5 import EmailField
 
 
 class LoginForm(Form):
@@ -20,7 +21,7 @@ class ChangePassForm(Form):
     confirmPassword = PasswordField('Confirm Password:', validators=[DataRequired()])
 
 class MailingForm(Form):
-    email = StringField('Email Address:', validators=[DataRequired()])
+    email = EmailField('Email address', validators=[Email()])
     last_name = StringField('Last name:', validators=[DataRequired()])
     first_name = StringField('First name:', validators=[DataRequired()])
 
