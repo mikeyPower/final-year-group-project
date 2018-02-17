@@ -1,0 +1,21 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1> Gang shit</h1>
+
+    <table style="width:100%">
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+      </tr>
+      {% for guest in guests %}
+        <tr>
+            <td>{{ guest.id }}</td>
+            <td>{{ guest.username }}</td>
+            <td>{{ guest.email }}</td>
+            <td><p>Remove</p></td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}

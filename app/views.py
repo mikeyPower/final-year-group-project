@@ -1,8 +1,9 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, GroupEmailForm
-from .models import User, Recipient, Menu, Total
+from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
+from .models import User, Recipient, Menu, Total, Event
+from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
 from passlib.hash import sha256_crypt
@@ -95,11 +96,6 @@ def send_email():
     return render_template('send_emails.html', myRecipient=myRecipient)
 
 
-
-@app.route('/event')
-@login_required
-def event():
-    return render_template('event.html')
 
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
@@ -266,7 +262,7 @@ def group_email():
 def menu():
     form = MenuForm()
     if form.validate_on_submit():#
-        print("your in")
+        print("you're in")
         title = form.title.data
         body = form.body.data
 
@@ -298,6 +294,75 @@ def menus():
     return render_template("menulist.html",
                            title="Menu List",
                            menus=menus)
+
+
+#### Event page functions ########
+
+
+@app.route('/events')
+@login_required
+def events():
+    events = Event.query.all()
+    return render_template('events.html', events=events)
+
+
+@app.route('/event', methods=['GET', 'POST'])
+@login_required
+def event():
+    form = EventForm()
+
+    if form.validate_on_submit():
+        title = form.title.data
+        location = form.location.data
+        description = form.description.data
+
+        event = Event(
+            title=title,
+            location=location,
+            description=description
+        )
+        db.session.add(event)
+        db.session.commit()
+        events = Event.query.all()
+        return render_template('events.html', events=events)
+    return render_template('add_event.html', form=form)
+
+@app.route('/event/<id>', methods=['GET', 'POST'])
+@login_required
+def event_details(id):
+    event = Event.query.filter_by(id=id).first_or_404()
+    return render_template('event.html', event=event)
+
+@app.route('/event_del/<id>')
+@login_required
+def event_del(id):
+    event = Event.query.filter_by(id=id).first_or_404()
+    db.session.delete(event)
+    db.session.commit()
+    return redirect('/events')
+
+
+### Guest list functs ###
+
+@app.route('/event/<int:id>/guests')
+@login_required
+def guest_list(id):
+    if request.method == 'POST':
+        print('hi')
+    usrs = User.query.all()
+    return render_template('guests.html', guests=usrs)
+
+
+@app.route('/guests/<id>')
+@login_required
+def remove_guest(id):
+    user = User.query.filter_by(id=id).first_or_404()
+    db.session.delete(user)
+    db.session.commit()
+    usrs = User.query.all()
+    return render_template('guests.html', guests=usrs)
+
+
 
 @app.route('/total-raised')
 @login_required
