@@ -5,6 +5,18 @@
   <form action="" method="post" name="add_guest">
   {{ form.hidden_tag() }}
   <p>
+
+
+    {% block content %}
+<div class="container">
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{message}}
+  </div>
+    {% endfor %}
+  {% endblock %}
+
       Please enter the email address <br>
       {{ form.email(size = 16) }} <br>
       Please enter first name:<br>

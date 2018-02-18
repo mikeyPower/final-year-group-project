@@ -49,18 +49,23 @@ def guests():
 
 @app.route('/add_guest', methods=['GET', 'POST'])
 def add_guest():
+    # next two commented lines to delete all guests
+    #db.session.query(Guest).delete()
+    #db.session.commit()
     form = GuestForm()
     if form.validate_on_submit():
-        error =try_register_guest(form.email.data, form.first_name.data, form.last_name.data)
+        user = Guest.query.filter_by(email=form.email.data).first()
+        if user is not None:
+            flash(u'Email is already registered', category='error')
+            print("Inside if statement!!!!!!!!!!!")
+            return redirect('/add_guest')
+        error =try_register_guest(form.email.data, form.first_name.data, form.last_name.data, form)
         if not error:
-
-            #Need to decide on Database
-            #flash('you have sucessfully registered')
             return redirect('/guest_list')
     return render_template('add_guest.html', form = form)
 
 #logic of how to register
-def try_register_guest(email,f_name,l_name):
+def try_register_guest(email,f_name,l_name, form):
     #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
     if verifyEmailSynatax(email) == False:
         flash(u'Email is not correct', category='error')
@@ -73,13 +78,6 @@ def try_register_guest(email,f_name,l_name):
     db.session.add(guest)
     db.session.commit()
     return False
-
-
-
-
-
-
-
 
 
 # Send emails
