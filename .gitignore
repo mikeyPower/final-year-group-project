@@ -3,4 +3,4 @@ db_repository/
 app.db
 flask/
 tmp/*
-!tmp/
+!tmp/.gitkeep
