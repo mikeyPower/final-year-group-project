@@ -10,6 +10,7 @@
         <th>Location</th>
         <th>Event Page</th>
         <th>Delete Event</th>
+        <th>Guest List</th>
       </tr>
       {% for ev in events %}
         <tr>
@@ -18,6 +19,7 @@
             <td>{{ ev.location }}</td>
             <td><a class="nav-link" href="/event/{{ ev.id }}">View</a></td>
             <td><a data-confirm="Are you sure?" data-method="delete" href="/event_del/{{ ev.id }}" rel="nofollow">Delete</a></td>
+            <td><a class="nav-link" href="/event/guests/{{ ev.id }}">Guest List</a></td>
         </tr>
       {% endfor %}
     </table>

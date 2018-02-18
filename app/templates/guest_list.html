@@ -1,0 +1,16 @@
+{% extends 'index.html'%}
+
+{% block body %}
+  <h1>Guest</h1>
+    {% for menu in guests%}
+     <ul>
+      <li style="display:inline-block" ><a >{{menu.email}}</a></li>
+      <li style="display:inline-block" ><a >{{menu.first_name}}</a></li>
+      <li style="display:inline-block" ><a >{{menu.last_name}}</a></li>
+     </form>
+           </ul>
+    {% endfor %}
+  <a class="nav-link" href="/add_guest" style="color: rgb(0,255,0)">Add Guest</a>
+  <input type="button" onclick="location.href='/group_email';" value="Send group emails" />
+  <input type="button" onclick="location.href='/send_emails';" value="Send Invitations" />
+{% endblock %}

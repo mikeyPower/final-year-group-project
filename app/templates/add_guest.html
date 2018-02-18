@@ -1,0 +1,17 @@
+{% extends 'index.html'%}
+
+{% block body %}
+  <h1>Add Guest</h1>
+  <form action="" method="post" name="add_guest">
+  {{ form.hidden_tag() }}
+  <p>
+      Please enter the email address <br>
+      {{ form.email(size = 16) }} <br>
+      Please enter first name:<br>
+      {{ form.first_name(size=16) }}<br>
+      Please enter last name:<br>
+      {{ form.last_name(size=16) }}<br>
+  </p>
+  <p><input type="submit" value="Add"></p>
+
+{% endblock %}

@@ -25,6 +25,11 @@ class MailingForm(Form):
     last_name = StringField('Last name:', validators=[DataRequired()])
     first_name = StringField('First name:', validators=[DataRequired()])
 
+class GuestForm(Form):
+    email = EmailField('Email address', validators=[Email()])
+    last_name = StringField('Last name:', validators=[DataRequired()])
+    first_name = StringField('First name:', validators=[DataRequired()])
+
 class MenuForm(Form):
     title = StringField('Title:', validators=[DataRequired()])
     body = TextAreaField('Body',validators=[DataRequired()])

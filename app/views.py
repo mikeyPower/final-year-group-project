@@ -1,8 +1,8 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
-from .models import User, Recipient, Menu, Total, Event
+from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, GuestForm
+from .models import User, Recipient, Menu, Total, Event, Guest
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -16,9 +16,9 @@ import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from flask import jsonify
-
-
 import re
+
+
 def verifyEmailSynatax(addressToVerify):
     match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', addressToVerify)
 
@@ -35,40 +35,51 @@ def verifyEmailSynatax(addressToVerify):
 def index():
     return render_template('index.html')
 
-# Manage mailing list
-@app.route('/email', methods=['GET', 'POST'])
-@login_required
-def email():
-    #db.session.query(Recipient).delete()
-    #db.session.commit()
-    form = MailingForm()
-    #db.session.query(Recipient).delete()
-    #db.session.commit()
-    #myRecipient = recipient.query.all()
-    recipient = Recipient(
-            email = form.email.data,
-            last_name = form.last_name.data,
-            first_name = form.first_name.data
+
+
+@app.route('/guest_list')
+def guests():
+    guests = Guest.query.all()
+    return render_template("guest_list.html",
+                           title="Guests",
+                           guests=guests)
+
+
+
+
+@app.route('/add_guest', methods=['GET', 'POST'])
+def add_guest():
+    form = GuestForm()
+    if form.validate_on_submit():
+        error =try_register_guest(form.email.data, form.first_name.data, form.last_name.data)
+        if not error:
+
+            #Need to decide on Database
+            #flash('you have sucessfully registered')
+            return redirect('/guest_list')
+    return render_template('add_guest.html', form = form)
+
+#logic of how to register
+def try_register_guest(email,f_name,l_name):
+    #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
+    if verifyEmailSynatax(email) == False:
+        flash(u'Email is not correct', category='error')
+        return True
+    guest = Guest(
+            email = email,
+            last_name = l_name,
+            first_name = f_name
         )
-    if request.method == 'POST':
-        form = MailingForm()
-        myRecipient = recipient.query.all()
-                #flash('Added')
-                #print("Added!!")
-        user = Recipient.query.filter_by(email=form.email.data).first()
-        if user is not None or verifyEmailSynatax(form.email.data) == True:
-            db.session.add(recipient)
-            db.session.commit()
-            myRecipient = recipient.query.all()
-            return render_template('email.html', form = form, myRecipient = myRecipient)
-                    #return render_template('email.html', form = form, myRecipient = myRecipient)
-        else:
-            flash(u'Email is already registered in mailing list', category='error')
-            myRecipient = recipient.query.all()
-            return render_template('email.html', form = form, myRecipient = myRecipient)
-    else:
-        myRecipient = recipient.query.all()
-        return render_template('email.html', form = form, myRecipient = myRecipient)
+    db.session.add(guest)
+    db.session.commit()
+    return False
+
+
+
+
+
+
+
 
 
 # Send emails
@@ -86,7 +97,7 @@ def send_email():
     msg['From'] = me
     msg['To'] = you
     text = "Hello!!!!!"
-    myRecipient = Recipient.query.all()
+    myRecipient = Guest.query.all()
     for i in range(len(myRecipient)):
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
             html = f.read()
@@ -160,12 +171,18 @@ def register():
 def try_register(email,name,password,confirm_pass):
     #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
     if password != confirm_pass:
+        flash(u'Password is incorrect', category='error')
         return True
     user = User.query.filter_by(username=name).first()
     if user is not None:
+        flash(u'Username is already present', category='error')
         return True
     user = User.query.filter_by(email=email).first()
     if user is not None:
+        flash(u'Email is already present', category='error')
+        return True
+    if verifyEmailSynatax(email) == False:
+        flash(u'Email is not correct', category='error')
         return True
     user = User(
       username = name,
@@ -236,7 +253,7 @@ def group_email():
         print("your in")
         title = form.title.data
         body = form.body.data
-        myRecipient = Recipient.query.all()
+        myRecipient = Guest.query.all()
         me = "Event Company"
         you = "Wessam Gholam"
         APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -248,7 +265,7 @@ def group_email():
         text = "Hello!!!!!"
         print(title)
         print(body)
-        myRecipient = Recipient.query.all()
+        myRecipient = Guest.query.all()
         for i in range(len(myRecipient)):
             with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
                 html = f.read()
@@ -354,12 +371,21 @@ def event_del(id):
 
 ### Guest list functs ###
 
+@app.route('/event/guests/<int:id>')
+@login_required
+def guest_list2(id):
+    if request.method == 'POST':
+        print('hi')
+    usrs = Event.query.join(id).join(Guest).filter(id.c.guest_id == Guest.id and id.c.role_id == Event.id).all()
+    #usrs = Guest.query.all()
+    return render_template('guests.html', guests=usrs)
+
 @app.route('/event/<int:id>/guests')
 @login_required
 def guest_list(id):
     if request.method == 'POST':
         print('hi')
-    usrs = User.query.all()
+    usrs = Guest.query.all()
     return render_template('guests.html', guests=usrs)
 
 
