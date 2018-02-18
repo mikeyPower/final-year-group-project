@@ -19,7 +19,7 @@
             <td>{{ ev.location }}</td>
             <td><a class="nav-link" href="/event/{{ ev.id }}">View</a></td>
             <td><a data-confirm="Are you sure?" data-method="delete" href="/event_del/{{ ev.id }}" rel="nofollow">Delete</a></td>
-            <td><a class="nav-link"  href="{{ url_for('guest_list', id = ev.id) }}">Guest List</a></td>
+            <td><a class="nav-link"  href="event/guests/{{ev.id}}">Guest List</a></td>
         </tr>
       {% endfor %}
     </table>

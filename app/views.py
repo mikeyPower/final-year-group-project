@@ -49,9 +49,6 @@ def guests():
 
 @app.route('/add_guest', methods=['GET', 'POST'])
 def add_guest():
-    # next two commented lines to delete all guests
-    #db.session.query(Guest).delete()
-    #db.session.commit()
     form = GuestForm()
     if form.validate_on_submit():
         user = Guest.query.filter_by(email=form.email.data).first()
@@ -63,6 +60,14 @@ def add_guest():
         if not error:
             return redirect('/guest_list')
     return render_template('add_guest.html', form = form)
+
+
+
+
+
+
+
+#<string:id>
 
 #logic of how to register
 def try_register_guest(email,f_name,l_name, form):
@@ -367,6 +372,23 @@ def event_del(id):
     return redirect('/events')
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Guest list functs ###
 
 @app.route('/event/guests/<int:id>')
@@ -374,9 +396,55 @@ def event_del(id):
 def guest_list2(id):
     if request.method == 'POST':
         print('hi')
-    usrs = Event.query.join(id).join(Guest).filter(id.c.guest_id == Guest.id and id.c.role_id == Event.id).all()
-    #usrs = Guest.query.all()
-    return render_template('guests.html', guests=usrs)
+    #usrs = Event.query.join(id=id).join(Guest).query.all()
+    usrs = Guest.query.all()
+    #usrs = Event.guests.query.filter_by(id=id).first_or_404()
+    event = Event.query.filter_by(id=id).first_or_404()
+
+    return render_template('guests.html', guests=usrs, event=event)
+
+
+
+
+
+#Need to fidure out how I query assoctiaon table
+@app.route('/event/guests/<string:id>/add_guest', methods=['GET', 'POST'])
+def add_guest_to_event(id):
+    form = GuestForm()
+    event = Event.query.filter_by(id=id).first_or_404()
+    if form.validate_on_submit():
+        if verifyEmailSynatax(form.email.data) == False:
+            flash(u'Email is not correct', category='error')
+        else:
+            guest = Guest(
+                email = form.email.data,
+                last_name = form.last_name.data,
+                first_name = form.first_name.data
+            )
+
+        event.guests.append(guest)
+        db.session.add(event)
+        db.session.commit()
+        return redirect('/guest_list')
+    return render_template('add_guest.html', form = form)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.route('/event/<int:id>/guests')
 @login_required
