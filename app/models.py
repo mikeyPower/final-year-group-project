@@ -1,5 +1,4 @@
 from app import db
-#from passlib.apps import custom_app_context as pwd_context
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 
 class User(db.Model):
@@ -8,6 +7,7 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     hashed_password = db.Column(db.String(128), nullable=False)
+    admin = db.Column(db.Boolean, default = False)
     deleted = db.Column(db.Boolean, default=False)
 
     @property
@@ -27,6 +27,13 @@ class User(db.Model):
             return unicode(self.id)  # python 2
         except NameError:
             return str(self.id)  # python 3
+    
+    def __repr__(self):
+        return '<User %r>' % (self.username)
+
+
+
+
 class Total(db.Model):
     __tablename__ = 'totalraised'
     id = db.Column(db.Integer, primary_key=True)
