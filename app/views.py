@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
 from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
-from .models import User, Menu, Total, Event
+from .models import User, Menu, Total, Event, Ticket
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -384,7 +384,7 @@ def event_del(id):
 @login_required
 def event_ticket(id):
     event = Event.query.filter_by(id=id).first_or_404()
-    return render_template('tickets.html', event=event, event_title = event.title, location= event.location)
+    return render_template('tickets.html', event=event, event_title = event.title, location= event.location, id=id)
 
 ### Guest list functs ###
 
@@ -400,6 +400,18 @@ def guest_list2(id):
 
     return render_template('guests.html', guests=usrs, event=event)
 
+
+@app.route('/event/event_tickets/<int:id>')
+@login_required
+def event_tickets(id):
+    if request.method == 'POST':
+        print('hi')
+    #usrs = Event.query.join(id=id).join(Guest).query.all()
+    tikts =  Ticket.query.all()
+    #usrs = Event.guests.query.filter_by(id=id).first_or_404()
+    event = Event.query.filter_by(id=id).first_or_404()
+
+    return render_template('event_tickets.html', tickets=tikts, event=event)
 
 
 
@@ -463,8 +475,16 @@ def updater():
 def generateTicketCode():
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
 
-@app.route('/ticket')
+@app.route('/event/tickets/ticket/<int:id>')
 @login_required
-def ticket_view():
-    ticket = generateTicketCode()
-    return render_template('ticket.html', code = ticket)
+def ticket_view(id):
+    ticketCode = generateTicketCode()
+
+    ticket = Ticket(
+        code=ticketCode,
+        event_id=id
+    )
+    db.session.add(ticket)
+    db.session.commit()
+    events = Event.query.all()
+    return render_template('ticket.html', code = ticketCode)

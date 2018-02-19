@@ -5,6 +5,6 @@
     <h1>Tickets  for the {{event_title}} event at {{location}}</h1>
     <h2 class = "text-center">{{code}}</h2>
     <p>To get you ticket please click on button below</p>
-    <input type="button" onclick="location.href='/ticket';" value="Get a ticket" />
+    <input type="button" onclick="location.href='/event/tickets/ticket/{{id}}';" value="Get a ticket" />
 </div>
 {% endblock %}

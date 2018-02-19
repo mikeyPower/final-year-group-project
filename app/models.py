@@ -29,7 +29,7 @@ class User(db.Model):
             return unicode(self.id)  # python 2
         except NameError:
             return str(self.id)  # python 3
-    
+
     def __repr__(self):
         return '<User %r>' % (self.username)
 
@@ -58,9 +58,24 @@ class Event(db.Model):
     description = db.Column(db.String(1000))
     guests = db.relationship('User', secondary=guests, lazy='subquery',
                            backref=db.backref('events', lazy=True))
+    tickets = db.relationship('Ticket', backref='event', lazy=True)
 
 class Menu(db.Model):
     __tablename__ = 'menu'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64), index=True, unique=True)
     body = db.Column(db.String(64), index=True, unique=True)
+
+
+class Ticket(db.Model):
+    __tablename__= 'ticket'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(64), index=True, unique=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'),nullable=False)
+
+#class Buyer(db.model):
+    #__tablename__ = 'buyer'
+    #id = db.Column(db.Integer, primary_key=True)
+    #code = db.Column(db.String(64), index=True, unique=True)
+    #event_id = db.Column(db.Integer, db.ForeignKey('event.id'),
+        #nullable=False)
