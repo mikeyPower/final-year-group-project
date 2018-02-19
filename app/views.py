@@ -30,6 +30,28 @@ def verifyEmailSynatax(addressToVerify):
         return True
 
 
+#######admin stuff########
+
+def requires_roles(*roles):
+    def wrapper(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            if not g.user.admin :
+                #flash("you are not an admin")
+                return render_template('access_denied.html')
+            return f(*args, **kwargs)
+        return wrapped
+    return wrapper
+
+@app.route("/create_admin", methods=['POST', 'GET'])
+@login_required
+def create_admin():
+    users = User.query.filter_by(admin=False).all()
+    return render_template('create_admin.html', users = users)
+
+#######end admin##########
+
+
 
 
 @app.route('/index')
@@ -37,6 +59,30 @@ def verifyEmailSynatax(addressToVerify):
 def index():
     return render_template('index.html')
 
+# Manage mailing list
+@app.route('/email', methods=['GET', 'POST'])
+@login_required
+def email():
+    #db.session.query(Recipient).delete()
+    #db.session.commit()
+    form = MailingForm()
+    #myRecipient = recipient.query.all()
+    recipient = Recipient(
+        email = form.email.data,
+        last_name = form.last_name.data,
+        first_name = form.first_name.data
+    )
+    if request.method == 'POST':
+        form = MailingForm()
+        flash('Added')
+        print("Added!!")
+        db.session.add(recipient)
+        db.session.commit()
+        myRecipient = recipient.query.all()
+        return render_template('email.html', form = form, myRecipient = myRecipient)
+    else:
+        myRecipient = recipient.query.all()
+        return render_template('email.html', form = form, myRecipient = myRecipient)
 
 
 
@@ -97,11 +143,14 @@ def send_email():
 @app.route('/',  methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    user = g.user
     form = LoginForm()
     if form.validate_on_submit():
         error = try_login(form.username.data, form.password.data)
         if not error:
             session['logged_in'] = True
+            if user.admin:
+                session['admin'] = True
             return redirect('/index')
     return render_template('login.html', form=form)
 
@@ -169,21 +218,7 @@ def try_register(email,name,password,confirm_pass):
     db.session.commit()
     return False
 
-#######admin stuff########
 
-#def requires_roles(*roles):
-#    def wrapper(f):
-#        @wraps(f)
-#        def wrapped(*args, **kwargs):
-#            if g.user.get_role not in roles:
-#                return error_response()
-#            return f(*args, **kwargs)
-#        return wrapped
-#    return wrapper
-
-
-
-#######end admin##########
 
 @app.before_request
 def before_request():
