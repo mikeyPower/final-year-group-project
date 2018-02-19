@@ -149,7 +149,7 @@ def login():
         error = try_login(form.username.data, form.password.data)
         if not error:
             session['logged_in'] = True
-            if user.roles == 'admin':
+            if user.admin:
                 session['admin'] = True
             return redirect('/index')
     return render_template('login.html', form=form)
