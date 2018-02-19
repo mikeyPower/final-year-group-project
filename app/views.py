@@ -380,6 +380,12 @@ def event_del(id):
     return redirect('/events')
 
 
+@app.route('/event/tickets/<int:id>', methods=['GET', 'POST'])
+@login_required
+def event_ticket(id):
+    event = Event.query.filter_by(id=id).first_or_404()
+    return render_template('tickets.html', event=event, event_title = event.title, location= event.location)
+
 ### Guest list functs ###
 
 @app.route('/event/guests/<int:id>')
