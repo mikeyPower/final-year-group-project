@@ -8,7 +8,7 @@
 <script type=text/javascript>
 (function run_update(){
     $( document ).ready(function(){
-        $.getJSON('/updater', function(data) {
+        $.getJSON('/update-total-raised', function(data) {
             console.log($("#odom-checker").text());
             if (data.current != ($("#odom-checker").text())){
                 $("#current").text(data.current);

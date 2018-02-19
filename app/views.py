@@ -396,23 +396,27 @@ def remove_guest(id):
     return render_template('guests.html', guests=usrs)
 
 
+def get_total_raised():
+    t = Total.query.get(1)
+    if t is None:
+        t2 = 0.0
+    else:
+        t2 = t.total
+    return jsonify(current=t2)
+
+def add_to_total_raised(x):
+    t = Total.query.get(1)
+    t += x
+    db.session.commit()
 
 @app.route('/total-raised')
 @login_required
 def totalraised():
     return render_template('total-raised.html')
 
-@app.route('/updater')
+@app.route('/update-total-raised')
 def updater():
-    try:
-        t = Total.query.get(1)
-        if t is None:
-            t2 = 0.0
-        else:
-            t2 = t.total
-        return jsonify(current=t2)
-    except Exception, e:
-        return(str(e))
+    return get_total_raised()
 
 #Following func used to generate ticket code, later will be checked against existing entry in DB and assigned to a guest in table
 def generateTicketCode():
