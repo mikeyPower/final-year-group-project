@@ -1,8 +1,8 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 from app import app, db, lm
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MailingForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, GuestForm
-from .models import User, Recipient, Menu, Total, Event, Guest
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
+from .models import User, Menu, Total, Event
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -37,35 +37,6 @@ def index():
 
 
 
-@app.route('/guest_list')
-def guests():
-    guests = Guest.query.all()
-    return render_template("guest_list.html",
-                           title="Guests",
-                           guests=guests)
-
-
-
-
-@app.route('/add_guest', methods=['GET', 'POST'])
-def add_guest():
-    form = GuestForm()
-    if form.validate_on_submit():
-        user = Guest.query.filter_by(email=form.email.data).first()
-        if user is not None:
-            flash(u'Email is already registered', category='error')
-            print("Inside if statement!!!!!!!!!!!")
-            return redirect('/add_guest')
-        error =try_register_guest(form.email.data, form.first_name.data, form.last_name.data, form)
-        if not error:
-            return redirect('/guest_list')
-    return render_template('add_guest.html', form = form)
-
-
-
-
-
-
 
 #<string:id>
 
@@ -90,7 +61,7 @@ def try_register_guest(email,f_name,l_name, form):
 @login_required
 def send_email():
     index = 0
-    myRecipient = Recipient.query.all()
+    myRecipient = User.query.all()
     me = "Event Company"
     you = "Wessam Gholam"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -100,7 +71,7 @@ def send_email():
     msg['From'] = me
     msg['To'] = you
     text = "Hello!!!!!"
-    myRecipient = Guest.query.all()
+    myRecipient = User.query.all()
     for i in range(len(myRecipient)):
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
             html = f.read()
@@ -256,7 +227,7 @@ def group_email():
         print("your in")
         title = form.title.data
         body = form.body.data
-        myRecipient = Guest.query.all()
+        myRecipient = User.query.all()
         me = "Event Company"
         you = "Wessam Gholam"
         APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -268,7 +239,7 @@ def group_email():
         text = "Hello!!!!!"
         print(title)
         print(body)
-        myRecipient = Guest.query.all()
+        myRecipient = User.query.all()
         for i in range(len(myRecipient)):
             with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
                 html = f.read()
@@ -397,7 +368,7 @@ def guest_list2(id):
     if request.method == 'POST':
         print('hi')
     #usrs = Event.query.join(id=id).join(Guest).query.all()
-    usrs = Guest.query.all()
+    usrs =  User.query.all()
     #usrs = Event.guests.query.filter_by(id=id).first_or_404()
     event = Event.query.filter_by(id=id).first_or_404()
 
@@ -408,25 +379,17 @@ def guest_list2(id):
 
 
 #Need to fidure out how I query assoctiaon table
-@app.route('/event/guests/<string:id>/add_guest', methods=['GET', 'POST'])
+@app.route('/event/guests/<string:id>/register', methods=['GET', 'POST'])
 def add_guest_to_event(id):
-    form = GuestForm()
+    form = RegisterForm()
     event = Event.query.filter_by(id=id).first_or_404()
     if form.validate_on_submit():
-        if verifyEmailSynatax(form.email.data) == False:
-            flash(u'Email is not correct', category='error')
-        else:
-            guest = Guest(
-                email = form.email.data,
-                last_name = form.last_name.data,
-                first_name = form.first_name.data
-            )
-
-        event.guests.append(guest)
-        db.session.add(event)
-        db.session.commit()
-        return redirect('/guest_list')
-    return render_template('add_guest.html', form = form)
+        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data)
+        if not error:
+            usrs =  User.query.all()
+            #return redirect(url_for('guests',guests=usrs, event=event))
+            return render_template('guests.html', guests=usrs, event=event)
+    return render_template('register.html', form = form)
 
 
 
