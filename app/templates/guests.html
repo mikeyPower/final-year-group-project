@@ -1,0 +1,24 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1> Gang shit</h1>
+
+    <table style="width:100%">
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+      </tr>
+      {% for guest in guests %}
+        <tr>
+            <td>{{ guest.id }}</td>
+            <td>{{ guest.first_name }}</td>
+            <td>{{ guest.last_name }}</td>
+            <td>{{ guest.email }}</td>
+            <td><p>Remove</p></td>
+        </tr>
+      {% endfor %}
+    </table>
+    <a class="nav-link" href="/event/guests/{{event.id}}/add_guest" style="color: rgb(0,255,0)">Add Guest</a>
+{% endblock %}

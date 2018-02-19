@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+
+{% block body %}
+  <h1>Group Emails</h1>
+  {% from "_formhelpers.html" import render_field %}
+  <form action="" method="post" name="menu">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ render_field(form.title, class_="form-control") }}
+    </div>
+    <div class="form-group">
+      {{ render_field(form.body, class_="form-control", id="editor") }}
+    </div>
+    <p><input type="submit" value="Submit">
+  </form>
+{% endblock %}
