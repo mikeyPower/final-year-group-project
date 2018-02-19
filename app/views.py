@@ -17,6 +17,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from flask import jsonify
 import re
+import random
+import string
 
 
 def verifyEmailSynatax(addressToVerify):
@@ -372,23 +374,6 @@ def event_del(id):
     return redirect('/events')
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### Guest list functs ###
 
 @app.route('/event/guests/<int:id>')
@@ -429,23 +414,6 @@ def add_guest_to_event(id):
     return render_template('add_guest.html', form = form)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @app.route('/event/<int:id>/guests')
 @login_required
 def guest_list(id):
@@ -482,3 +450,13 @@ def updater():
         return jsonify(current=t2)
     except Exception, e:
         return(str(e))
+
+#Following func used to generate ticket code, later will be checked against existing entry in DB and assigned to a guest in table
+def generateTicketCode():
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
+
+@app.route('/ticket')
+@login_required
+def ticket_view():
+    ticket = generateTicketCode()
+    return render_template('ticket.html', code = ticket)
