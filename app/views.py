@@ -89,19 +89,7 @@ def email():
 #<string:id>
 
 #logic of how to register
-def try_register_guest(email,f_name,l_name, form):
-    #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
-    if verifyEmailSynatax(email) == False:
-        flash(u'Email is not correct', category='error')
-        return True
-    guest = Guest(
-            email = email,
-            last_name = l_name,
-            first_name = f_name
-        )
-    db.session.add(guest)
-    db.session.commit()
-    return False
+
 
 
 # Send emails
@@ -184,7 +172,7 @@ def load_user(id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data)
+        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.last_name.data,form.first_name.data)
         if not error:
 
             #Need to decide on Database
@@ -193,7 +181,7 @@ def register():
     return render_template('register.html', form = form)
 
 #logic of how to register
-def try_register(email,name,password,confirm_pass):
+def try_register(email,name,password,confirm_pass,f_name,l_name):
     #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
     if password != confirm_pass:
         flash(u'Password is incorrect', category='error')
@@ -212,7 +200,9 @@ def try_register(email,name,password,confirm_pass):
     user = User(
       username = name,
       email = email,
-      hashed_password = sha256_crypt.hash(str(password)) #password , #Hashing added
+      hashed_password = sha256_crypt.hash(str(password)), #password , #Hashing added
+      first_name = f_name,
+      last_name = l_name
     )
     db.session.add(user)
     db.session.commit()
@@ -422,7 +412,7 @@ def add_guest_to_event(id):
     form = RegisterForm()
     event = Event.query.filter_by(id=id).first_or_404()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data)
+        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.last_name.data,form.first_name.data)
         if not error:
             usrs =  User.query.all()
             #return redirect(url_for('guests',guests=usrs, event=event))

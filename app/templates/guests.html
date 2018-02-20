@@ -13,9 +13,9 @@
       {% for guest in guests %}
         <tr>
             <td>{{ guest.id }}</td>
-            <td>{{ guest.username }}</td>
-            <td>{{ guest.email }}</td>
-            <td><p>Remove</p></td>
+            <td>{{ guest.first_name }}</td>
+            <td>{{ guest.last_name }}</td>
+            <td>{{guest.email}}</td>
         </tr>
       {% endfor %}
     </table>

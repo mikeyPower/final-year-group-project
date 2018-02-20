@@ -1,0 +1,18 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1> Gang shit</h1>
+
+    <table style="width:100%">
+      <tr>
+        <th>ID</th>
+        <th>Ticket Code</th>
+      </tr>
+      {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket.id }}</td>
+            <td>{{ ticket.code }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}
