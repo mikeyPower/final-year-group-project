@@ -93,9 +93,9 @@ def email():
 
 
 # Send emails
-@app.route('/send_emails', methods=['GET', 'POST'])
+@app.route('/send_emails/<int:id>', methods=['GET', 'POST'])
 @login_required
-def send_email():
+def send_email(id):
     index = 0
     myRecipient = User.query.all()
     me = "Event Company"
@@ -113,7 +113,7 @@ def send_email():
             html = f.read()
         part1 = MIMEText(text, 'plain')
         part2 = MIMEText(render_template("invitation.html",
-                               myRecipient=myRecipient[i]), 'html')
+                               myRecipient=myRecipient[i], id = id), 'html')
         msg.attach(part1)
         msg.attach(part2)
         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -465,7 +465,7 @@ def updater():
 def generateTicketCode():
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
 
-@app.route('/event/tickets/ticket/<int:id>')
+@app.route('/event/ticket/<int:id>')
 @login_required
 def ticket_view(id):
     ticketCode = generateTicketCode()

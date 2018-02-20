@@ -11,4 +11,7 @@
 <br>
 <p><b>Description</b></p>
 <p>{{ event.description }}</p>
+
+<p>To get you ticket please click on button below</p>
+<input type="button" onclick="location.href='/event/ticket/{{event.id}}';" value="Get a ticket" />
 {% endblock %}
