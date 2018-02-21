@@ -10,4 +10,4 @@ install:
     - ./install.sh
 
 script:
-    - ./run.py
+    - pytest
