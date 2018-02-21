@@ -379,7 +379,7 @@ def edit_event(ev_id):
         event.title = form.title.data
         event.location = form.location.data
         event.description = form.description.data
-        db.session.add(g.user)
+        db.session.add(event)
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('event_details', ev_id=event.id))
