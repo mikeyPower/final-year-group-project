@@ -468,8 +468,19 @@ def get_total_raised():
 
 def add_to_total_raised(x):
     t = Total.query.get(1)
-    t += x
+    if t is None:
+        ts = Total(total=x)
+        db.session.add(ts)
+    else:
+        t.total += x
     db.session.commit()
+
+def get_total_raised_tester():
+    t = Total.query.get(1)
+    if t is None:
+        return 0
+    else:
+        return t.total
 
 @app.route('/total-raised')
 @login_required

@@ -11,3 +11,4 @@ guess_language
 flipflop
 coverage
 passlib
+pytest
