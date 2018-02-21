@@ -355,10 +355,10 @@ def event():
         return render_template('events.html', events=events)
     return render_template('add_event.html', form=form)
 
-@app.route('/event/<id>', methods=['GET', 'POST'])
+@app.route('/event/<ev_id>', methods=['GET', 'POST'])
 @login_required
-def event_details(id):
-    event = Event.query.filter_by(id=id).first_or_404()
+def event_details(ev_id):
+    event = Event.query.filter_by(id=ev_id).first_or_404()
     return render_template('event.html', event=event)
 
 @app.route('/event_del/<id>')
@@ -369,6 +369,25 @@ def event_del(id):
     db.session.commit()
     return redirect('/events')
 
+
+@app.route('/event/<ev_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_event(ev_id):
+    event = Event.query.filter_by(id=ev_id).first_or_404()
+    form = EventForm()
+    if form.validate_on_submit():
+        event.title = form.title.data
+        event.location = form.location.data
+        event.description = form.description.data
+        db.session.add(event)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('event_details', ev_id=event.id))
+    else:
+        form.title.data = event.title
+        form.location.data = event.location
+        form.description.data = event.description
+    return render_template('add_event.html', form=form)
 
 @app.route('/event/tickets/<int:id>', methods=['GET', 'POST'])
 @login_required
