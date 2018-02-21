@@ -9,13 +9,15 @@
         <th>First Name</th>
         <th>Last Name</th>
         <th>Email</th>
+        <th>Ticket Reference</th>
       </tr>
       {% for guest in guests %}
         <tr>
-            <td>{{ guest.id }}</td>
-            <td>{{ guest.first_name }}</td>
-            <td>{{ guest.last_name }}</td>
-            <td>{{guest.email}}</td>
+            <td>{{ guest.user.id }}</td>
+            <td>{{ guest.user.first_name }}</td>
+            <td>{{ guest.user.last_name }}</td>
+            <td>{{ guest.user.email }}</td>
+            <td>{{ guest.code }}</td>
         </tr>
       {% endfor %}
     </table>

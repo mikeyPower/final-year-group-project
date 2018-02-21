@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
 from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
-from .models import User, Menu, Total, Event, Ticket
+from .models import User, Menu, Total, Event, Guest
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -391,17 +391,17 @@ def guest_list2(id):
     return render_template('guests.html', guests=usrs, event=event)
 
 
-@app.route('/event/event_tickets/<int:id>')
+@app.route('/event/event_tickets/<int:eventid>')
 @login_required
-def event_tickets(id):
+def event_tickets(eventid):
     if request.method == 'POST':
         print('hi')
     #usrs = Event.query.join(id=id).join(Guest).query.all()
-    tikts =  Ticket.query.all()
+    alltickets =  Event.query.filter_by(id=eventid)
     #usrs = Event.guests.query.filter_by(id=id).first_or_404()
-    event = Event.query.filter_by(id=id).first_or_404()
+    #event = Event.query.filter_by(id=id).first_or_404()
 
-    return render_template('event_tickets.html', tickets=tikts, event=event)
+    return render_template('event_tickets.html', tickets=alltickets)
 
 
 
@@ -425,8 +425,8 @@ def add_guest_to_event(id):
 def guest_list(id):
     if request.method == 'POST':
         print('hi')
-    usrs = Guest.query.all()
-    return render_template('guests.html', guests=usrs)
+    guestlist = Event.query.filter_by(id=id).first_or_404().guests
+    return render_template('guests.html', guests = guestlist, event = Event.query.filter_by(id=id).first_or_404())
 
 
 @app.route('/guests/<id>')
@@ -465,16 +465,36 @@ def updater():
 def generateTicketCode():
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(4))
 
-@app.route('/event/ticket/<int:id>')
-@login_required
-def ticket_view(id):
-    ticketCode = generateTicketCode()
+def assign_ticket(event,user):
+    x = generateTicketCode()
+    #guests.insert().values(event_id=event, user_id=user, code=x)
+    guestlist = Event.query.filter_by(id=event).first_or_404().guests
+    u = User.query.filter_by(id=user).first_or_404()
+    existsalready = False
+    for guest in guestlist:
+        if u.username == guest.user.username:
+            existsalready = True
 
-    ticket = Ticket(
-        code=ticketCode,
-        event_id=id
-    )
-    db.session.add(ticket)
-    db.session.commit()
-    events = Event.query.all()
-    return render_template('ticket.html', code = ticketCode)
+    if not existsalready:
+        g = Guest(code=x)
+        g.user = User.query.filter_by(id=user).first_or_404()
+        e = Event.query.filter_by(id=event).first_or_404()
+        e.guests.append(g)
+        db.session.commit()
+        return x
+    else:
+        return None
+
+@app.route('/event/ticket/<int:eventid>')
+@login_required
+def ticket_view(eventid):
+    ticket = assign_ticket(eventid,current_user.id)
+    if ticket is not None:
+        return render_template('ticket.html', code = ticket)
+    else:
+        t = ""
+        guestlist = Event.query.filter_by(id=eventid).first_or_404().guests
+        for g in guestlist:
+            if g.user.username == current_user.username:
+                t = g.code
+        return render_template('already_ticketed.html', code = t)
