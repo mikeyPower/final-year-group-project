@@ -413,11 +413,7 @@ def guest_list2(id):
 def event_tickets(eventid):
     if request.method == 'POST':
         print('hi')
-    #usrs = Event.query.join(id=id).join(Guest).query.all()
-    alltickets =  Event.query.filter_by(id=eventid)
-    #usrs = Event.guests.query.filter_by(id=id).first_or_404()
-    #event = Event.query.filter_by(id=id).first_or_404()
-
+    alltickets =  Event.query.filter_by(id=eventid).first_or_404().guests
     return render_template('event_tickets.html', tickets=alltickets)
 
 
