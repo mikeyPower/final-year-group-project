@@ -427,9 +427,11 @@ def add_guest_to_event(id):
     if form.validate_on_submit():
         error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.last_name.data,form.first_name.data)
         if not error:
-            usrs =  User.query.all()
+            user =  User.query.filter_by(username=form.username.data).first_or_404()
+            assign_ticket(id,user.id)
+            return redirect(url_for('guest_list2', id=id))
             #return redirect(url_for('guests',guests=usrs, event=event))
-            return render_template('guests.html', guests=usrs, event=event)
+            #return render_template('guests.html', guests=usrs, event=event)
     return render_template('register.html', form = form)
 
 
