@@ -402,12 +402,10 @@ def event_ticket(id):
 def guest_list2(id):
     if request.method == 'POST':
         print('hi')
-    #usrs = Event.query.join(id=id).join(Guest).query.all()
-    usrs =  User.query.all()
-    #usrs = Event.guests.query.filter_by(id=id).first_or_404()
-    event = Event.query.filter_by(id=id).first_or_404()
 
-    return render_template('guests.html', guests=usrs, event=event)
+    event = Event.query.filter_by(id=id).first_or_404()
+    guests = event.guests
+    return render_template('guests.html', guests=guests, event=event)
 
 
 @app.route('/event/event_tickets/<int:eventid>')
