@@ -119,8 +119,8 @@ def send_email(ev_id):
     answer100 = db.session.query(Guest)
     #answer44 = db.session.query(User.email).join(answer4)
     invite_list = db.session.query(User).join(answer2).all()
-    print(invite_list[0].email)
-    print(invite_list[1].email)
+    #print(invite_list[0].email)
+    #print(invite_list[1].email)
 
 
     for i in range(len(invite_list)):
