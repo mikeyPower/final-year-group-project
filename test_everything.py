@@ -3,6 +3,7 @@ from app.models import Total
 from app.views import *
 from app.menu_views import *
 import pytest
+import unittest
 
 def test_total_raised():
     x = get_total_raised_tester()
@@ -53,10 +54,23 @@ def test_add_event():
     db.session.commit()
     print(events[0].location)
     print(events[1].location)
+    #index = 10 / 0
     assert events[0].location == events[0].location
 
-#def test_send_emails():
-    #server = smtplib.SMTP('smtp.gmail.com', 587)
-    #server.ehlo()
-    #server.starttls()
-    #assert server.login("event.management.tcd@gmail.com", "tcdtcd12") == True
+def test_send_emails():
+    with pytest.raises(Exception) as e_info:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login("event.management.tcd@gmail.com", "tcdtcd12676")
+
+
+class MyTestCase(unittest.TestCase):
+    def test1(self):
+        with self.assertRaises(Exception) as context:
+            msg = "Hello !!"
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd1247576")
+            server.sendmail("event.management.tcd@gmail.com", "hello@here.com", msg)
