@@ -25,3 +25,38 @@ def test_menu_added():
     db.session.delete(menu)
     db.session.commit()
     assert body_data == menu.body
+
+
+def test_add_event():
+
+    title_data = "Test Event somewhere in the fucking world hhgdkhfjhjfd"
+    location_data = "UCD where dumb ass peeps go"
+    description_data = "Test yes indeed, it's a test...  rjhgrhgrk"
+
+    event = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    title_data = "Test Event somewhere in the fucking world no nono"
+    event2 = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    db.session.add(event)
+    db.session.add(event2)
+    db.session.commit()
+    events = db.session.query(Event).filter_by(location = location_data).all()
+    db.session.delete(event)
+    db.session.delete(event2)
+    db.session.commit()
+    print(events[0].location)
+    print(events[1].location)
+    assert events[0].location == events[0].location
+
+#def test_send_emails():
+    #server = smtplib.SMTP('smtp.gmail.com', 587)
+    #server.ehlo()
+    #server.starttls()
+    #assert server.login("event.management.tcd@gmail.com", "tcdtcd12") == True

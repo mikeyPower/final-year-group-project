@@ -73,6 +73,8 @@ def create_admin():
 def index():
     return render_template('index.html')
 
+
+#################### Mailing and Invitations Stuff ##################
 # Manage mailing list
 @app.route('/email', methods=['GET', 'POST'])
 @login_required
@@ -106,12 +108,10 @@ def email():
 
 
 
-# Send emails
+# Send Invitations
 @app.route('/send_emails/<int:ev_id>', methods=['GET', 'POST'])
 @login_required
 def send_email(ev_id):
-    index = 0
-    idd = id
     myRecipient = User.query.all()
     me = "Event Company"
     you = "Wessam Gholam"
@@ -125,41 +125,7 @@ def send_email(ev_id):
     guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
     myRecipient = User.query.all()
     answer = db.session.query(User).filter(~User.id.in_(guest_list))
-    print("Answer: ")
-    print("Answer: ")
-
-    print(answer)
-    print("Answer: ")
-
-    #print(answer[0].email)
-    #print(answer[1].email)
-    #print(answer[2].email)
-    #print(answer[4].email)
-
-    #print(myRecipient)
-    print(" ")
-    print(" ")
-    print(" ")
     index = 0
-    print("Now list of emails: ")
-    print(answer.count())
-    print("Inside for loop")
-    print(" ")
-    for item in answer:
-        print(answer[index].email)
-        if index < answer.count():
-            index = index + 1
-        else:
-            break
-
-    #return True
-
-    print()
-    print("####################################################################################3")
-    print()
-    index = 0
-
-
     for item in answer:
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
         part1 = MIMEText(text, 'plain')
@@ -177,6 +143,44 @@ def send_email(ev_id):
         else:
             break
     return render_template('send_emails.html', myRecipient=answer)
+
+
+#Send group email
+@app.route('/group_email', methods=['GET', 'POST'])
+@login_required
+def group_email():
+    form = GroupEmailForm()
+    if form.validate_on_submit():#
+        print("your in")
+        title = form.title.data
+        body = form.body.data
+        myRecipient = User.query.all()
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = title
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello"
+        myRecipient = User.query.all()
+        for i in range(len(myRecipient)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(body, 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
+    return render_template('group_email.html', form = form)
+
+
+#################### End of Mailing and Invitations Stuff #########################
+    
 
 
 
@@ -298,45 +302,6 @@ def changePass(old, new, confirm):
     return error
 
 
-@app.route('/group_email', methods=['GET', 'POST'])
-@login_required
-def group_email():
-    form = GroupEmailForm()
-    if form.validate_on_submit():#
-        print("your in")
-        title = form.title.data
-        body = form.body.data
-        myRecipient = User.query.all()
-        me = "Event Company"
-        you = "Wessam Gholam"
-        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
-        APP_STATIC = os.path.join(APP_ROOT, 'templates')
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = title
-        msg['From'] = me
-        msg['To'] = you
-        text = "Hello!!!!!"
-        print(title)
-        print(body)
-        myRecipient = User.query.all()
-        for i in range(len(myRecipient)):
-            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
-                html = f.read()
-            part1 = MIMEText(text, 'plain')
-            part2 = MIMEText(body, 'html')
-            msg.attach(part1)
-            msg.attach(part2)
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.ehlo()
-            server.starttls()
-            server.login("event.management.tcd@gmail.com", "tcdtcd12")
-            server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
-        #flash('Email Sent', 'success')
-        print("added")
-        #return redirect('/menulist')
-    return render_template('group_email.html', form = form)
-
-
 #### Event page functions ########
 
 
@@ -438,11 +403,6 @@ def event_invite_list(ev_id):
     guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
     myRecipient = User.query.all()
     answer = db.session.query(User).filter(~User.id.in_(guest_list)).all()
-    print("$$$$$$")
-    print(answer)
-    print(answer[0].email)
-    print(answer[1].email)
-
     return render_template('event_invite_list.html', list = answer)
 
 
