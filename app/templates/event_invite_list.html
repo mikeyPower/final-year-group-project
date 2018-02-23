@@ -1,0 +1,23 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1> Invite List</h1>
+
+<table style="width:100%">
+     <tr>
+       <th>ID</th>
+       <th>First Name</th>
+       <th>Last Name</th>
+       <th>Email</th>
+     </tr>
+     {% for item in list %}
+       <tr>
+           <td>{{ item.id }}</td>
+           <td>{{ item.first_name }}</td>
+           <td>{{ item.last_name }}</td>
+           <td>{{ item.email }}</td>
+
+       </tr>
+     {% endfor %}
+   </table>
+{% endblock %}

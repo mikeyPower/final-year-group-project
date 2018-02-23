@@ -125,13 +125,18 @@ def send_email(ev_id):
     guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
     myRecipient = User.query.all()
     answer = db.session.query(User).filter(~User.id.in_(guest_list))
+    print("Answer: ")
+    print("Answer: ")
+
     print(answer)
+    print("Answer: ")
+
     #print(answer[0].email)
     #print(answer[1].email)
     #print(answer[2].email)
     #print(answer[4].email)
 
-    print(myRecipient)
+    #print(myRecipient)
     print(" ")
     print(" ")
     print(" ")
@@ -423,6 +428,22 @@ def event_tickets(eventid):
         print('hi')
     alltickets =  Event.query.filter_by(id=eventid).first_or_404().guests
     return render_template('event_tickets.html', tickets=alltickets)
+
+@app.route('/event/invite_list/<int:ev_id>')
+@login_required
+def event_invite_list(ev_id):
+    if request.method == 'POST':
+        print('hi')
+    #alltickets =  Event.query.filter_by(id=eventid).first_or_404().guests
+    guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
+    myRecipient = User.query.all()
+    answer = db.session.query(User).filter(~User.id.in_(guest_list)).all()
+    print("$$$$$$")
+    print(answer)
+    print(answer[0].email)
+    print(answer[1].email)
+
+    return render_template('event_invite_list.html', list = answer)
 
 
 
