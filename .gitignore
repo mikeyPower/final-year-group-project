@@ -1,6 +1,7 @@
 *.pyc
 db_repository/
 app.db
+.pytest_cache/
 flask/
 tmp/*
 !tmp/.gitkeep

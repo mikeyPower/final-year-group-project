@@ -8,6 +8,10 @@ Run The Following Commands:
        6: ./run.py to run the app
 
 
+Running pytest:
+	1. py.test -v
+
+
 Feature Number 29:
 Steps:
        1.Navigate and click on "Menu List" in the navigation bar

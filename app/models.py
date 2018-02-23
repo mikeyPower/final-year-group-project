@@ -70,7 +70,7 @@ class Menu(db.Model):
     __tablename__ = 'menu'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(64), index=True, unique=True)
-    body = db.Column(db.String(64), index=True, unique=True)
+    body = db.Column(db.String(64), index=True)
 
 
 #class Ticket(db.Model):

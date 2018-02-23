@@ -1,5 +1,6 @@
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
-from app import app, db, lm
+from app import app, db, lm, menu_views
+from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
 from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
 from .models import User, Menu, Total, Event, Guest
@@ -28,6 +29,19 @@ def verifyEmailSynatax(addressToVerify):
 	    return False
     else:
         return True
+
+def add_menu(title,body):
+    title = form.title.data
+    body = form.body.data
+
+    menu = Menu(
+      title = title,
+      body = body
+    )
+    db.session.add(menu)
+    db.session.commit()
+    return
+
 
 
 #######admin stuff########
@@ -298,45 +312,6 @@ def group_email():
         print("added")
         #return redirect('/menulist')
     return render_template('group_email.html', form = form)
-
-
-@app.route('/menu', methods=['GET', 'POST'])
-@login_required
-def menu():
-    form = MenuForm()
-    if form.validate_on_submit():#
-        print("you're in")
-        title = form.title.data
-        body = form.body.data
-
-        menu = Menu(
-          title = title,
-          body = body
-        )
-        db.session.add(menu)
-        db.session.commit()
-
-        #flash('Menu Created', 'success')
-        print("added")
-        return redirect('/menulist')
-    return render_template('menu.html', form = form)
-
-
-@app.route('/menu/<string:id>/')
-@login_required
-def menu_details(id):
-
-    menu = Menu.query.filter_by(id=id).first()
-
-    return render_template('menu_details.html', menu=menu)
-
-
-@app.route('/menulist')
-def menus():
-    menus = Menu.query.all()
-    return render_template("menulist.html",
-                           title="Menu List",
-                           menus=menus)
 
 
 #### Event page functions ########
