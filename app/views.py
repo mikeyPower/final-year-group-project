@@ -93,10 +93,11 @@ def email():
 
 
 # Send emails
-@app.route('/send_emails/<int:id>', methods=['GET', 'POST'])
+@app.route('/send_emails/<int:ev_id>', methods=['GET', 'POST'])
 @login_required
-def send_email(id):
+def send_email(ev_id):
     index = 0
+    idd = id
     myRecipient = User.query.all()
     me = "Event Company"
     you = "Wessam Gholam"
@@ -108,23 +109,37 @@ def send_email(id):
     msg['To'] = you
     text = "Hello!!!!!"
     myRecipient = User.query.all()
-    for i in range(len(myRecipient)):
+    result = Guest.query.with_entities(Guest.user_id)
+    #answer = db.session.query.filter(~User.notin_(result))
+    answer2 = db.session.query(Guest).filter(Guest.event_id != ev_id)
+    #answer3 = db.session.query(Guest).filter(Guest.event_id != ev_id)
+    answer4 = db.session.query(User.email).join(answer2)
+    #answer5 = db.session.query(User.email).join(answer4)
+    userList = db.session.query(Guest,User).filter_by(event_id=ev_id)
+    answer100 = db.session.query(Guest)
+    #answer44 = db.session.query(User.email).join(answer4)
+    invite_list = db.session.query(User).join(answer2).all()
+    print(invite_list[0].email)
+    print(invite_list[1].email)
+
+
+    for i in range(len(invite_list)):
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:
             html = f.read()
         part1 = MIMEText(text, 'plain')
         part2 = MIMEText(render_template("invitation.html",
-                               myRecipient=myRecipient[i], id = id), 'html')
+                               myRecipient=invite_list[i], id = ev_id), 'html')
         msg.attach(part1)
         msg.attach(part2)
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
         server.starttls()
         server.login("event.management.tcd@gmail.com", "tcdtcd12")
-        server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
-        check = myRecipient[i].last_name
-        print("Look here:**:", check)
+        server.sendmail("event.management.tcd@gmail.com", invite_list[i].email, msg.as_string())
+        check = invite_list[i].last_name
+        #print("Look here:**:", check)
         index = i
-    return render_template('send_emails.html', myRecipient=myRecipient)
+    return render_template('send_emails.html', myRecipient=invite_list)
 
 
 
