@@ -28,18 +28,18 @@ def test_menu_added():
     assert body_data == menu.body
 
 
-def test_add_event():
+def test_create_event():
 
-    title_data = "Test Event somewhere in the fucking world hhgdkhfjhjfd"
-    location_data = "UCD where dumb ass peeps go"
-    description_data = "Test yes indeed, it's a test...  rjhgrhgrk"
+    title_data = "Test Event somewhere in world"
+    location_data = "Mars in Mily Way Galaxy"
+    description_data = "Test yes indeed, it's a test... !!!"
 
     event = Event(
         title=title_data,
         location=location_data,
         description=description_data
     )
-    title_data = "Test Event somewhere in the fucking world no nono"
+    title_data = "Test Event somewhere in world 2"
     event2 = Event(
         title=title_data,
         location=location_data,
@@ -66,7 +66,7 @@ def test_send_emails():
 
 
 class MyTestCase(unittest.TestCase):
-    def test1(self):
+    def test_2_send_emails(self):
         with self.assertRaises(Exception) as context:
             msg = "Hello !!"
             server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -74,3 +74,55 @@ class MyTestCase(unittest.TestCase):
             server.starttls()
             server.login("event.management.tcd@gmail.com", "tcdtcd1247576")
             server.sendmail("event.management.tcd@gmail.com", "hello@here.com", msg)
+
+def test_view_invite_and_guest_lists():
+    title_data = "Auction"
+    location_data = "Grafton street"
+    description_data = "Sell stuff"
+
+    event = Event(
+        id = 10,
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+
+    user = User(
+        id = 15,
+        username = "wessamgholam",
+        email = "gholamwessam@gmail.com",
+        hashed_password = "123",
+        last_name = "Gholam",
+        first_name = "Wessam"
+    )
+    user2 = User(
+        id = 16,
+        username = "wessamgholam2",
+        email = "gholamwessam2@gmail.com",
+        hashed_password = "123",
+        last_name = "Gholam",
+        first_name = "Wessam"
+    )
+
+    guest = Guest(
+        event_id = 10,
+        user_id = 15,
+        code = "65tgnb"
+    )
+
+    db.session.add(event)
+    db.session.add(user)
+    db.session.add(user2)
+    db.session.add(guest)
+    db.session.commit()
+    ##events = db.session.query(Event).filter_by(location = location_data).all()
+    guest_list = db.session.query(Guest.user_id).filter_by(event_id = 10)
+    myRecipient = User.query.all()
+    invite_list = db.session.query(User).filter(~User.id.in_(guest_list)).all()
+    guest_list2 = db.session.query(User).filter_by(id = 15).all()
+    db.session.delete(event)
+    db.session.delete(user)
+    db.session.delete(user2)
+    db.session.delete(guest)
+    db.session.commit()
+    assert guest_list2[0].email !=  invite_list[0].email
