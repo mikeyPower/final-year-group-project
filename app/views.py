@@ -386,6 +386,18 @@ def guest_list2(id):
     return render_template('guests.html', guests=guests, event=event)
 
 
+
+@app.route('/event/<int:ev_id>/guest/<int:guest_id>/rem')
+@login_required
+def rem_guest(ev_id, guest_id):
+    event = Event.query.filter_by(id=ev_id).first_or_404()
+    guest = Guest.query.filter_by(user_id=guest_id).first_or_404()
+    event.guests.remove(guest)
+    db.session.commit()
+    return redirect(url_for('guest_list2', id=ev_id))
+
+
+
 @app.route('/event/event_tickets/<int:eventid>')
 @login_required
 def event_tickets(eventid):
