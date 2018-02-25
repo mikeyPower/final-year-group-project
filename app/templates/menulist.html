@@ -1,14 +1,13 @@
 {% extends 'index.html'%}
 
 {% block body %}
+<div class="container">
   <h1>Menus List</h1>
     {% for menu in menus %}
      <ul>
       <li style="display:inline-block" ><a href="menu/{{menu.id}}">{{menu.title}}</a></li>
-      <li style="display:inline-block" ><a href="edit_menu/{{menu.id}}">Edit</a></li>
-    <li style="display:inline-block" ><a href="delete_menu/{{menu.id}}">Delete</a></li>
-     </form>
-           </ul>
+       </ul>
     {% endfor %}
-  <a class="nav-link" href="/menu" style="color: rgb(0,255,0)">Add Menu</a>
+  <a class="nav-link" href="/menu">Add Menu</a>
+</div>
 {% endblock %}
