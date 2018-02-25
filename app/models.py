@@ -63,7 +63,7 @@ class Event(db.Model):
     title = db.Column(db.String(120), index=True, unique=True)
     location = db.Column(db.String(120), index=True)
     description = db.Column(db.String(1000))
-    guests = db.relationship("Guest", backref = "event")
+    guests = db.relationship("Guest", backref = "event", cascade="all, delete-orphan")
     #guests = db.relationship('User', secondary=guests, lazy='subquery', backref=db.backref('events', lazy=True))
 
 class Menu(db.Model):

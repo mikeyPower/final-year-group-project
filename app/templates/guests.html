@@ -10,6 +10,7 @@
         <th>Last Name</th>
         <th>Email</th>
         <th>Ticket Reference</th>
+        <th>Remove Guest</th>
       </tr>
       {% for guest in guests %}
         <tr>
@@ -18,6 +19,7 @@
             <td>{{ guest.user.last_name }}</td>
             <td>{{ guest.user.email }}</td>
             <td>{{ guest.code }}</td>
+            <td><a class="nav-link" href="/event/{{event.id}}/guest/{{ guest.user.id }}/rem" style="color: rgb(0,255,0)">Remove</a></td>
         </tr>
       {% endfor %}
     </table>
