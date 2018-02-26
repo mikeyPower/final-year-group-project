@@ -23,7 +23,8 @@
         </tr>
       {% endfor %}
     </table>
-    <input type="button" onclick="location.href='/group_email';" value="Send emails to regerstered users" />
+    <input type="button" onclick="location.href='/group_email';" value="Send emails to registered users" />
+    <input type="button" onclick="location.href='/group_email_to_guest_invite_lists/{{event.id}}';" value="Send email to attendees" />
     <input type="button" onclick="location.href='/send_emails/{{event.id}}';" value="Send Invitations" />
     <a class="nav-link" href="/event/guests/{{event.id}}/register" style="color: rgb(0,255,0)">Add Guest</a>
 {% endblock %}
