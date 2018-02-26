@@ -179,6 +179,49 @@ def group_email():
     return render_template('group_email.html', form = form)
 
 
+#Send group email to guest and invite lists
+@app.route('/group_email_to_guest_invite_lists/<int:ev_id>', methods=['GET', 'POST'])
+@login_required
+def group_email_to_guest_and_invite_lists(ev_id):
+    form = GroupEmailForm()
+    if form.validate_on_submit():#
+        print("your in")
+        title = form.title.data
+        body = form.body.data
+        myRecipient = User.query.all()
+        guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
+        myRecipient = User.query.all()
+        answer = db.session.query(User.email).filter(~User.id.notin_(guest_list)).first()
+
+        print(answer[0])
+
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = title
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello"
+        myRecipient = User.query.all()
+        for i in range(len(answer)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(body, 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", answer[i], msg.as_string())
+            #return redirect('/send_emails/{{ev_id}}')
+            #return redirect(url_for('send_emails', id=ev_id))
+            return redirect(url_for('send_email', ev_id=ev_id))
+    return render_template('group_email_to_guest_invite_lists.html', form = form)
+
+
 #################### End of Mailing and Invitations Stuff #########################
 
 
