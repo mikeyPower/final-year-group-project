@@ -96,3 +96,25 @@ Steps:
       5. Input the title of email
       6. Enter the body of email
       7. You will know be brought to a page says "email sent". Emails are sent to attendees
+
+
+
+Feature Cluster 5 (features 27 and 28):
+Steps:
+    1. Navigate and click on "Event" in the navigation bar
+    2. Click "View"
+    3. Click "Guest List"
+    4. Click on "Add Guest"
+    5. Fill out Guest registration details
+    6. Submit
+    7. You will know be brought to the Guestlist page for that event with the updated list
+    8. To remove a guest from the list click remove on the row of the specific guest
+
+Feature Number 5 Update Event
+Steps:
+    1. Navigate and click on "Event" in the navigation bar
+    2. Click "View"
+    3. Click Edit Event
+    4. Make edits
+    5. Submit update
+    6. You will return to the event page where you can view the changes you have just made
