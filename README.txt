@@ -96,7 +96,7 @@ Steps:
       4. Click on "Send emails to regestered users"
       5. Enter the title of email
       6. Enter the body of email
-      7. You will now be brought to a page says "email sent". Emails are sent to all regestered users
+      7. You will now be brought to a page says "email sent". Emails are sent to all registered users
       8. Please check your email's inbox
 
 Feature Number 21 Send group emails to guests:
@@ -138,3 +138,15 @@ Feature Number 6 Keep Track of Possible/Previous Guests:
 Steps:
     1. Navigate and click on "Guests" in the navigation bar
     2. You are now shown a list of all possible and previous guests
+
+Feature Number 10 View invite list:
+Steps:
+    1. Navigate and click on "Event" in the navigation bar
+    2. Click "Add event"
+    3. Input a tilte of your event
+    4. Input a the location of the event
+    5. Input a description of your event
+    6. When satisified with what you have entered hit "Submit"
+    7.You will know be brought back to the event list page with your event being added.
+    8. Click "Invite List" for the particular event you want
+    9. You will be brough to a page which contains the invite list for that particular event
