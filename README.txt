@@ -11,8 +11,29 @@ Run The Following Commands:
 Running pytest:
 	   1. py.test -v
 
+Feature Number 11 Administrator:
+Steps:
+      1.Navigate and Click on 'Event' in the navigation bar
+      2.You should be now on the events page listing the all the events
+      3.Click on 'View' under 'Event Page'
+      4.You should now be able to see the individual details of that event
+      5.Click on 'View Guest List'
+      6.You should now be able to see all the Guest info inlcluding contact details
 
-Feature Number 29:
+
+Feature Number 13 Administrator:
+Steps:
+      1.Navigate and Click on 'Event' in the navigation bar
+      2.You should be now on the events page listing the all the events
+      3.Click on 'View' under 'Event Page'
+      4.You should now be able to see the individual details of that event
+      5.Click on 'View Guest List'
+      6.You should now be able to see all the Guest info inlcluding contact details
+      7.Now Click on 'add guest' you will be brought to a registration form to fill out
+      8.Fill in the guest details and hit 'register' you will now be brought back to the Guest list with the registered guest included
+
+
+Feature Number 29 Administrator:
 Steps:
        1.Navigate and click on "Menu List" in the navigation bar
        3.Click "Add Menu"

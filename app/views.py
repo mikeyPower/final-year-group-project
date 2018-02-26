@@ -271,7 +271,7 @@ def load_user(id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.last_name.data,form.first_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
         if not error:
 
             #Need to decide on Database
