@@ -11,6 +11,6 @@ if not os.path.exists(SQLALCHEMY_MIGRATE_REPO):
     api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
 else:
     api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO, api.version(SQLALCHEMY_MIGRATE_REPO))
-admin=models.User(username="Admin",email="test@test.com",hashed_password=sha256_crypt.hash("password"), admin = True, last_name="smith",first_name="john")
-db.session.add(admin)
-db.session.commit()
+#admin=models.User(username="Admin",email="test@test.com",hashed_password=sha256_crypt.hash("password"), admin = True, last_name="smith",first_name="john")
+#db.session.add(admin)
+#db.session.commit()
