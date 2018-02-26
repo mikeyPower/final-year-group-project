@@ -34,3 +34,30 @@ Steps:
             3. from app.views import *
             4. add_to_total_raised( <ADD CUSTOM AMOUNT> )
        3.When you enter your amount, you will see that the amount raised updates to the new amount on the website.
+
+Feature Number 4:
+Steps:
+      1. Navigate and click on "Event" in the navigation bar
+      2. Click "Add Event"
+      3. Input a tilte of your event
+      4. Input a the location of the event
+      5. Input a description of your event
+      6. When satisified with what you have entered hit "Submit"
+      5.You will know be brought back to the event list page with your event being added, you may click on "View"
+        to see that the contents are the same as you have entered
+
+Feature 8,9 and 14:
+Steps:
+      1. Navigate and click on "Event" in the navigation bar
+      2. Click "Guest List"
+      3. Click on "Send Invitations"
+      4. You will know be brought to a page says "email sent". Where invitations are sent to email addresses on invite list
+
+Feature 20:
+Steps:
+      1. Navigate and click on "Event" in the navigation bar
+      2. Click "Guest List"
+      3. Click on "Send emails to regestered users"
+      4. Input the title of email
+      5. Enter the body of email
+      4. You will know be brought to a page says "email sent". Where emails are sent to all regestered users

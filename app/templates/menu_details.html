@@ -1,9 +1,10 @@
 {% extends 'index.html' %}
 
 {% block body %}
+<div class="container">
   <h1>{{menu.title}}</h1>
   <hr>
-  <div>
+
     {{menu.body | safe}}
-  </div>
+</div>
 {% endblock %}
