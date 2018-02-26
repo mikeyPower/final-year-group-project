@@ -1,0 +1,22 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1>All Guests</h1>
+
+    <table style="width:100%">
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+      </tr>
+      {% for guest in guests %}
+        <tr>
+            <td>{{ guest.id }}</td>
+            <td>{{ guest.first_name }}</td>
+            <td>{{ guest.last_name }}</td>
+            <td>{{ guest.email }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}

@@ -552,6 +552,13 @@ def remove_guest(id):
     usrs = User.query.all()
     return render_template('guests.html', guests=usrs)
 
+@app.route('/guests')
+@login_required
+def all_guests():
+    guests = User.query.filter_by(admin=False)
+    return render_template('all_guests.html', guests=guests)
+
+
 
 def get_total_raised():
     t = Total.query.get(1)

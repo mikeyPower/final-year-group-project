@@ -127,3 +127,8 @@ Steps:
     4. Make edits
     5. Submit update
     6. You will return to the event page where you can view the changes you have just made
+
+Feature Number 6 Keep Track of Possible/Previous Guests:
+Steps:
+    1. Navigate and click on "Guests" in the navigation bar
+    2. You are now shown a list of all possible and previous guests
