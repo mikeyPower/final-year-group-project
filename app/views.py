@@ -72,12 +72,21 @@ def create_admin():
 @app.route("/make_admin/<usr_id>",methods=['GET','POST'])
 def make_admin(usr_id):
     user = User.query.filter_by(username = usr_id).first()
+    msg = "failed to create admin"
     if user:
         user.admin= True
         db.session.commit()
-        flash("admin create")
-    flash("failed to create admin")
+        msg = "admin created"
+        flash(msg)
     return redirect("/create_admin")
+
+##for testing purposes
+def admin_test_function(name):
+    user = User.query.filter_by(username = name).first()
+    if user:
+        user.admin= True
+        db.session.commit()
+    return
 #######end admin##########
 
 
