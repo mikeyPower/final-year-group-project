@@ -152,3 +152,11 @@ Steps:
             2.Click view event page
             3.Click get a ticket
             4.You will be presented with your ticket Reference code
+
+Feature Number 12, 22, 24, 25:
+      1.In order to view who is attending an event, follow the following steps:
+            1.Click Event in the navbar
+            2.Click Guest List for the event you wish to see the RSVP list of
+            3.You will be shown a list of RSVP'd guests.
+      2.To manage this list, it is possible to add a guest (as shown before by clicking Add Guest)
+      3.It is possible to delete a guest by clicking Remove Guest
