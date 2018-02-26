@@ -52,7 +52,7 @@ Steps:
        5.You will know be brought back to the menulist page with your menu being added, you may click on this menu
          to see that the contents are the same as you have entered
 
-Feature Cluster 12: (features 51,52,53)
+Feature Number 51,52,53:
 Steps:
        This feature can be found by clicking "Total Raised" on the navbar at the top of the screen.
        Here you will see the total amount raised displayed.
@@ -150,3 +150,16 @@ Steps:
     7.You will know be brought back to the event list page with your event being added.
     8. Click "Invite List" for the particular event you want
     9. You will be brough to a page which contains the invite list for that particular event
+Feature Number 15, 16, 18:
+Steps:
+      1.Create an event
+      2.As an admin, you can register a guest for an event by doing the following:
+            1.Click the guest list for an event
+            2.Click add guest
+            3.Type in the new guests registration details (note they cannot be an existing user)
+            4.Click Register and you will return to the guest list where you can see the ticket code
+      3.As a non-admin user, to get a ticket for yourself, follow the following steps:
+            1.Click Event in the navbar
+            2.Click view event page
+            3.Click get a ticket
+            4.You will be presented with your ticket Reference code
