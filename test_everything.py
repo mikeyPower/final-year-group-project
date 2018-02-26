@@ -273,3 +273,8 @@ def test_guests_add_and_remove():
     db.session.delete(user)
     db.session.delete(user2)
     db.session.commit()
+
+
+def test_admin():
+    reg = User.query.filter_by(username='Admin').first_or_404()
+    assert reg is not None
