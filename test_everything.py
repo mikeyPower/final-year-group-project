@@ -218,6 +218,21 @@ def test_view_invite_and_guest_lists():
     db.session.commit()
     assert guest_list2[0].email !=  invite_list[0].email
 
+def keep_track_all_users():
+    user = User(
+        id = 15,
+        username = "wessamgholam",
+        email = "gholamwessam@gmail.com",
+        hashed_password = "123",
+        last_name = "Gholam",
+        first_name = "Wessam"
+    )
+    db.session.add(user)
+    db.session.commit()
+    assert user in User.query.all()
+    db.session.delete(user)
+    db.session.commit()
+
 
 def test_guests_add_and_remove():
     title_data = "Auction"
