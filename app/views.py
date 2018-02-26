@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, SearchAdminForm
 from .models import User, Menu, Total, Event, Guest
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -59,10 +59,25 @@ def requires_roles(*roles):
 
 @app.route("/create_admin", methods=['POST', 'GET'])
 @login_required
+@requires_roles('admin')
 def create_admin():
     users = User.query.filter_by(admin=False).all()
-    return render_template('create_admin.html', users = users)
+    form = SearchAdminForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        return render_template('create_admin.html',form=form, users=users,myUser=user)
+    return render_template('create_admin.html',form=form ,users = users,myUser=None)
 
+
+@app.route("/make_admin/<usr_id>",methods=['GET','POST'])
+def make_admin(usr_id):
+    user = User.query.filter_by(username = usr_id).first()
+    if user:
+        user.admin= True
+        db.session.commit()
+        flash("admin create")
+    flash("failed to create admin")
+    return redirect("/create_admin")
 #######end admin##########
 
 

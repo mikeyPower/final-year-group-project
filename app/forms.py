@@ -37,3 +37,6 @@ class EventForm(Form):
 class GroupEmailForm(Form):
     title = StringField('Title:', validators=[DataRequired()])
     body = TextAreaField('Body',validators=[DataRequired()])
+
+class SearchAdminForm(Form):
+    username = StringField('Name', validators=[DataRequired()])
