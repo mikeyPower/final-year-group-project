@@ -131,6 +131,18 @@ def test_eticketing():
     db.session.commit()
 
 
+##test admin##
+def test_creating_admin():
+    usr=User(username="billjoe123",email="mytesteremail@test.com",hashed_password="123",last_name="joe",first_name="billy")
+    db.session.add(usr)
+    db.session.commit()
+    assert usr.admin==False
+    admin_test_function(usr.username)
+    assert usr.admin==True
+    db.session.delete(usr)
+    db.session.commit()
+
+########END########
 
 def test_view_invite_and_guest_lists():
     title_data = "Auction"
