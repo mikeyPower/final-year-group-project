@@ -2,8 +2,10 @@
 
 {% block body %}
 <h1> Event</h1>
+{% if session['admin'] %}
 <h3><a class="nav-link" href="{{ url_for('guest_list', id = event.id) }}">View Guest List</a></h3>
 <h3><a class="nav-link" href="{{ url_for('edit_event', ev_id = event.id) }}">Edit Event</a></h3>
+{% endif %}
 <a href="/events">Back to List</a>
 <br>
 <h1><b>Title: </b>{{ event.title }}</h1>

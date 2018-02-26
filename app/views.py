@@ -317,6 +317,7 @@ def login():
 def logout():
     logout_user()
     session['logged_in'] = False
+    session['admin'] = False
     return redirect('/login')
 
 
