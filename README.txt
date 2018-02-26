@@ -11,6 +11,15 @@ Run The Following Commands:
 Running pytest:
 	   1. py.test -v
 
+Feature Number 1 and 2, Administrator:
+Steps:
+      1. Login as an admin with,Username=Admin and password = password
+      2. navigate to the create admin page in the navbar
+      3. here you will see a list of users, you can search for a name in the search bar
+      4. once you have searched for a user their name will appear under the search bar.
+      5. if you then click the name this will make them an admin
+      6. this new admin will now have the same ability to create other admin's from the list of users
+
 Feature Number 11 Administrator:
 Steps:
       1.Navigate and Click on 'Event' in the navigation bar
