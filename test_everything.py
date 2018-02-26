@@ -131,6 +131,18 @@ def test_eticketing():
     db.session.commit()
 
 
+##test admin##
+def test_creating_admin():
+    usr=User(username="billjoe123",email="mytesteremail@test.com",hashed_password="123",last_name="joe",first_name="billy")
+    db.session.add(usr)
+    db.session.commit()
+    assert usr.admin==False
+    admin_test_function(usr.username)
+    assert usr.admin==True
+    db.session.delete(usr)
+    db.session.commit()
+
+########END########
 
 def test_view_invite_and_guest_lists():
     title_data = "Auction"
@@ -183,3 +195,66 @@ def test_view_invite_and_guest_lists():
     db.session.delete(guest)
     db.session.commit()
     assert guest_list2[0].email !=  invite_list[0].email
+
+
+def test_guests_add_and_remove():
+    title_data = "Auction"
+    location_data = "Grafton street"
+    description_data = "Sell stuff"
+
+    event = Event(
+        id=10,
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+
+    user = User(
+        id=15,
+        username="bizzzzboi",
+        email="tstus@gmail.com",
+        hashed_password="123",
+        last_name="dude",
+        first_name="my"
+    )
+    user2 = User(
+        id=16,
+        username="lzzzzzzilboi",
+        email="sectstusr@gmail.com",
+        hashed_password="123",
+        last_name="boujee",
+        first_name="bad"
+    )
+
+    g = Guest(
+        event_id=10,
+        user_id=15,
+        user = user,
+        code="65nb"
+    )
+
+    g2 = Guest(
+        event_id=10,
+        user_id=16,
+        user=user2,
+        code="65nb"
+    )
+
+    db.session.add(event)
+    db.session.add(user)
+    db.session.add(user2)
+    db.session.commit()
+    auc = db.session.query(Event).filter_by(id = 10).first_or_404()
+    auc.guests.append(g)
+    auc.guests.append(g2)
+    db.session.commit()
+    print(auc.guests)
+    assert g in auc.guests
+    auc.guests.remove(g)
+    db.session.commit()
+    assert g not in auc.guests
+    auc.guests.remove(g2)
+    db.session.delete(event)
+    db.session.delete(user)
+    db.session.delete(user2)
+    db.session.commit()

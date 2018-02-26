@@ -11,6 +11,15 @@ Run The Following Commands:
 Running pytest:
 	   1. py.test -v
 
+Feature Number 1 and 2, Administrator:
+Steps:
+      1. Login as an admin with,Username=Admin and password = password
+      2. navigate to the create admin page in the navbar
+      3. here you will see a list of users, you can search for a name in the search bar
+      4. once you have searched for a user their name will appear under the search bar.
+      5. if you then click the name this will make them an admin
+      6. this new admin will now have the same ability to create other admin's from the list of users
+
 Feature Number 11 Administrator:
 Steps:
       1.Navigate and Click on 'Event' in the navigation bar
@@ -56,7 +65,7 @@ Steps:
             4. add_to_total_raised( <ADD CUSTOM AMOUNT> )
        3.When you enter your amount, you will see that the amount raised updates to the new amount on the website.
 
-Feature Number 4:
+Feature Number 4 Create Event:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
       2. Click "Add Event"
@@ -64,38 +73,71 @@ Steps:
       4. Input a the location of the event
       5. Input a description of your event
       6. When satisified with what you have entered hit "Submit"
-      5.You will know be brought back to the event list page with your event being added, you may click on "View"
-        to see that the contents are the same as you have entered
+      5.You will know be brought back to the event list page with your event being added.
 
-Feature Number 8,9 and 14:
+Feature Number 8,9 and 14 Send Invitations:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "View"
-      3. Click "Guest List"
-      4. Click on "Send customised invitations"
-      5. Input email addresses separated by a semicolon ";"
-      6. Click submit
-      5. You will know be brought to a page says "email sent". Where invitations are sent to email addresses you've entered
+      2. Create an event, see feature number 4 above
+      3. Click "View"
+      4. Click "Guest List"
+      5. Click on "Send customised invitations"
+      6. Input email addresses separated by a semicolon ";", include an email you can access
+        to allow you to verify the receipt of the email.
+      7. Click submit
+      8. You will know be brought to a page says "email sent". Where invitations are sent to email addresses you've entered
+      9. Please check your email's inbox
 
-Feature Number 20:
+Feature Number 20 Send group email to registered users:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "View"
+      2. Click "View" for the particular event you want
       3. Click "Guest List"
       4. Click on "Send emails to regestered users"
-      5. Input the title of email
+      5. Enter the title of email
       6. Enter the body of email
-      7. You will know be brought to a page says "email sent". Emails are sent to all regestered users
+      7. You will now be brought to a page says "email sent". Emails are sent to all regestered users
+      8. Please check your email's inbox
 
-Feature Number 21:
+Feature Number 21 Send group emails to guests:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "View"
-      3. Click "Guest List"
-      4. Click on "Send email to attendees"
-      5. Input the title of email
-      6. Enter the body of email
-      7. You will know be brought to a page says "email sent". Emails are sent to attendees
+      2. Create an event, see feature number 4 above
+      3. Click "View" for the particular event you want
+      4. Click "Guest List"
+      5. Click "Add guest", you will be brought to a registration form to fill out
+      6.Fill in the guest details and hit 'register' you will now be brought back to the Guest list with the registered guest included
+      7. Click on "Send email to guests"
+      8. Input the title of email
+      9. Enter the body of email
+      10. You will now be brought to a page says "email sent". Emails are sent to attendees
+      11. Please check your email's inbox
+
+
+Feature Cluster 5 (features 27 and 28):
+Steps:
+    1. Navigate and click on "Event" in the navigation bar
+    2. Click "View"
+    3. Click "Guest List"
+    4. Click on "Add Guest"
+    5. Fill out Guest registration details
+    6. Submit
+    7. You will know be brought to the Guestlist page for that event with the updated list
+    8. To remove a guest from the list click remove on the row of the specific guest
+
+Feature Number 5 Update Event
+Steps:
+    1. Navigate and click on "Event" in the navigation bar
+    2. Click "View"
+    3. Click Edit Event
+    4. Make edits
+    5. Submit update
+    6. You will return to the event page where you can view the changes you have just made
+
+Feature Number 6 Keep Track of Possible/Previous Guests:
+Steps:
+    1. Navigate and click on "Guests" in the navigation bar
+    2. You are now shown a list of all possible and previous guests
 
 Feature Number 15, 16, 18:
 Steps:
