@@ -524,7 +524,7 @@ def add_guest_to_event(id):
     form = RegisterForm()
     event = Event.query.filter_by(id=id).first_or_404()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.last_name.data,form.first_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
         if not error:
             user =  User.query.filter_by(username=form.username.data).first_or_404()
             assign_ticket(id,user.id)
