@@ -8,6 +8,7 @@
       <li class="nav-item">
         <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
       </li>
+      {% if session['logged_in']: %}
       <li class="nav-item">
         <a class="nav-link" href="/events">Event</a>
       </li>
@@ -22,9 +23,12 @@
       <li class="nav-item">
         <a class="nav-link" href="/menulist">Menu List</a>
       </li>
-      <li class="nav_item">
-        <a class="nav-link" href="/create_admin">Admin Page</a>
-      </li>
+      {% endif %}
+      {% if session['admin']: %}
+        <li class="nav_item">
+          <a class="nav-link" href="/create_admin">Admin Page</a>
+        </li>
+      {% endif %}
     </ul>
 
 

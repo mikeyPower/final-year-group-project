@@ -51,7 +51,7 @@ Steps:
        5.You will know be brought back to the menulist page with your menu being added, you may click on this menu
          to see that the contents are the same as you have entered
 
-Feature Number 51,52,53 Administrator:
+Feature Number 51,52,53,54 Administrator:
 Steps:
        This feature can be found by clicking "Total Raised" on the navbar at the top of the screen.
        Here you will see the total amount raised displayed.
