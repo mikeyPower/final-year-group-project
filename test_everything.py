@@ -83,6 +83,28 @@ def test_create_event():
     #index = 10 / 0
     assert events[0].location == events[0].location
 
+def test_event_update():
+    title_data = "Test Event somewhere in world"
+    location_data = "Mars in Mily Way Galaxy"
+    description_data = "Test yes indeed, it's a test... !!!"
+
+    event = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    old_title = event.title
+    db.session.add(event)
+    db.session.commit()
+    ev2 = db.session.query(Event).filter_by(title = old_title).first_or_404()
+    ev2.title = "this is a new title"
+    db.session.add(ev2)
+    db.session.commit()
+    ev3 = db.session.query(Event).filter_by(title = "this is a new title").first_or_404()
+    assert ev3.title != old_title
+    db.session.delete(ev3)
+    db.session.commit()
+
 def test_send_emails():
     with pytest.raises(Exception) as e_info:
         server = smtplib.SMTP('smtp.gmail.com', 587)
