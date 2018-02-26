@@ -2,7 +2,7 @@ from app import app, db
 from .forms import MenuForm
 from .models import Menu
 from app.views import *
-from flask import g,render_template, flash, redirect, session, Flask, url_for, request
+from flask import g,render_template, flash, redirect, session, Flask, url_for, request, Markup#, IntegrityError
 
 @app.route('/menu', methods=['GET', 'POST'])
 @login_required
@@ -10,11 +10,11 @@ def menu():
     form = MenuForm()
     if form.validate_on_submit():#
         #print("you're in")
-        add_menu(form.title.data,form.body.data)
 
-        #flash('Menu Created', 'success')
-        print("added")
-        return redirect('/menulist')
+        if add_menu(form.title.data,form.body.data) == True:
+            return redirect('/menulist')
+        else:
+            flash('Menu has not been added')
     return render_template('menu.html', form = form)
 
 def add_menu(title_data,body_data):
@@ -25,9 +25,14 @@ def add_menu(title_data,body_data):
       title = title,
       body = body
     )
-    db.session.add(menu)
-    db.session.commit()
-    return
+    try:
+        db.session.add(menu)
+        db.session.commit()
+        return True
+    except:
+        return False
+
+    return True
 
 
 

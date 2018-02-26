@@ -1,7 +1,7 @@
 {% extends 'index.html'%}
 
 {% block body %}
-<h1> Gang shit</h1>
+<h1>Guest List</h1>
 
     <table style="width:100%">
       <tr>
@@ -10,6 +10,7 @@
         <th>Last Name</th>
         <th>Email</th>
         <th>Ticket Reference</th>
+        <th>Remove Guest</th>
       </tr>
       {% for guest in guests %}
         <tr>
@@ -18,10 +19,13 @@
             <td>{{ guest.user.last_name }}</td>
             <td>{{ guest.user.email }}</td>
             <td>{{ guest.code }}</td>
+            <td><a class="nav-link" href="/event/{{event.id}}/guest/{{ guest.user.id }}/rem" style="color: rgb(0,255,0)">Remove</a></td>
         </tr>
       {% endfor %}
     </table>
-    <input type="button" onclick="location.href='/group_email';" value="Send group emails" />
+    <input type="button" onclick="location.href='/group_email';" value="Send emails to registered users" />
+    <input type="button" onclick="location.href='/group_email_to_guest_invite_lists/{{event.id}}';" value="Send email to attendees" />
     <input type="button" onclick="location.href='/send_emails/{{event.id}}';" value="Send Invitations" />
-    <a class="nav-link" href="/event/guests/{{event.id}}/register" style="color: rgb(0,255,0)">Add Guest</a>
+    <input type="button" onclick="location.href='/invite/{{event.id}}';" value="Send customised invitations" />
+    <a class="nav-link" href="/event/{{event.id}}/guests/register" style="color: rgb(0,255,0)">Add Guest</a>
 {% endblock %}
