@@ -72,8 +72,10 @@ Steps:
       1. Navigate and click on "Event" in the navigation bar
       2. Click "View"
       3. Click "Guest List"
-      4. Click on "Send Invitations"
-      5. You will know be brought to a page says "email sent". Where invitations are sent to email addresses on invite list
+      4. Click on "Send customised invitations"
+      5. Input email addresses separated by a semicolon ";"
+      6. Click submit
+      5. You will know be brought to a page says "email sent". Where invitations are sent to email addresses you've entered
 
 Feature Number 20:
 Steps:

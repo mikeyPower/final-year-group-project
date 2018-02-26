@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses
 from .models import User, Menu, Total, Event, Guest
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -220,6 +220,51 @@ def group_email_to_guest_and_invite_lists(ev_id):
             #return redirect(url_for('send_emails', id=ev_id))
             return redirect(url_for('send_email', ev_id=ev_id))
     return render_template('group_email_to_guest_invite_lists.html', form = form)
+
+
+#Send group email to guest and invite lists
+@app.route('/invite/<int:ev_id>', methods=['GET', 'POST'])
+@login_required
+def customised_invitations(ev_id):
+    form = EmailAddresses()
+    if form.validate_on_submit():#
+        print("your in")
+        adressess = form.addresses.data
+        myRecipient = User.query.all()
+        guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
+        myRecipient = User.query.all()
+        answer = db.session.query(User.email).filter(~User.id.notin_(guest_list)).first()
+        addresses2 = []
+        addresses2 = adressess.split(";")
+        print(addresses2)
+        print(addresses2[0])
+
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "Invitation"
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello"
+        myRecipient = User.query.all()
+        for i in range(len(addresses2)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
+            part1 = MIMEText(text, 'plain')
+            #part2 = MIMEText(body, 'html')
+            part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id), 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", addresses2[i], msg.as_string())
+            #return redirect('/send_emails/{{ev_id}}')
+            #return redirect(url_for('send_emails', id=ev_id))
+            return redirect(url_for('send_email', ev_id=ev_id))
+    return render_template('invite.html', form = form)
 
 
 #################### End of Mailing and Invitations Stuff #########################
