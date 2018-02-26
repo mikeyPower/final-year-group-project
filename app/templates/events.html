@@ -9,18 +9,11 @@
         <th>Title</th>
         <th>Location</th>
         <th>Event Page</th>
-<<<<<<< HEAD
         {% if session['admin']: %}
           <th>Delete Event</th>
           <th>Invite List
           <th>Tickets</th>
         {% endif %}
-=======
-        <th>Delete Event</th>
-        <th>Guest List</th>
-        <th>Invite List</th>
-        <th>Tickets</th>
->>>>>>> 71f5edbdd07159748f9e1dabc96c4665586d463d
       </tr>
       {% for ev in events %}
         <tr>
@@ -28,19 +21,13 @@
             <td>{{ ev.title }}</td>
             <td>{{ ev.location }}</td>
             <td><a class="nav-link" href="/event/{{ ev.id }}">View</a></td>
-<<<<<<< HEAD
             {% if session['admin']: %}
               <td><a data-confirm="Are you sure?" data-method="delete" href="/event_del/{{ ev.id }}" rel="nofollow">Delete</a></td>
               <td><a class="nav-link"  href="event/invite_list/{{ev.id}}">Invite List</a></td>
               <td><a class="nav-link"  href="event/event_tickets/{{ev.id}}">Show Tickets</a></td>
             {% endif %}
-=======
-            <td><a data-confirm="Are you sure?" data-method="delete" href="/event_del/{{ ev.id }}" rel="nofollow">Delete</a></td>
-            <td><a class="nav-link"  href="event/{{ev.id}}/guests">Guest List</a></td>
-            <td><a class="nav-link"  href="event/invite_list/{{ev.id}}">Invite List</a></td>
             <td><a class="nav-link"  href="event/event_tickets/{{ev.id}}">Show Tickets</a></td>
 
->>>>>>> 71f5edbdd07159748f9e1dabc96c4665586d463d
         </tr>
       {% endfor %}
     </table>
