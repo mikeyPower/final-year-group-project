@@ -101,6 +101,37 @@ class MyTestCase(unittest.TestCase):
             server.login("event.management.tcd@gmail.com", "tcdtcd1247576")
             server.sendmail("event.management.tcd@gmail.com", "hello@here.com", msg)
 
+def test_eticketing():
+    email ='testemail3@gmail.com'
+    name ='testemail3@gmail.com'
+    password ='testPassword'
+    confirm_pass = 'testPassword'
+    f_name ='John'
+    l_name ='M'
+    assert try_register(email,name,password,confirm_pass,f_name,l_name) == False
+    u = User.query.filter_by(email=email).first()
+
+    title_data = "Cool Event"
+    location_data = "Drawda"
+    description_data = "Test yes indeed, it's a test... !!!"
+    event = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    db.session.add(event)
+    db.session.commit()
+    e = Event.query.all()[-1]
+    assert e.title == title_data
+    assert assign_ticket(e.id,u.id) != None
+    assert assign_ticket(e.id,u.id) == None
+    rem_guest_tester(e.id,u.id)
+    db.session.delete(e)
+    db.session.delete(u)
+    db.session.commit()
+
+
+
 def test_view_invite_and_guest_lists():
     title_data = "Auction"
     location_data = "Grafton street"

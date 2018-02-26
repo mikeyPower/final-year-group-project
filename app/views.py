@@ -386,7 +386,12 @@ def rem_guest(ev_id, guest_id):
     db.session.commit()
     return redirect(url_for('guest_list', id=ev_id))
 
-
+def rem_guest_tester(ev_id, guest_id):
+    event = Event.query.filter_by(id=ev_id).first_or_404()
+    guest = Guest.query.filter_by(user_id=guest_id).first_or_404()
+    event.guests.remove(guest)
+    db.session.commit()
+    return True
 
 @app.route('/event/event_tickets/<int:eventid>')
 @login_required
