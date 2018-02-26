@@ -2,10 +2,42 @@
 
 {% block body %}
 <h1>Sign In</h1>
-    <ul>
-    {% for user in users: %}
-      <li> user</li>
+<body> 
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
     {% endfor %}
     </ul>
-</form>
+  {% endif %}
+  {% endwith %}
+
+  <div id=search>
+    <form action="" method="post" name="search">
+      {{ form.hidden_tag() }}
+      <p>
+        Search user:
+        {{ form.username(size=30) }}
+      </p>
+      <input type = "submit" value="Search"></input>
+    </form>
+    {% if myUser != None %}
+      <div id ="user" method="post" name="made_admin" >
+        <tr>
+          <td>
+            <a class="nav-link" href="/make_admin/{{ myUser.username }}">
+            {{ myUser.username }}
+            </a>
+          </td>
+        </tr>
+      </div> 
+    {% endif %}
+  </div>
+  <ul>
+  {% for user in users: %}
+  <li>{{    user.username }}</li>
+  {% endfor %}
+  </ul>
+</body>
 {% endblock %}

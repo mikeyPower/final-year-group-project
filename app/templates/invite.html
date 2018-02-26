@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+
+{% block body %}
+  <h1>Add emails to invite </h1>
+  <p>Please enter email addresses and separate them by a semicolon ";"</p>
+  {% from "_formhelpers.html" import render_field %}
+  <form action="" method="post" name="event">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ render_field(form.addresses, class_="form-control") }}
+    </div>
+    <p><input type="submit" value="Submit">
+  </form>
+{% endblock %}

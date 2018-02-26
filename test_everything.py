@@ -18,6 +18,32 @@ def test_total_raised():
     assert y-x != 4000
 
 
+#Testing email syntax functionality
+def test_email_syntax():
+    x = 'testemail@gmail.com'
+    y = 'wrongEmail@gmail.com'
+    z =  'incorrect@gmail'
+    assert verifyEmailSynatax(x) == True
+    assert verifyEmailSynatax(y) ==  False
+    assert verifyEmailSynatax(z) ==  False
+
+
+#Testing register functionality
+def test_try_register():
+    email ='testemail1@gmail.com'
+    name ='testemail1@gmail.com'
+    password ='testPassword'
+    confirm_pass = 'testPassword'
+    f_name ='michael'
+    l_name ='power'
+    assert try_register(email,name,password,confirm_pass,f_name,l_name) == False
+    reg = User.query.filter_by(email=email).first()
+    db.session.delete(reg)
+    db.session.commit()
+
+
+
+
 def test_menu_added():
     title_data = "Brunch Test5"
     body_data = "Eggs and Toast Test5"

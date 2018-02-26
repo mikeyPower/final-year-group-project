@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="container">
-  <h1>Add Menu</h1>
+  <h1>Group Emails</h1>
   {% from "_formhelpers.html" import render_field %}
   <form action="" method="post" name="menu">
     {{ form.hidden_tag() }}
@@ -13,11 +13,6 @@
       {{ render_field(form.body, class_="form-control", id="editor") }}
     </div>
     <p><input type="submit" value="Submit">
-
   </form>
-  <!--  {% for message in get_flashed_messages() %}
-  {{message}}
-    {% endfor %} -->
-
 </div>
 {% endblock %}
