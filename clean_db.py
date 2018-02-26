@@ -6,6 +6,7 @@ def clean_all():
     clean_menu()
     clean_user()
     clean_event()
+    clean_total()
 
 def clean_menu():
     db.session.query(Menu).delete()
