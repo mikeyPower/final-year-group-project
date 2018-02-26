@@ -9,7 +9,7 @@ Run The Following Commands:
 
 
 Running pytest:
-	1. py.test -v
+	   1. py.test -v
 
 
 Feature Number 29:
@@ -21,4 +21,16 @@ Steps:
        4.When satisified with what you have entered hit "Submit"
        5.You will know be brought back to the menulist page with your menu being added, you may click on this menu
          to see that the contents are the same as you have entered
-       
+
+Feature Cluster 12: (features 51,52,53)
+Steps:
+       This feature can be found by clicking "Total Raised" on the navbar at the top of the screen.
+       Here you will see the total amount raised displayed.
+       1.With the app running, open a new terminal and navigate to the root folder
+       2.In console, run the following commands:
+            1. python
+            Now the python interpreter is launched, enter the following:
+            2. from app import app, views
+            3. from app.views import *
+            4. add_to_total_raised( <ADD CUSTOM AMOUNT> )
+       3.When you enter your amount, you will see that the amount raised updates to the new amount on the website.
