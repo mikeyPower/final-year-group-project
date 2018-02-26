@@ -11,8 +11,29 @@ Run The Following Commands:
 Running pytest:
 	   1. py.test -v
 
+Feature Number 11 Administrator:
+Steps:
+      1.Navigate and Click on 'Event' in the navigation bar
+      2.You should be now on the events page listing the all the events
+      3.Click on 'View' under 'Event Page'
+      4.You should now be able to see the individual details of that event
+      5.Click on 'View Guest List'
+      6.You should now be able to see all the Guest info inlcluding contact details
 
-Feature Number 29:
+
+Feature Number 13 Administrator:
+Steps:
+      1.Navigate and Click on 'Event' in the navigation bar
+      2.You should be now on the events page listing the all the events
+      3.Click on 'View' under 'Event Page'
+      4.You should now be able to see the individual details of that event
+      5.Click on 'View Guest List'
+      6.You should now be able to see all the Guest info inlcluding contact details
+      7.Now Click on 'add guest' you will be brought to a registration form to fill out
+      8.Fill in the guest details and hit 'register' you will now be brought back to the Guest list with the registered guest included
+
+
+Feature Number 29 Administrator:
 Steps:
        1.Navigate and click on "Menu List" in the navigation bar
        3.Click "Add Menu"
@@ -46,18 +67,32 @@ Steps:
       5.You will know be brought back to the event list page with your event being added, you may click on "View"
         to see that the contents are the same as you have entered
 
-Feature 8,9 and 14:
+Feature Number 8,9 and 14:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "Guest List"
-      3. Click on "Send Invitations"
-      4. You will know be brought to a page says "email sent". Where invitations are sent to email addresses on invite list
+      2. Click "View"
+      3. Click "Guest List"
+      4. Click on "Send customised invitations"
+      5. Input email addresses separated by a semicolon ";"
+      6. Click submit
+      5. You will know be brought to a page says "email sent". Where invitations are sent to email addresses you've entered
 
-Feature 20:
+Feature Number 20:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "Guest List"
-      3. Click on "Send emails to regestered users"
-      4. Input the title of email
-      5. Enter the body of email
-      4. You will know be brought to a page says "email sent". Where emails are sent to all regestered users
+      2. Click "View"
+      3. Click "Guest List"
+      4. Click on "Send emails to regestered users"
+      5. Input the title of email
+      6. Enter the body of email
+      7. You will know be brought to a page says "email sent". Emails are sent to all regestered users
+
+Feature Number 21:
+Steps:
+      1. Navigate and click on "Event" in the navigation bar
+      2. Click "View"
+      3. Click "Guest List"
+      4. Click on "Send email to attendees"
+      5. Input the title of email
+      6. Enter the body of email
+      7. You will know be brought to a page says "email sent". Emails are sent to attendees

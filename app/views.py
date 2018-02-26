@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm
 from .models import User, Menu, Total, Event, Guest
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -59,10 +59,25 @@ def requires_roles(*roles):
 
 @app.route("/create_admin", methods=['POST', 'GET'])
 @login_required
+@requires_roles('admin')
 def create_admin():
     users = User.query.filter_by(admin=False).all()
-    return render_template('create_admin.html', users = users)
+    form = SearchAdminForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        return render_template('create_admin.html',form=form, users=users,myUser=user)
+    return render_template('create_admin.html',form=form ,users = users,myUser=None)
 
+
+@app.route("/make_admin/<usr_id>",methods=['GET','POST'])
+def make_admin(usr_id):
+    user = User.query.filter_by(username = usr_id).first()
+    if user:
+        user.admin= True
+        db.session.commit()
+        flash("admin create")
+    flash("failed to create admin")
+    return redirect("/create_admin")
 #######end admin##########
 
 
@@ -179,6 +194,94 @@ def group_email():
     return render_template('group_email.html', form = form)
 
 
+#Send group email to guest and invite lists
+@app.route('/group_email_to_guest_invite_lists/<int:ev_id>', methods=['GET', 'POST'])
+@login_required
+def group_email_to_guest_and_invite_lists(ev_id):
+    form = GroupEmailForm()
+    if form.validate_on_submit():#
+        print("your in")
+        title = form.title.data
+        body = form.body.data
+        myRecipient = User.query.all()
+        guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
+        myRecipient = User.query.all()
+        answer = db.session.query(User.email).filter(~User.id.notin_(guest_list)).first()
+
+        print(answer[0])
+
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = title
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello"
+        myRecipient = User.query.all()
+        for i in range(len(answer)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(body, 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", answer[i], msg.as_string())
+            #return redirect('/send_emails/{{ev_id}}')
+            #return redirect(url_for('send_emails', id=ev_id))
+            return redirect(url_for('send_email', ev_id=ev_id))
+    return render_template('group_email_to_guest_invite_lists.html', form = form)
+
+
+#Send group email to guest and invite lists
+@app.route('/invite/<int:ev_id>', methods=['GET', 'POST'])
+@login_required
+def customised_invitations(ev_id):
+    form = EmailAddresses()
+    if form.validate_on_submit():#
+        print("your in")
+        adressess = form.addresses.data
+        myRecipient = User.query.all()
+        guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
+        myRecipient = User.query.all()
+        answer = db.session.query(User.email).filter(~User.id.notin_(guest_list)).first()
+        addresses2 = []
+        addresses2 = adressess.split(";")
+        print(addresses2)
+        print(addresses2[0])
+
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = "Invitation"
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello"
+        myRecipient = User.query.all()
+        for i in range(len(addresses2)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
+            part1 = MIMEText(text, 'plain')
+            #part2 = MIMEText(body, 'html')
+            part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id), 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", addresses2[i], msg.as_string())
+            #return redirect('/send_emails/{{ev_id}}')
+            #return redirect(url_for('send_emails', id=ev_id))
+            return redirect(url_for('send_email', ev_id=ev_id))
+    return render_template('invite.html', form = form)
+
+
 #################### End of Mailing and Invitations Stuff #########################
 
 
@@ -228,7 +331,7 @@ def load_user(id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.last_name.data,form.first_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
         if not error:
 
             #Need to decide on Database
