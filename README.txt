@@ -65,7 +65,7 @@ Steps:
             4. add_to_total_raised( <ADD CUSTOM AMOUNT> )
        3.When you enter your amount, you will see that the amount raised updates to the new amount on the website.
 
-Feature Number 4:
+Feature Number 4 Create Event:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
       2. Click "Add Event"
@@ -73,39 +73,45 @@ Steps:
       4. Input a the location of the event
       5. Input a description of your event
       6. When satisified with what you have entered hit "Submit"
-      5.You will know be brought back to the event list page with your event being added, you may click on "View"
-        to see that the contents are the same as you have entered
+      5.You will know be brought back to the event list page with your event being added.
 
-Feature Number 8,9 and 14:
+Feature Number 8,9 and 14 Send Invitations:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "View"
-      3. Click "Guest List"
-      4. Click on "Send customised invitations"
-      5. Input email addresses separated by a semicolon ";"
-      6. Click submit
-      5. You will know be brought to a page says "email sent". Where invitations are sent to email addresses you've entered
+      2. Create an event, see feature number 4 above
+      3. Click "View"
+      4. Click "Guest List"
+      5. Click on "Send customised invitations"
+      6. Input email addresses separated by a semicolon ";", include an email you can access
+        to allow you to verify the receipt of the email.
+      7. Click submit
+      8. You will know be brought to a page says "email sent". Where invitations are sent to email addresses you've entered
+      9. Please check your email's inbox
 
-Feature Number 20:
+Feature Number 20 Send group email to registered users:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "View"
+      2. Click "View" for the particular event you want
       3. Click "Guest List"
       4. Click on "Send emails to regestered users"
-      5. Input the title of email
+      5. Enter the title of email
       6. Enter the body of email
-      7. You will know be brought to a page says "email sent". Emails are sent to all regestered users
+      7. You will now be brought to a page says "email sent". Emails are sent to all regestered users
+      8. Please check your email's inbox
 
-Feature Number 21:
+Feature Number 21 Send group emails to guests:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "View"
-      3. Click "Guest List"
-      4. Click on "Send email to attendees"
-      5. Input the title of email
-      6. Enter the body of email
-      7. You will know be brought to a page says "email sent". Emails are sent to attendees
-
+      2. Create an event, see feature number 4 above
+      3. Click "View" for the particular event you want
+      4. Click "Guest List"
+      5. Click "Add guest", you will be brought to a registration form to fill out
+      6.Fill in the guest details and hit 'register' you will now be brought back to the Guest list with the registered guest included
+      7. Click on "Send email to guests"
+      8. Input the title of email
+      9. Enter the body of email
+      10. You will now be brought to a page says "email sent". Emails are sent to attendees
+      11. Please check your email's inbox
 
 
 Feature Cluster 5 (features 27 and 28):
