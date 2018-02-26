@@ -180,7 +180,7 @@ def group_email():
 
 
 #################### End of Mailing and Invitations Stuff #########################
-    
+
 
 
 
@@ -375,16 +375,6 @@ def event_ticket(id):
 
 ### Guest list functs ###
 
-@app.route('/event/guests/<int:id>')
-@login_required
-def guest_list2(id):
-    if request.method == 'POST':
-        print('hi')
-
-    event = Event.query.filter_by(id=id).first_or_404()
-    guests = event.guests
-    return render_template('guests.html', guests=guests, event=event)
-
 
 
 @app.route('/event/<int:ev_id>/guest/<int:guest_id>/rem')
@@ -394,7 +384,7 @@ def rem_guest(ev_id, guest_id):
     guest = Guest.query.filter_by(user_id=guest_id).first_or_404()
     event.guests.remove(guest)
     db.session.commit()
-    return redirect(url_for('guest_list2', id=ev_id))
+    return redirect(url_for('guest_list', id=ev_id))
 
 
 
@@ -421,7 +411,7 @@ def event_invite_list(ev_id):
 
 
 #Need to fidure out how I query assoctiaon table
-@app.route('/event/guests/<string:id>/register', methods=['GET', 'POST'])
+@app.route('/event/<string:id>/guests/register', methods=['GET', 'POST'])
 def add_guest_to_event(id):
     form = RegisterForm()
     event = Event.query.filter_by(id=id).first_or_404()
@@ -430,7 +420,7 @@ def add_guest_to_event(id):
         if not error:
             user =  User.query.filter_by(username=form.username.data).first_or_404()
             assign_ticket(id,user.id)
-            return redirect(url_for('guest_list2', id=id))
+            return redirect(url_for('guest_list', id=id))
             #return redirect(url_for('guests',guests=usrs, event=event))
             #return render_template('guests.html', guests=usrs, event=event)
     return render_template('register.html', form = form)
