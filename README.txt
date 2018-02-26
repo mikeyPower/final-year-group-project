@@ -11,6 +11,7 @@ Run The Following Commands:
 Running pytest:
 	   1. py.test -v
 
+
 Feature Number 1 and 2, Administrator:
 Steps:
       1. Login as an admin with,Username=Admin and password = password
@@ -20,15 +21,14 @@ Steps:
       5. if you then click the name this will make them an admin
       6. this new admin will now have the same ability to create other admin's from the list of users
 
-Feature Number 11 Administrator:
+Feature Number 11 Administrator I want to see guests contact details:
 Steps:
       1.Navigate and Click on 'Event' in the navigation bar
-      2.You should be now on the events page listing the all the events
+      2.You should be now on the events page listing all the events
       3.Click on 'View' under 'Event Page'
       4.You should now be able to see the individual details of that event
       5.Click on 'View Guest List'
       6.You should now be able to see all the Guest info inlcluding contact details
-
 
 Feature Number 13 Administrator:
 Steps:
@@ -41,8 +41,7 @@ Steps:
       7.Now Click on 'add guest' you will be brought to a registration form to fill out
       8.Fill in the guest details and hit 'register' you will now be brought back to the Guest list with the registered guest included
 
-
-Feature Number 29 Administrator:
+Feature Number 29 Administrator I want to create menus:
 Steps:
        1.Navigate and click on "Menu List" in the navigation bar
        3.Click "Add Menu"
@@ -52,7 +51,7 @@ Steps:
        5.You will know be brought back to the menulist page with your menu being added, you may click on this menu
          to see that the contents are the same as you have entered
 
-Feature Number 51,52,53:
+Feature Number 51,52,53 Administrator:
 Steps:
        This feature can be found by clicking "Total Raised" on the navbar at the top of the screen.
        Here you will see the total amount raised displayed.
@@ -65,7 +64,7 @@ Steps:
             4. add_to_total_raised( <ADD CUSTOM AMOUNT> )
        3.When you enter your amount, you will see that the amount raised updates to the new amount on the website.
 
-Feature Number 4 Create Event:
+Feature Number 4 Administrator Create Event :
 Steps:
       1. Navigate and click on "Event" in the navigation bar
       2. Click "Add Event"
@@ -75,7 +74,7 @@ Steps:
       6. When satisified with what you have entered hit "Submit"
       5.You will know be brought back to the event list page with your event being added.
 
-Feature Number 8,9 and 14 Send Invitations:
+Feature Number 8,9 and 14 Administrator Send Invitations:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
       2. Create an event, see feature number 4 above
@@ -114,7 +113,7 @@ Steps:
       11. Please check your email's inbox
 
 
-Feature Cluster 5 (features 27 and 28):
+Feature Cluster 5 (features 27 and 28) Administrator:
 Steps:
     1. Navigate and click on "Event" in the navigation bar
     2. Click "View"
@@ -125,7 +124,7 @@ Steps:
     7. You will know be brought to the Guestlist page for that event with the updated list
     8. To remove a guest from the list click remove on the row of the specific guest
 
-Feature Number 5 Update Event
+Feature Number 5 Administrator Update Event
 Steps:
     1. Navigate and click on "Event" in the navigation bar
     2. Click "View"
@@ -139,7 +138,7 @@ Steps:
     1. Navigate and click on "Guests" in the navigation bar
     2. You are now shown a list of all possible and previous guests
 
-Feature Number 10 View invite list:
+Feature Number 10 Administrator View invite list:
 Steps:
     1. Navigate and click on "Event" in the navigation bar
     2. Click "Add event"
@@ -150,7 +149,8 @@ Steps:
     7.You will know be brought back to the event list page with your event being added.
     8. Click "Invite List" for the particular event you want
     9. You will be brough to a page which contains the invite list for that particular event
-Feature Number 15, 16, 18:
+
+Feature Number 15, 16, 18 Administrator:
 Steps:
       1.Create an event
       2.As an admin, you can register a guest for an event by doing the following:
