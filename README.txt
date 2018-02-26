@@ -46,18 +46,30 @@ Steps:
       5.You will know be brought back to the event list page with your event being added, you may click on "View"
         to see that the contents are the same as you have entered
 
-Feature 8,9 and 14:
+Feature Number 8,9 and 14:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "Guest List"
-      3. Click on "Send Invitations"
-      4. You will know be brought to a page says "email sent". Where invitations are sent to email addresses on invite list
+      2. Click "View"
+      3. Click "Guest List"
+      4. Click on "Send Invitations"
+      5. You will know be brought to a page says "email sent". Where invitations are sent to email addresses on invite list
 
-Feature 20:
+Feature Number 20:
 Steps:
       1. Navigate and click on "Event" in the navigation bar
-      2. Click "Guest List"
-      3. Click on "Send emails to regestered users"
-      4. Input the title of email
-      5. Enter the body of email
-      4. You will know be brought to a page says "email sent". Where emails are sent to all regestered users
+      2. Click "View"
+      3. Click "Guest List"
+      4. Click on "Send emails to regestered users"
+      5. Input the title of email
+      6. Enter the body of email
+      7. You will know be brought to a page says "email sent". Emails are sent to all regestered users
+
+Feature Number 21:
+Steps:
+      1. Navigate and click on "Event" in the navigation bar
+      2. Click "View"
+      3. Click "Guest List"
+      4. Click on "Send email to attendees"
+      5. Input the title of email
+      6. Enter the body of email
+      7. You will know be brought to a page says "email sent". Emails are sent to attendees
