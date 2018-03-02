@@ -3,6 +3,8 @@ from .forms import MenuForm
 from .models import Menu
 from app.views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request, Markup#, IntegrityError
+import time
+import datetime
 
 @app.route('/menu', methods=['GET', 'POST'])
 @login_required
@@ -15,15 +17,15 @@ def menu():
             return redirect('/menulist')
         else:
             flash('Menu has not been added')
-    return render_template('menu.html', form = form)
+    return render_template('menu/menu.html', form = form)
 
 def add_menu(title_data,body_data):
     title = title_data
     body = body_data
-
     menu = Menu(
       title = title,
-      body = body
+      body = body,
+      created_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
     )
     try:
         db.session.add(menu)
@@ -42,12 +44,12 @@ def menu_details(id):
 
     menu = Menu.query.filter_by(id=id).first()
 
-    return render_template('menu_details.html', menu=menu)
+    return render_template('menu/menu_details.html', menu=menu)
 
 
 @app.route('/menulist')
 def menus():
     menus = Menu.query.all()
-    return render_template("menulist.html",
+    return render_template("menu/menulist.html",
                            title="Menu List",
                            menus=menus)

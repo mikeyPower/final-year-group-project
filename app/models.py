@@ -71,6 +71,7 @@ class Menu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100)) #unique=True
     body = db.Column(db.String(1000))
+    created_time = db.Column(db.String(100))
 
 
 #class Ticket(db.Model):
