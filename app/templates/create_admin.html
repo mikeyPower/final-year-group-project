@@ -1,18 +1,8 @@
 {% extends 'index.html'%}
 
 {% block body %}
-<h1>Sign In</h1>
+<h1>Create Admin</h1>
 <body> 
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-  {% endwith %}
-
   <div id=search>
     <form action="" method="post" name="search">
       {{ form.hidden_tag() }}

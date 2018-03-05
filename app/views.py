@@ -63,8 +63,12 @@ def requires_roles(*roles):
 def create_admin():
     users = User.query.filter_by(admin=False).all()
     form = SearchAdminForm()
+    msg="that user doesn't exist"
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            msg=None
+        flash(msg)
         return render_template('create_admin.html',form=form, users=users,myUser=user)
     return render_template('create_admin.html',form=form ,users = users,myUser=None)
 
