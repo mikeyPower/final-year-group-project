@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField
+from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.fields.html5 import EmailField
 
@@ -32,6 +32,8 @@ class MenuForm(Form):
 class EventForm(Form):
     title = StringField('Title:', validators=[DataRequired()])
     location = TextAreaField('Location',validators=[DataRequired()])
+    date = StringField('Date', validators=[DataRequired()])
+    start_time = StringField('Start time', validators=[DataRequired()])
     description = TextAreaField('Desription')
 
 class GroupEmailForm(Form):
