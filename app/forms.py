@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField
+from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField, DecimalField
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.fields.html5 import EmailField
 
@@ -22,8 +22,6 @@ class ChangePassForm(Form):
     newPassword = PasswordField('New Password:', validators=[DataRequired()])
     confirmPassword = PasswordField('Confirm Password:', validators=[DataRequired()])
 
-
-
 class MenuForm(Form):
     title = StringField('Title:', validators=[DataRequired()])
     body = TextAreaField('Body')
@@ -45,3 +43,7 @@ class SearchAdminForm(Form):
 
 class EmailAddresses(Form):
     addresses = StringField('Email Addresses:', validators=[DataRequired()])
+
+class MoneyRaisedForm(Form):
+    source = StringField('Source:', validators=[DataRequired()])
+    money_raised = DecimalField('Money Raised:', validators=[DataRequired()])

@@ -66,6 +66,7 @@ class Event(db.Model):
     start_time = db.Column(db.String(30))
     description = db.Column(db.String(1000))
     guests = db.relationship("Guest", backref = "event", cascade="all, delete-orphan")
+    moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
     #guests = db.relationship('User', secondary=guests, lazy='subquery', backref=db.backref('events', lazy=True))
 
 class Menu(db.Model):
@@ -74,6 +75,14 @@ class Menu(db.Model):
     title = db.Column(db.String(100)) #unique=True
     body = db.Column(db.String(1000))
     created_time = db.Column(db.String(100))
+
+#money raised at an event and where it came from
+class MoneyRaised(db.Model):
+    __tablename__ = 'moneyraised'
+    id = db.Column(db.Integer, primary_key = True)
+    amount = db.Column(db.Float)
+    source = db.Column(db.String(512))
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
 
 #class Ticket(db.Model):

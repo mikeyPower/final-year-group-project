@@ -1,22 +1,31 @@
 {% extends 'index.html'%}
 
 {% block body %}
-<h1> Event</h1>
-{% if session['admin'] %}
-<h3><a class="nav-link" href="{{ url_for('guest_list', id = event.id) }}">View Guest List</a></h3>
-<h3><a class="nav-link" href="{{ url_for('edit_event', ev_id = event.id) }}">Edit Event</a></h3>
-{% endif %}
-<a href="/events">Back to List</a>
-<br>
-<h1><b>Title: </b>{{ event.title }}</h1>
-<br>
-<h2><b>Location: </b>{{ event.location }}</h2>
-<br>
-<p><b>Date: </b> {{ event.date }}</p>
-<p><b>Start Time: </b> {{ event.start_time }}</p>
-<p><b>Description</b></p>
-<p>{{ event.description }}</p>
+<div class="container">
+    <h1> Event</h1>
+    {% if session['admin'] %}
+    <h3><a class="nav-link" href="{{ url_for('guest_list', id = event.id) }}">View Guest List</a></h3>
+    <h3><a class="nav-link" href="{{ url_for('edit_event', ev_id = event.id) }}">Edit Event</a></h3>
+    {% endif %}
+    <a href="/events">Back to List</a>
+    <br>
+    <h1><b>Title: </b>{{ event.title }}</h1>
+    <br>
+    <h2><b>Location: </b>{{ event.location }}</h2>
+    <br>
+    <p><b>Date: </b> {{ event.date }}</p>
+    <p><b>Start Time: </b> {{ event.start_time }}</p>
+    <p><b>Description</b></p>
+    <p>{{ event.description }}</p>
 
-<p>To get you ticket please click on button below</p>
-<input type="button" onclick="location.href='/event/ticket/{{event.id}}';" value="Get a ticket" />
+    <input type="button" onclick="location.href='/event/ticket/{{event.id}}';" value="Get a ticket" />
+    <input type="button" onclick="location.href='/total-raised/{{event.id}}';" value="View Total Money Raised" />
+    <br><br><br>
+
+    <h4>Admin Tools:</h4>
+    {% if session['admin'] %}
+    <input type="button" onclick="location.href='/event/view-money-raised/{{event.id}}';" value="View donations" />
+    <input type="button" onclick="location.href='/event/record-money-raised/{{event.id}}';" value="Record a donation" />
+    {% endif %}
+</div>
 {% endblock %}
