@@ -4,6 +4,8 @@ from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
 from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry
 from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, MoneyRaisedForm
+from .models import User, Menu, Total, Event, Guest, MoneyRaised
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -934,38 +936,23 @@ def all_guests():
 
 
 
-def get_total_raised():
-    t = Total.query.get(1)
+def get_total_raised(eventid):
+    d_list = Event.query.get(eventid).moneyraised
+    t = sum(x.amount for x in d_list)
     if t is None:
         t2 = 0.0
     else:
-        t2 = t.total
+        t2 = t
     return jsonify(current=t2)
 
-def add_to_total_raised(x):
-    t = Total.query.get(1)
-    if t is None:
-        ts = Total(total=x)
-        db.session.add(ts)
-    else:
-        t.total += x
-    db.session.commit()
-
-def get_total_raised_tester():
-    t = Total.query.get(1)
-    if t is None:
-        return 0
-    else:
-        return t.total
-
-@app.route('/total-raised')
+@app.route('/total-raised/<int:eventid>')
 @login_required
-def totalraised():
-    return render_template('total-raised.html')
+def totalraised(eventid):
+    return render_template('total-raised.html', event=Event.query.get(eventid))
 
-@app.route('/update-total-raised')
-def updater():
-    return get_total_raised()
+@app.route('/update-total-raised/<int:eventid>')
+def updater(eventid):
+    return get_total_raised(eventid)
 
 #Following func used to generate ticket code, later will be checked against existing entry in DB and assigned to a guest in table
 def generateTicketCode():
@@ -1004,3 +991,24 @@ def ticket_view(eventid):
             if g.user.username == current_user.username:
                 t = g.code
         return render_template('already_ticketed.html', code = t)
+
+@app.route('/event/record-money-raised/<int:eventid>', methods=['GET', 'POST'])
+@login_required
+@requires_roles('admin')
+def record_money_raised_view(eventid):
+    form = MoneyRaisedForm()
+    if form.validate_on_submit():
+        m = MoneyRaised(source=form.source.data, amount=form.money_raised.data, event_id=eventid)
+        db.session.add(m)
+        db.session.commit()
+        flash('Money Recorded! - Source: ' + form.source.data + ',  Amount: ' + str(form.money_raised.data))
+        return redirect('/event/record-money-raised/' + str(eventid))
+    return render_template('input_money_raised.html', form=form,event = Event.query.get(eventid))
+
+@app.route('/event/view-money-raised/<int:eventid>')
+@login_required
+@requires_roles('admin')
+def view_money_raised_view(eventid):
+    d_list = Event.query.get(eventid).moneyraised
+    totalraised = sum(x.amount for x in d_list)
+    return render_template('admin_view_donations.html', total = totalraised, event = Event.query.get(eventid),donations=d_list)

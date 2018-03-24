@@ -2,13 +2,13 @@
 
 {% block body %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="static/odometer/odometer.min.js"></script>
-<link rel="stylesheet" href="static/odometer/odometer-theme-default.css" />
+<script src="../static/odometer/odometer.min.js"></script>
+<link rel="stylesheet" href="../static/odometer/odometer-theme-default.css" />
 
 <script type=text/javascript>
 (function run_update(){
     $( document ).ready(function(){
-        $.getJSON('/update-total-raised', function(data) {
+        $.getJSON('/update-total-raised/{{event.id}}', function(data) {
             console.log($("#odom-checker").text());
             if (data.current != ($("#odom-checker").text())){
                 $("#current").text(data.current);
@@ -27,7 +27,7 @@ window.odometerOptions = {
 };
 </script>
 <div class="container">
-    <h1> Total Raised</h1>
+    <h1>{{event.title}} - Total Raised</h1>
     <body>
         <div class="row">
             <div class="col-lg-12">

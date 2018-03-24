@@ -5,19 +5,6 @@ from app.menu_views import *
 import pytest
 import unittest
 
-def test_total_raised():
-    x = get_total_raised_tester()
-    add_to_total_raised(4000)
-    y = get_total_raised_tester()
-    add_to_total_raised(-4000)
-    assert y-x == 4000
-    x = get_total_raised_tester()
-    add_to_total_raised(6000)
-    y = get_total_raised_tester()
-    add_to_total_raised(-4000)
-    assert y-x != 4000
-
-
 #Testing email syntax functionality
 def test_email_syntax():
     x = 'testemail@gmail.com'
