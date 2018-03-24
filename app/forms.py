@@ -1,6 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField, DecimalField
-from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField,SelectField,SelectMultipleField
+from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField, DecimalField,SelectField,SelectMultipleField
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.fields.html5 import EmailField
 
@@ -45,15 +44,12 @@ class SearchAdminForm(Form):
 class EmailAddresses(Form):
     addresses = StringField('Email Addresses:', validators=[DataRequired()])
 
-<<<<<<< HEAD
 class PastebinEntry(Form):
     language = SelectMultipleField(
         'Programming Language',
         choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
     )
 
-=======
 class MoneyRaisedForm(Form):
     source = StringField('Source:', validators=[DataRequired()])
     money_raised = DecimalField('Money Raised:', validators=[DataRequired()])
->>>>>>> 9132924af32a0503e614ab3785d25479b1aa1cfb
