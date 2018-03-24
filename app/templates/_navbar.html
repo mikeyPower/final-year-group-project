@@ -10,7 +10,7 @@
       <li class="nav-item">
         <a class="nav-link" href="/events">Event</a>
       </li>
-      
+
       <li class="nav-item">
         <a class="nav-link" href="/guests">Guests</a>
       </li>
@@ -27,7 +27,10 @@
       {% endif %}
       {% if session['admin']: %}
         <li class="nav_item">
-          <a class="nav-link" href="/mailing_lists">mailing lists</a>
+          <a class="nav-link" href="/mailing_lists">Mailing lists</a>
+        </li>
+        <li class="nav_item">
+          <a class="nav-link" href="/group_email">Send email to users</a>
         </li>
       {% endif %}
     </ul>
