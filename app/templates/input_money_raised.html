@@ -1,0 +1,20 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<div class="container">
+    <h1>Record Money Raised</h1>
+    <h3>{{event.title}}</h3>
+    <form action="" method="post" name="recordMoneyRaised">
+        {{ form.hidden_tag() }}
+        <p>
+            Source:<br>
+            {{ form.source(size=30) }}<br>
+            Amount Raised:<br>
+            {{ form.money_raised(size=30) }}
+        </p>
+        <p><input type="submit" value="Submit"></p>
+    </form>
+    <br>
+    <input type="button" onclick="location.href='/event/{{event.id}}';" value="Back to Event Page" />
+</div>
+{% endblock %}

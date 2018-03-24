@@ -1,0 +1,27 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<div class="container">
+    {% if session['admin']: %}
+    <h1>{{event.title}} - Money Raised</h1>
+    <h4>Total Raised: {{total}}</h4>
+    <br>
+    <table style="width:100%">
+        <tr>
+            <th>Source</th>
+            <th>Amount Raised</th>
+
+        </tr>
+        {% for d in donations %}
+        <tr>
+            <td>{{ d.source }}</td>
+            <td>{{ d.amount }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <br>
+    <input type="button" onclick="location.href='/event/{{event.id}}';" value="Back to Event Page" />
+</div>
+{% endblock %}
