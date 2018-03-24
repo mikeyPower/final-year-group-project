@@ -123,6 +123,8 @@ class MoneyRaised(db.Model):
     amount = db.Column(db.Float)
     source = db.Column(db.String(512))
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+
+
 class Choice(db.Model):
     __tablename__ = 'choice'
     id = db.Column(db.Integer, primary_key=True)

@@ -519,6 +519,20 @@ class Choice_partial_Form(FlaskForm):
 
 
 
+##########################################33
+def choose_mailing_list(columns='email'):
+    print('inside partial')
+
+    u = Mailing_list.query
+    return u
+
+def getUserFactory(columns='email'):
+    return partial(choose_mailing_list, columns=columns)
+
+class Mailing_list_choice(FlaskForm):
+    a = QuerySelectMultipleField(query_factory=getUserFactory('email'), get_label='title')
+##########################################33
+
 #### Event page functions ########
 
 
@@ -917,6 +931,16 @@ def guest_list(id):
         print('hi')
     guestlist = Event.query.filter_by(id=id).first_or_404().guests
     return render_template('guests.html', guests = guestlist, event = Event.query.filter_by(id=id).first_or_404())
+
+###########################################################
+@app.route('/event/<int:id>/invite_mailing_list')
+@login_required
+def invite_mailing_list_to_event(id):
+    form = Mailing_list_choice()
+    if request.method == 'POST':
+        print('hi')
+    guestlist = Event.query.filter_by(id=id).first_or_404().guests
+    return render_template('invite_mailing_list.html', guests = guestlist, form = form)
 
 
 @app.route('/guests/<id>')

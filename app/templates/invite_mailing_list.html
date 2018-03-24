@@ -1,0 +1,11 @@
+{% extends 'index.html'%}
+{% block body %}
+<h1> Send Invitations to mailing list</h1>
+<form action="" method="post" name="event">
+  <p>
+      please select mailing list you wish to send invitations to:<br>
+      {{ form.a }}
+  </p>
+  <p><input type="submit" name="btn" value="Submit">
+</form>
+{% endblock %}
