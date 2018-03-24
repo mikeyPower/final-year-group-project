@@ -1,0 +1,26 @@
+{% extends 'index.html'%}
+
+{% block body %}
+
+
+    <table style="width:100%">
+      <tr>
+        <th>Email Addresses</th>
+        <th> Remove email address</tr>
+
+      {% for ticket in mailinglists %}
+        <tr>
+            <td>{{ ticket.email }}</td>
+            <td><a data-confirm="Are you sure?" data-method="delete" href="/mailing_list/{{id}}/delete_email/{{ ticket.id }}" rel="nofollow">Delete</a></td>
+        </tr>
+      {% endfor %}
+
+      {% for user in email_address_for_non_users %}
+        <tr>
+          <td>{{user.email}}</td>
+          <td><a data-confirm="Are you sure?" data-method="delete" href="/mailing_list/{{id}}/delete_email_non_users/{{ user.id }}" rel="nofollow">Delete</a></td>
+
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}

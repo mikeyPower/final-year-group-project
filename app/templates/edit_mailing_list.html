@@ -1,0 +1,45 @@
+{% extends 'index.html'%}
+{% block body %}
+{% block content %}
+  <div class="containter">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{message}}
+    </div>
+    {% endfor %}
+    {% block page_content %} {% endblock %}
+  </div>
+  {% endblock %}
+  <h1>Add email addresses to mailing list</h1>
+
+<!--<select class="custom-select" multiple>
+  <option selected>Open this select menu</option>
+  <option value="1">One</option>
+  <option value="2">Two</option>
+  <option value="3">Three</option>
+</select> -->
+<form action="" method="post" name="event">
+  <p>
+      Please enter title for the mailing list:<br>
+      {{ form.title(size=30) }}<br>
+      please select emails you wish to add to mailing list:<br>
+      {{ form.a }}
+  </p>
+  <p><input type="submit" name="btn" value="Submit">
+</form>
+
+<p>
+  Or alternativly, you enter email addresses manually:
+</p>
+<input type="button" onclick="location.href='/create_mailing_list/add_emails_v2/{{mailing_list_id}}';" value="Add emails manually" />
+{% endblock %}
+
+
+<!--<form action="" method="post" name="event">
+  <p>
+      Please enter email addresses separated by ;<br>
+
+  </p>
+  <p><input type="submit" name="btn" value="Submits">
+</form> -->

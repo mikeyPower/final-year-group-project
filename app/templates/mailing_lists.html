@@ -1,0 +1,26 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1> Event</h1>
+    <h4><a href="/create_mailing_list/{{mailing_list_id}}">Add Mailing list</a></h4>
+ <table style="width:100%">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+          <th>Delete mailing list</th>
+          <th>Edit mailing list</th>
+          <th>View/Remove Email addresses</th>
+      </tr>
+      {% for ml in mailing_listss %}
+        <tr>
+            <td>{{ ml.id }}</td>
+            <td>{{ ml.title }}</td>
+            {% if session['admin']: %}
+              <td><a data-confirm="Are you sure?" data-method="delete" href="/mailing_list_del/{{ ml.id }}" rel="nofollow">Delete</a></td>
+              <td><a class="nav-link"  href="/edit_mailing_list/{{ml.id}}">Edit</a></td>
+              <td><a class="nav-link"  href="/mailing_list/{{ml.id}}">Email Addresses</a></td>
+            {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}

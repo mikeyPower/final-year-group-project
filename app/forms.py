@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField
+from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField,SelectField,SelectMultipleField
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.fields.html5 import EmailField
 
@@ -45,3 +45,10 @@ class SearchAdminForm(Form):
 
 class EmailAddresses(Form):
     addresses = StringField('Email Addresses:', validators=[DataRequired()])
+
+class PastebinEntry(Form):
+    language = SelectMultipleField(
+        'Programming Language',
+        choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
+    )
+   

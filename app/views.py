@@ -2,8 +2,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm
-from .models import User, Menu, Total, Event, Guest
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry
+from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -20,6 +20,18 @@ from flask import jsonify
 import re
 import random
 import string
+from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField,SelectField,SelectMultipleField
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
+from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
+from flask.ext.wtf import Form
+from wtforms.validators import DataRequired, Email, EqualTo
+from wtforms.fields.html5 import EmailField
+from flask.ext.sqlalchemy import SQLAlchemy
+from functools import partial
+from sqlalchemy import orm
+from flask.ext.wtf import FlaskForm
+#global id_number_for_form = 0;
+
 
 
 def verifyEmailSynatax(addressToVerify):
@@ -256,7 +268,7 @@ def group_email_to_guest_and_invite_lists(ev_id):
 def customised_invitations(ev_id):
     form = EmailAddresses()
     if form.validate_on_submit():#
-        print("your in")
+        print("Maaaagic")
         adressess = form.addresses.data
         myRecipient = User.query.all()
         guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
@@ -371,8 +383,8 @@ def try_register(email,name,password,confirm_pass,f_name,l_name):
         flash(u'Email is not correct', category='error')
         return True
     user = User(
-      username = name,
       email = email,
+      username = name,
       hashed_password = sha256_crypt.hash(str(password)), #password , #Hashing added
       first_name = f_name,
       last_name = l_name
@@ -403,6 +415,18 @@ def settings():
             flash(error)
     return render_template('settings.html', form = form )
 
+@app.route('/mailing_lists', methods=['GET','POST'])
+@login_required
+def mailing_lists():
+    mailing_listss = Mailing_list.query.all()
+    print('test test')
+    try:
+        print(mailing_listss[-1].id)
+        mailing_list_id = mailing_listss[-1].id + 1
+    except:
+        mailing_list_id = 1
+    return render_template('mailing_lists.html',mailing_listss=mailing_listss, mailing_list_id=mailing_list_id)
+
 def changePass(old, new, confirm):
     usr = g.user
     error = "Old password is incorrect"
@@ -419,6 +443,80 @@ def changePass(old, new, confirm):
     return error
 
 
+
+
+@app.route('/edit_mailing_list/<int:mailing_list_id>', methods=['GET','POST'])
+@login_required
+def edit_mailing_lists(mailing_list_id):
+    print('shiaaaat')
+    global id_number_for_form
+    id_number_for_form = mailing_list_id
+    print(id_number_for_form)
+    form = Choice_partial_Form()
+    mailing_listss = Mailing_list.query.all()
+    wanted_users = form.a.data
+    for i in range(len(wanted_users)):
+        print(mailing_list_id)
+        print(wanted_users[i].email)
+        recipient = Recipient(
+            user_id = wanted_users[i].id,
+            mailing_list_idd=mailing_list_id
+        )
+        db.session.add(recipient)
+        db.session.commit()
+        flash('User added to mailing list')
+    try:
+        print(mailing_listss[-1].id)
+    except:
+        print('yo')
+    return render_template('edit_mailing_list.html',mailing_listss=mailing_listss, mailing_list_id=mailing_list_id, form=form)
+
+
+
+
+
+def choice_partial_query(columns='email'):
+
+    mlist = Mailing_list.query.filter_by(id=id_number_for_form).all()
+    users = db.session.query(User.id, User.email)
+    recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = id_number_for_form).all()
+    print('inside partial')
+    print(mlist)
+    print(recipient_list)
+    list_of_users = []
+    mlist = Mailing_list.query.filter_by(id=id_number_for_form).all()
+    users = db.session.query(User).all()
+    recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = id_number_for_form).all()
+    print('before deletion')
+    print(users)
+    for i in range(len(recipient_list)):
+        llist = db.session.query(User).filter_by(id = recipient_list[i].user_id).all()
+        print(llist)
+        print(users)
+        if llist[0] in users:
+            users.remove(llist[0])
+        else:
+            print(' ')
+        print('after deletion')
+        print(users)
+        print('-----------------------')
+        index = index = 1
+
+
+    u = User.query
+    return users
+
+def getUserFactory(columns='email'):
+    return partial(choice_partial_query, columns=columns)
+
+class Choice_partial_Form(FlaskForm):
+    title = StringField('Title:', validators=[DataRequired()])
+    a = QuerySelectMultipleField(query_factory=getUserFactory('email'), get_label='email')
+
+
+
+
+
 #### Event page functions ########
 
 
@@ -427,6 +525,260 @@ def changePass(old, new, confirm):
 def events():
     events = Event.query.all()
     return render_template('events.html', events=events)
+
+#db = SQLAlchemy(app)
+
+
+
+
+def choice_query(columns='email'):
+    users = db.session.query(User.id, User.email)
+    u = User.query
+    return u
+
+def getUserFactory(columns='email'):
+    return partial(choice_query, columns=columns)
+
+class ChoiceForm(FlaskForm):
+    title = StringField('Title:', validators=[DataRequired()])
+    a = QuerySelectMultipleField(query_factory=getUserFactory('email'), get_label='email')
+
+
+
+@app.route('/create_mailing_list/add_emails/<int:mailing_list_id>',methods=['GET', 'POST'])
+@login_required
+def add_emails_manually_to_mailing_list(mailing_list_id):
+    form = EmailAddresses()
+    if form.validate_on_submit():#
+        adressess1 = form.addresses.data
+        print("Maaaagic")
+        print(form.addresses.data)
+        addresses2 = []
+        addresses2 = adressess1.split(";")
+        print(addresses2)
+        print('-------------------------------')
+        print(' ')
+        print('before loop')
+        oo = Non_user_recipient.query.all()
+        print(oo)
+        mailing_list = Mailing_list(
+            title = 'tcd'
+        )
+        db.session.add(mailing_list)
+        db.session.commit()
+        for i in range(len(addresses2)):
+            addr = addresses2[i]
+            print(addresses2[i])
+            non_user_recipient = Non_user_recipient(
+                mailing_list_idd=mailing_list_id,
+                email = addresses2[i]
+            )
+            db.session.add(non_user_recipient)
+            db.session.commit()
+
+
+        oo2 = Non_user_recipient.query.all()
+        print('after loop')
+        print(oo2)
+
+
+
+
+    #events = Event.query.all()
+    return render_template('invite.html', form=form)
+
+@app.route('/create_mailing_list/add_emails_v2/<int:mailing_list_id>',methods=['GET', 'POST'])
+@login_required
+def add_emails_manually_to_mailing_list_v2(mailing_list_id):
+    form = EmailAddresses()
+    if form.validate_on_submit():#
+        adressess1 = form.addresses.data
+        print("Maaaagic")
+        print(form.addresses.data)
+        addresses2 = []
+        addresses2 = adressess1.split(";")
+        print(addresses2)
+        print('-------------------------------')
+        print(' ')
+        print('before loop')
+        oo = Non_user_recipient.query.all()
+        print(oo)
+
+        for i in range(len(addresses2)):
+            addr = addresses2[i]
+            print(addresses2[i])
+            non_user_recipient = Non_user_recipient(
+                mailing_list_idd=mailing_list_id,
+                email = addresses2[i]
+            )
+            db.session.add(non_user_recipient)
+            db.session.commit()
+
+
+        oo2 = Non_user_recipient.query.all()
+        print('after loop')
+        print(oo2)
+
+
+
+
+    #events = Event.query.all()
+    return render_template('invite.html', form=form)
+
+
+@app.route('/mailing_list_del/<int:mailing_list_id>')
+@login_required
+def mailing_list_del(mailing_list_id):
+    print('before deletion')
+    all_lists = Mailing_list.query.all()
+    all_rec = Recipient.query.all()
+    print('Look carefully')
+    print(all_lists)
+    print(all_rec)
+    mlist = Mailing_list.query.filter_by(id=mailing_list_id).first_or_404()
+    recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+    print('content of query of rec list')
+    print(recipient_list)
+    index = 0;
+    for i in range(len(recipient_list)):
+        print('inside fooor loop')
+        print(recipient_list[i])
+        db.session.delete(recipient_list[i])
+        db.session.commit()
+
+    db.session.delete(mlist)
+    db.session.commit()
+    print('deletion is done')
+    print(all_lists)
+    print(all_rec)
+    return redirect('/mailing_lists')
+
+@app.route('/mailing_list/<int:mailing_listt_id>/delete_email/<int:recipient_id>',methods=['GET', 'POST'])
+@login_required
+def remove_email_from_mailing_list(mailing_listt_id,recipient_id):
+    recipient_list = db.session.query(Recipient).filter_by(user_id = recipient_id).all()
+    print(recipient_id)
+    print('well im here')
+    print(recipient_list)
+    try:
+        print(recipient_list[0].user_id)
+        print(recipient_list[1].user_id)
+    except:
+        print('err')
+
+    print('getting type')
+    print(type(recipient_list[0]))
+    print(recipient_list[0])
+    print(hasattr(recipient_list[0], 'iddd'))
+    if(recipient_list[0] == Recipient):
+        print('its a Recipient')
+
+
+
+    db.session.delete(recipient_list[0])
+    db.session.commit()
+    return redirect('/mailing_lists')
+
+
+@app.route('/mailing_list/<int:mailing_listt_id>/delete_email_non_users/<int:recipient_id>',methods=['GET', 'POST'])
+@login_required
+def remove_email_from_mailing_list_for_non_users(mailing_listt_id,recipient_id):
+    recipient_list = db.session.query(Non_user_recipient).filter_by(id = recipient_id).all()
+    print(recipient_id)
+    print('well im here')
+    print(recipient_list)
+    try:
+        print(recipient_list[0].user_id)
+        print(recipient_list[1].user_id)
+    except:
+        print('err')
+
+
+    print('getting type')
+
+
+
+    db.session.delete(recipient_list[0])
+    db.session.commit()
+    return redirect('/mailing_lists')
+
+
+
+@app.route('/mailing_list/<int:mailing_list_id>',methods=['GET', 'POST'])
+@login_required
+def mailing_list(mailing_list_id):
+    if request.method == 'POST':
+        print('hi')
+
+    list_of_users=[]
+    print('ma list')
+    print(list_of_users)
+    recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+    index = 0;
+
+    for i in range(len(recipient_list)):
+        llist = db.session.query(User).filter_by(id = recipient_list[i].user_id).all()
+        list_of_users.append(llist[0])
+        index = index = 1
+    addresses2 = Non_user_recipient.query.filter_by(mailing_list_idd = mailing_list_id).all()
+    print(addresses2)
+
+    email_address_for_non_users = []
+    for i in range(len(addresses2)):
+        addr = addresses2[i]
+        email_address_for_non_users.append(addresses2[i].email)
+    try:
+        print('Watch ooot')
+    except:
+        print('nope')
+
+
+    return render_template('mailing_list.html', mailinglists=list_of_users, id=mailing_list_id, email_address_for_non_users = addresses2)
+
+
+@app.route('/create_mailing_list/<int:mailing_list_id>',methods=['GET', 'POST'])
+@login_required
+def create_mailing_list(mailing_list_id):
+    form = ChoiceForm()
+    user=None
+    if form.validate_on_submit():
+        print('Validated')
+    print(form.validate_on_submit())
+    if request.method == 'POST':
+        try:
+            title_assigned = form.title.data
+            user = form.a.data
+            print('Look Here')
+            print(title_assigned)
+            mailing_list = Mailing_list(
+                title = title_assigned
+            )
+            lists = Mailing_list.query.all()
+            particular_mailing_list = db.session.query(Mailing_list).filter_by(id = mailing_list_id)
+            print(lists)
+            for i in range(len(user)):
+                print(mailing_list_id)
+                print(user[i].email)
+                recipient = Recipient(
+                    user_id = user[i].id,
+                    mailing_list_idd=mailing_list_id
+                )
+                db.session.add(recipient)
+            db.session.add(mailing_list)
+            db.session.commit()
+            recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+            ll = Recipient.query.all()
+            print(ll)
+
+            print(recipient_list)
+            print(recipient_list[0].mailing_list_idd)
+            return redirect(url_for('mailing_lists', form = form,id=mailing_list_id))
+
+
+        except:
+            print('error2')
+
+    return render_template('create_mailing_list.html',form = form,id=mailing_list_id)
 
 
 @app.route('/event', methods=['GET', 'POST'])
