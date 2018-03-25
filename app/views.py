@@ -755,6 +755,8 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
         oo2 = Non_user_recipient.query.all()
         print('after loop')
         print(oo2)
+        return redirect(url_for('mailing_lists'))
+
 
 
 
@@ -777,11 +779,11 @@ def add_emails_manually_to_mailing_list_v2(mailing_list_id):
         print(' ')
         print('before loop')
         oo = Non_user_recipient.query.all()
-        print(oo)
+        #print(oo)
 
         for i in range(len(addresses2)):
             addr = addresses2[i]
-            print(addresses2[i])
+            #print(addresses2[i])
             non_user_recipient = Non_user_recipient(
                 mailing_list_idd=mailing_list_id,
                 email = addresses2[i]
@@ -933,6 +935,8 @@ def create_mailing_list(mailing_list_id):
             mailing_list = Mailing_list(
                 title = title_assigned
             )
+            db.session.add(mailing_list)
+            db.session.commit()
             lists = Mailing_list.query.all()
             particular_mailing_list = db.session.query(Mailing_list).filter_by(id = mailing_list_id)
             print(lists)
@@ -944,7 +948,7 @@ def create_mailing_list(mailing_list_id):
                     mailing_list_idd=mailing_list_id
                 )
                 db.session.add(recipient)
-            db.session.add(mailing_list)
+            #db.session.add(mailing_list)
             db.session.commit()
             recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = mailing_list_id).all()
             ll = Recipient.query.all()
