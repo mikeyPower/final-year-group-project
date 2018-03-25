@@ -1,0 +1,22 @@
+{% extends 'index.html'%}
+{% block body %}
+{% block content %}
+  <div class="containter">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{message}}
+    </div>
+    {% endfor %}
+    {% block page_content %} {% endblock %}
+  </div>
+  {% endblock %}
+<h1> Send group email to mailing list</h1>
+<form action="" method="post" name="event">
+  <p>
+      please select mailing list you wish to send email to:<br>
+      {{ form.a }}
+  </p>
+  <p><input type="submit" name="btn" value="Submit">
+</form>
+{% endblock %}

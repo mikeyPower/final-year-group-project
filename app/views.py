@@ -32,6 +32,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from functools import partial
 from sqlalchemy import orm
 from flask.ext.wtf import FlaskForm
+from flask import Flask, abort, request
+import json
+from werkzeug.datastructures import MultiDict
+import time
 #global id_number_for_form = 0;
 
 
@@ -310,6 +314,101 @@ def customised_invitations(ev_id):
     return render_template('invite.html', form = form)
 
 
+@app.route('/send_emails', methods=['GET', 'POST'])
+@login_required
+def email_sent_confirmation():
+    #time.sleep(5)
+    string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+    #return redirect(url_for('select_users_to_emails_to_mailing_list'))
+    return render_template('send_emails.html', st = string)
+
+@app.route('/group_email_to_mailing_list', methods=['GET', 'POST'])
+@login_required
+def g_emails_to_mailing_list():
+    form = GroupEmailForm()
+    users =  request.args.getlist('json')
+    if form.validate_on_submit():
+        title = form.title.data
+        body = form.body.data
+        me = "Event Company"
+        you = "Wessam Gholam"
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+        APP_STATIC = os.path.join(APP_ROOT, 'templates')
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = title
+        msg['From'] = me
+        msg['To'] = you
+        text = "Hello"
+        for i in range(len(users)):
+            with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(body, 'html')
+            msg.attach(part1)
+            msg.attach(part2)
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.ehlo()
+            server.starttls()
+            server.login("event.management.tcd@gmail.com", "tcdtcd12")
+            server.sendmail("event.management.tcd@gmail.com", users[i], msg.as_string())
+        return redirect(url_for('email_sent_confirmation'))
+    #print('ooopa loopa')
+    print(users)
+    #print(users[0])
+    #print(users[1])
+    #print(users[2])
+    #return redirect(url_for('email_sent_confirmation'))
+    return render_template('group_email_to_mailing_list.html', form=form)
+
+
+@app.route('/select_users_for_group_email_to_mailing_list', methods=['GET', 'POST'])
+@login_required
+def select_users_to_emails_to_mailing_list():
+    form = Mailing_list_choice()
+    list_of_mailing_lists = []
+    ids_list = []
+    send_invitations_to = []
+    if request.method == 'POST':
+        print(form.a.data)
+        list_of_mailing_lists = form.a.data
+        for i in range(len(list_of_mailing_lists)):
+            ids_list.append(list_of_mailing_lists[i].id)
+        #session['users'] = list_of_users
+        for i in range(len(list_of_mailing_lists)):
+            recipient_list = Recipient.query.filter_by(mailing_list_idd = list_of_mailing_lists[0].id).all()
+            #print(recipient_list)
+            #print(recipient_list[0].user_id)
+            #print(recipient_list[1].user_id)
+            #print(recipient_list[0].mailing_list_idd)
+            #print(recipient_list[1].mailing_list_idd)
+            for j in range(len(recipient_list)):
+                users_list = User.query.filter_by(id = recipient_list[j].user_id).all()
+                #print(users_list)
+                for k in range(len(users_list)):
+                    #print(users_list[k].email)
+                    send_invitations_to.append(users_list[k].email)
+        for i in range(len(list_of_mailing_lists)):
+            #print('foucking inside 1')
+            non_user_recipient_list = Non_user_recipient.query.filter_by(mailing_list_idd = list_of_mailing_lists[0].id).all()
+            for j in range(len(non_user_recipient_list)):
+                #print('foucking inside 2')
+                send_invitations_to.append(non_user_recipient_list[j].email)
+        #url_for('.do_foo', messages=messages)
+        #url_for('show_list', some_list=comma_separated)
+        #event_data = {'data_1': list_of_users}
+        print('visca barca!! ####')
+        print(send_invitations_to)
+        event_data = {'users': ids_list}
+        return redirect(url_for('g_emails_to_mailing_list', json=send_invitations_to))
+        #######return redirect(url_for('g_emails_to_mailing_list', some_list=list_of_users))
+        #return render_template('select_users_for_group_emails.html', form=form)
+
+        #return redirect('/group_email_to_mailing_list',listt = list_of_users)
+        #return render_template('group_email_to_mailing_list.html', listt = list_of_users)
+    return render_template('select_users_for_group_emails.html', form=form)
+    #group_email_to_mailing_list
+
+
+
 
 
 def invitations_to_a_mailing_list(addresses2,ev_id):
@@ -336,6 +435,8 @@ def invitations_to_a_mailing_list(addresses2,ev_id):
         server.starttls()
         server.login("event.management.tcd@gmail.com", "tcdtcd12")
         server.sendmail("event.management.tcd@gmail.com", addresses2[i], msg.as_string())
+        return redirect(url_for('email_sent_confirmation'))
+        #return redirect('/events')
     #flash('Invitations are sent!')
     #return redirect('/send_emails/{{ev_id}}')
         #return redirect(url_for('send_emails', id=ev_id))
@@ -484,27 +585,38 @@ def changePass(old, new, confirm):
 @app.route('/edit_mailing_list/<int:mailing_list_id>', methods=['GET','POST'])
 @login_required
 def edit_mailing_lists(mailing_list_id):
-    print('shiaaaat')
     global id_number_for_form
     id_number_for_form = mailing_list_id
     print(id_number_for_form)
     form = Choice_partial_Form()
-    mailing_listss = Mailing_list.query.all()
-    wanted_users = form.a.data
-    for i in range(len(wanted_users)):
-        print(mailing_list_id)
-        print(wanted_users[i].email)
-        recipient = Recipient(
-            user_id = wanted_users[i].id,
-            mailing_list_idd=mailing_list_id
-        )
-        db.session.add(recipient)
+    list_mail = Mailing_list.query.filter_by(id = mailing_list_id).all()
+    ml = list_mail[0]
+    mailing_listss = []
+    if request.method == 'POST':
+        print('ON SUBMIT')
+    #form.title.data = event.title
+        mailing_listss = Mailing_list.query.all()
+        wanted_users = form.a.data
+        ml.title = form.title.data
+        db.session.add(ml)
         db.session.commit()
-        flash('User added to mailing list')
-    try:
-        print(mailing_listss[-1].id)
-    except:
-        print('yo')
+        for i in range(len(wanted_users)):
+            print(mailing_list_id)
+            print(wanted_users[i].email)
+            recipient = Recipient(
+                user_id = wanted_users[i].id,
+                mailing_list_idd=mailing_list_id
+            )
+            db.session.add(recipient)
+            db.session.commit()
+        if not wanted_users:
+            flash('Title has been updated')
+        else:
+            flash('User added to mailing list')
+    else:
+        form.title.data = ml.title
+
+
     return render_template('edit_mailing_list.html',mailing_listss=mailing_listss, mailing_list_id=mailing_list_id, form=form)
 
 
@@ -668,6 +780,8 @@ def add_emails_manually_to_mailing_list_v2(mailing_list_id):
         oo2 = Non_user_recipient.query.all()
         print('after loop')
         print(oo2)
+        return redirect(url_for('mailing_lists'))
+
 
 
 
@@ -711,8 +825,9 @@ def remove_email_from_mailing_list(mailing_listt_id,recipient_id):
     print('well im here')
     print(recipient_list)
     try:
-        print(recipient_list[0].user_id)
-        print(recipient_list[1].user_id)
+        print(' ')
+        #print(recipient_list[0].user_id)
+        #print(recipient_list[1].user_id)
     except:
         print('err')
 
@@ -738,8 +853,9 @@ def remove_email_from_mailing_list_for_non_users(mailing_listt_id,recipient_id):
     print('well im here')
     print(recipient_list)
     try:
-        print(recipient_list[0].user_id)
-        print(recipient_list[1].user_id)
+        print(' ')
+        #print(recipient_list[0].user_id)
+        #print(recipient_list[1].user_id)
     except:
         print('err')
 
@@ -751,6 +867,7 @@ def remove_email_from_mailing_list_for_non_users(mailing_listt_id,recipient_id):
     db.session.delete(recipient_list[0])
     db.session.commit()
     return redirect('/mailing_lists')
+
 
 
 
@@ -976,14 +1093,15 @@ def invite_mailing_list_to_event(id):
         #print('hiiiiiiiiii')
         print(form.a.data)
         ml = form.a.data
+        done = 0
         print(ml)
         for i in range(len(ml)):
             recipient_list = Recipient.query.filter_by(mailing_list_idd = ml[0].id).all()
             print(recipient_list)
-            print(recipient_list[0].user_id)
-            print(recipient_list[1].user_id)
-            print(recipient_list[0].mailing_list_idd)
-            print(recipient_list[1].mailing_list_idd)
+            #print(recipient_list[0].user_id)
+            #print(recipient_list[1].user_id)
+            #print(recipient_list[0].mailing_list_idd)
+            #print(recipient_list[1].mailing_list_idd)
             for j in range(len(recipient_list)):
                 users_list = User.query.filter_by(id = recipient_list[j].user_id).all()
                 print(users_list)
@@ -996,10 +1114,44 @@ def invite_mailing_list_to_event(id):
             for j in range(len(non_user_recipient_list)):
                 #print('foucking inside 2')
                 send_invitations_to.append(non_user_recipient_list[j].email)
+                #done =1
         #redirect('/event/record-money-raised/' + str(eventid))
         #return redirect('/send_emails/' + str(id))
-    invitations_to_a_mailing_list(send_invitations_to,id)
+    #invitations_to_a_mailing_list(send_invitations_to,id)
+    addresses2 = send_invitations_to
+    ev_id = id
+    ev = Event.query.filter_by(id = ev_id).all()
+    eventt = ev[0]
+    me = "Event Company"
+    you = "Wessam Gholam"
+    APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+    APP_STATIC = os.path.join(APP_ROOT, 'templates')
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = "Invitation to " + eventt.title + " event"
+    msg['From'] = me
+    msg['To'] = you
+    text = "Hello"
+    myRecipient = User.query.all()
+    for i in range(len(addresses2)):
+        with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
+        part1 = MIMEText(text, 'plain')
+        #ev = Event.query.filter_by(id = ev_id).all()
+        print(ev)
+        print(ev[0].title)
+        print(eventt)
+        #part2 = MIMEText(body, 'html')
+        part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id, title = eventt.title, location = eventt.location, date = eventt.date), 'html')
+        msg.attach(part1)
+        msg.attach(part2)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login("event.management.tcd@gmail.com", "tcdtcd12")
+        server.sendmail("event.management.tcd@gmail.com", addresses2[i], msg.as_string())
+        return redirect(url_for('email_sent_confirmation'))
     print(send_invitations_to)
+    #return redirect(url_for('email_sent_confirmation'))
+
     guestlist = Event.query.filter_by(id=id).first_or_404().guests
     return render_template('invite_mailing_list.html', guests = guestlist, form = form)
 
