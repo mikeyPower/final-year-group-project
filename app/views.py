@@ -360,6 +360,12 @@ def g_emails_to_mailing_list():
     return render_template('group_email_to_mailing_list.html', form=form)
 
 
+@app.route('/mailing_list_error_handling', methods=['GET', 'POST'])
+@login_required
+def empty_mailing_list():
+    return render_template('mailing_list_error.html')
+
+
 @app.route('/select_users_for_group_email_to_mailing_list', methods=['GET', 'POST'])
 @login_required
 def select_users_to_emails_to_mailing_list():
@@ -368,8 +374,15 @@ def select_users_to_emails_to_mailing_list():
     ids_list = []
     send_invitations_to = []
     if request.method == 'POST':
-        print(form.a.data)
+        #print(form.a.data)
+        print('JUST BEFORE ERROR')
         list_of_mailing_lists = form.a.data
+        print(list_of_mailing_lists)
+        if not list_of_mailing_lists:
+            print('ERROR 404 $$$$$$$$$$$$$$$$$$$$$$$4')
+            redirect(url_for('email_sent_confirmation'))
+            flash('please select mailing list, or add one if you havent done so')
+            return render_template('select_users_for_group_emails.html', form=form)
         for i in range(len(list_of_mailing_lists)):
             ids_list.append(list_of_mailing_lists[i].id)
         #session['users'] = list_of_users
@@ -1089,10 +1102,17 @@ def guest_list(id):
 def invite_mailing_list_to_event(id):
     form = Mailing_list_choice()
     send_invitations_to = []
+    guestlist = []
     if request.method == 'POST':
         #print('hiiiiiiiiii')
         print(form.a.data)
         ml = form.a.data
+        if not ml:
+            print('ERROR 404 @@@@@@@@')
+            flash('Please select a mailing list, or create one if you havent done so')
+            return render_template('invite_mailing_list.html', guests = guestlist, form = form)
+
+
         done = 0
         print(ml)
         for i in range(len(ml)):
