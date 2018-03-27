@@ -1,0 +1,22 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1>Top Donors</h1>
+
+    <table style="width:100%">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Total Donated<th>
+      </tr>
+      {% for d in donors %}
+        <tr>
+            <td>{{ d.user.first_name }}</td>
+            <td>{{ d.user.last_name }}</td>
+            <td>{{ d.user.email }}</td>
+            <td>{{ d.total }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+    <input type="button" onclick="location.href='/guests';" value="Back to guests" />
+{% endblock %}
