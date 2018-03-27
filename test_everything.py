@@ -153,6 +153,14 @@ def test_creating_admin():
 
 ########END########
 
+def test_mailing_list():
+    ml = Mailing_list(title = 'test_mailing_list')
+    db.session.add(ml)
+    db.session.commit()
+    assert ml.title=='test_mailing_list'
+    db.session.delete(ml)
+    db.session.commit()
+
 def test_view_invite_and_guest_lists():
     title_data = "Auction"
     location_data = "Grafton street"
