@@ -1,5 +1,5 @@
 from app import db
-from wtforms import Form, StringField, TextAreaField, PasswordField, DateField, validators
+from wtforms import Form, StringField, TextAreaField, PasswordField, DateField, validators, DateTimeField
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import relationship, backref
 
@@ -126,6 +126,7 @@ class MoneyRaised(db.Model):
     from_other_source = db.Column(db.Boolean, default = False)
     user_source = db.Column(db.Integer, db.ForeignKey('user.id'))
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    date_time = db.Column(db.DateTime)
 
 
 class Choice(db.Model):

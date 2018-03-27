@@ -36,6 +36,7 @@ from flask import Flask, abort, request
 import json
 from werkzeug.datastructures import MultiDict
 import time
+from datetime import datetime
 #global id_number_for_form = 0;
 
 
@@ -1280,7 +1281,9 @@ def record_money_raised_view(eventid):
     form = MoneyRaisedForm()
     form.user_source.choices = getChoices()
     if form.validate_on_submit():
-        m = MoneyRaised(other_source=form.source.data, user_source = form.user_source.data, amount=form.money_raised.data, from_other_source=form.checkbox.data, event_id=eventid)
+        m = MoneyRaised(other_source=form.source.data, user_source = form.user_source.data,
+        amount=form.money_raised.data, from_other_source=form.checkbox.data, event_id=eventid,
+        date_time = datetime.now())
         db.session.add(m)
         db.session.commit()
         flash('Money Recorded! - Source: ' + form.source.data + ',  Amount: ' + str(form.money_raised.data))
@@ -1298,15 +1301,16 @@ def view_money_raised_view(eventid):
     sources = []
     for d in d_list:
         if(d.from_other_source==True):
-            sources.append(Donation_Source(d.other_source,d.amount))
+            sources.append(Donation_Source(d.other_source,d.amount, d.date_time))
         else:
-            sources.append(Donation_Source(d.user_backref.email,d.amount))
+            sources.append(Donation_Source(d.user_backref.email,d.amount, d.date_time))
     return render_template('admin_view_donations.html', total = totalraised, event = Event.query.get(eventid),donations=sources)
 
 class Donation_Source(object):
-    def __init__(self, source, amount):
+    def __init__(self, source, amount, date):
         self.source = source
         self.amount = amount
+        self.date = date
 
 
 def getChoices():
@@ -1324,3 +1328,18 @@ class MoneyRaisedForm(Form):
     checkbox = BooleanField('If from another source, click this box', default=False)
     user_source = SelectField('Users:', choices=getChoices(), coerce=int)
     source = StringField('Source:')
+
+@app.route('/top_donors')
+@login_required
+def top_donors():
+    u_list = User.query.all()
+    donors = []
+    for u in u_list:
+        donors.append(Donor(u,sum([d.amount for d in u.donations])))
+    newlist = sorted(donors, key=lambda x: x.total, reverse=True)
+    return render_template('top_donors.html', donors=newlist )
+
+class Donor(object):
+    def __init__(self, user, total):
+        self.user = user
+        self.total = total
