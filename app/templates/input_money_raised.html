@@ -1,20 +1,76 @@
 {% extends 'index.html'%}
 
+{% import "bootstrap/wtf.html" as wtf %}
 {% block body %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+
+$( document ).ready(function(){
+    $("#other_source").hide();
+
+    $('#checkbox').change(function(){
+        if(this.checked){
+            $("#other_source").show();
+            $("#user_source").hide();
+        }else{
+            $("#other_source").hide();
+            $("#user_source").show();
+        }
+
+    });
+});
+</script>
+
+<script>
+function myFunction() {
+    var input, filter, ul, li, a, i;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("myUL");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+
+        }
+    }
+}
+</script>
+
 <div class="container">
     <h1>Record Money Raised</h1>
     <h3>{{event.title}}</h3>
     <form action="" method="post" name="recordMoneyRaised">
         {{ form.hidden_tag() }}
-        <p>
-            Source:<br>
-            {{ form.source(size=30) }}<br>
+        <h4>
             Amount Raised:<br>
-            {{ form.money_raised(size=30) }}
-        </p>
+            {{ form.money_raised(size=30) }}<br><br>
+            Select a user:
+        </h4>
+
+        <div class="checkbox">
+            {{ wtf.form_field(form.checkbox) }}
+        </div>
+        <div id="user_source">
+            {{ form.user_source}}
+        </div>
+        <div id='other_source'>
+            <h4 >
+                Source:<br>
+            </h4>
+            <p>
+                {{ form.source(size=30) }}<br>
+            </p>
+        </div>
         <p><input type="submit" value="Submit"></p>
     </form>
     <br>
     <input type="button" onclick="location.href='/event/{{event.id}}';" value="Back to Event Page" />
 </div>
+
+
+
 {% endblock %}

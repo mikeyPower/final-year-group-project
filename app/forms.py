@@ -2,6 +2,8 @@ from flask.ext.wtf import Form
 from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField, DecimalField,SelectField,SelectMultipleField
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.fields.html5 import EmailField
+from app import models, db
+from app.models import User
 
 
 class LoginForm(Form):
@@ -49,7 +51,3 @@ class PastebinEntry(Form):
         'Programming Language',
         choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
     )
-
-class MoneyRaisedForm(Form):
-    source = StringField('Source:', validators=[DataRequired()])
-    money_raised = DecimalField('Money Raised:', validators=[DataRequired()])

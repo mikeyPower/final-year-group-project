@@ -47,6 +47,7 @@ class User(db.Model):
     deleted = db.Column(db.Boolean, default=False)
     last_name = db.Column(db.String(20), index=True)
     first_name = db.Column(db.String(20), index=True)
+    donations = db.relationship('MoneyRaised', backref='user_backref', lazy=True)
     #mailing_list = relationship('Mailing_list', secondary=association_table, lazy='dynamic', backref=backref('user', lazy='dynamic'))
     #mailing_list = relationship("Mailing_list", secondary="users_mailing_list")
     #users_in_mailing_list = db.relationship('Mailing_list', secondary=users_in_mailing_list,
@@ -121,7 +122,9 @@ class MoneyRaised(db.Model):
     __tablename__ = 'moneyraised'
     id = db.Column(db.Integer, primary_key = True)
     amount = db.Column(db.Float)
-    source = db.Column(db.String(512))
+    other_source = db.Column(db.String(512), default = None)
+    from_other_source = db.Column(db.Boolean, default = False)
+    user_source = db.Column(db.Integer, db.ForeignKey('user.id'))
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
 

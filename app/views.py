@@ -4,7 +4,7 @@ from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
 from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry
 from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, MoneyRaisedForm
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm
 from .models import User, Menu, Total, Event, Guest, MoneyRaised
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -22,7 +22,7 @@ from flask import jsonify
 import re
 import random
 import string
-from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField,SelectField,SelectMultipleField
+from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField,SelectField,SelectMultipleField, DecimalField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
 from flask.ext.wtf import Form
@@ -1082,12 +1082,15 @@ def ticket_view(eventid):
 @requires_roles('admin')
 def record_money_raised_view(eventid):
     form = MoneyRaisedForm()
+    form.user_source.choices = getChoices()
     if form.validate_on_submit():
-        m = MoneyRaised(source=form.source.data, amount=form.money_raised.data, event_id=eventid)
+        m = MoneyRaised(other_source=form.source.data, user_source = form.user_source.data, amount=form.money_raised.data, from_other_source=form.checkbox.data, event_id=eventid)
         db.session.add(m)
         db.session.commit()
         flash('Money Recorded! - Source: ' + form.source.data + ',  Amount: ' + str(form.money_raised.data))
         return redirect('/event/record-money-raised/' + str(eventid))
+    else:
+        print form.errors
     return render_template('input_money_raised.html', form=form,event = Event.query.get(eventid))
 
 @app.route('/event/view-money-raised/<int:eventid>')
@@ -1096,4 +1099,33 @@ def record_money_raised_view(eventid):
 def view_money_raised_view(eventid):
     d_list = Event.query.get(eventid).moneyraised
     totalraised = sum(x.amount for x in d_list)
-    return render_template('admin_view_donations.html', total = totalraised, event = Event.query.get(eventid),donations=d_list)
+    sources = []
+    for d in d_list:
+        if(d.from_other_source==True):
+            sources.append(Donation_Source(d.other_source,d.amount))
+        else:
+            sources.append(Donation_Source(d.user_backref.email,d.amount))
+    return render_template('admin_view_donations.html', total = totalraised, event = Event.query.get(eventid),donations=sources)
+
+class Donation_Source(object):
+    def __init__(self, source, amount):
+        self.source = source
+        self.amount = amount
+
+
+def getChoices():
+    try:
+        ls = User.query.all()
+        cs = [(0,None)]
+        for u in ls:
+            cs.append((u.id,u.email))
+            print "OKAY-OKAY-OKAY-OH" + str(u.id) + u.email
+        return cs
+    except:
+        print 'ok'
+
+class MoneyRaisedForm(Form):
+    money_raised = DecimalField('Money Raised:', validators=[DataRequired()])
+    checkbox = BooleanField('If from another source, click this box', default=False)
+    user_source = SelectField('Users:', choices=getChoices(), coerce=int)
+    source = StringField('Source:')

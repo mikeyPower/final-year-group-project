@@ -21,7 +21,6 @@ def clean_event():
     db.session.query(Event).delete()
     db.session.commit()
 
-
 def clean_total():
     db.session.query(Total).delete()
     db.session.commit()
