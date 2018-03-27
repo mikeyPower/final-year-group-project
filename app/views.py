@@ -1295,7 +1295,6 @@ def getChoices():
         cs = [(0,None)]
         for u in ls:
             cs.append((u.id,u.email))
-            print "OKAY-OKAY-OKAY-OH" + str(u.id) + u.email
         return cs
     except:
         print 'ok'
