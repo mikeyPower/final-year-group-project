@@ -1,0 +1,55 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<div>
+<p style="margin-left: 1%">
+  <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    Register New Guest
+  </button>
+</p>
+    <div class="collapse" id="collapseExample" style="margin-left: 5%; margin-right: 5%">
+      <div class="card card-body">
+        <h1>Register Account</h1>
+        <form action="" method="post" name="register">
+            {{ form.hidden_tag() }}
+            <p>
+                Please enter your email <br>
+                {{ form.email(size = 16) }} <br>
+                Please enter your first name <br>
+                {{ form.first_name(size = 16) }} <br>
+                Please enter your last name <br>
+                {{ form.last_name(size = 16) }} <br>
+                Please enter your username:<br>
+                {{ form.username(size=16) }}<br>
+                Please enter your password:<br>
+                {{ form.password(size=16) }}<br>
+                Please confirm your password:<br>
+                {{ form.confirm(size=16) }}
+            </p>
+            <p><input type="submit" value="register"></p>
+        </form>
+      </div>
+    </div>
+</div>
+<div id="user-list">
+    <table style="width:100%">
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Add To Guestlist</th>
+      </tr>
+      {% for u in usrs %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.first_name }}</td>
+            <td>{{ u.last_name }}</td>
+            <td>{{ u.email }}</td>
+            <td><a class="nav-link" href="/event/{{event.id}}/guests/register/user/{{ u.id }}" style="color: rgb(0,255,0)">Add</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

@@ -1082,15 +1082,35 @@ def event_invite_list(ev_id):
 def add_guest_to_event(id):
     form = RegisterForm()
     event = Event.query.filter_by(id=id).first_or_404()
+
+    # Users not already signed up to event
+    guestlist = event.guests
+    users_list = User.query.all()
+    users = []
+    for u in users_list:
+        vis = 0
+        for g in guestlist:
+            if (u.id == g.user_id):
+                vis = 1
+        if (vis == 0):
+            users.append(u)
+
     if form.validate_on_submit():
         error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
         if not error:
             user =  User.query.filter_by(username=form.username.data).first_or_404()
             assign_ticket(id,user.id)
             return redirect(url_for('guest_list', id=id))
-            #return redirect(url_for('guests',guests=usrs, event=event))
-            #return render_template('guests.html', guests=usrs, event=event)
-    return render_template('register.html', form = form)
+    return render_template('registration.html', form = form, event = event, usrs = users)
+
+
+# Add existing user to guestlist of an event
+@app.route('/event/<string:id>/guests/register/user/<int:user_id>')
+@login_required
+def add_user_to_guestlist(id, user_id):
+    assign_ticket(id, user_id)
+    return redirect(url_for('add_guest_to_event', id=id))
+
 
 
 @app.route('/event/<int:id>/guests')
