@@ -71,7 +71,9 @@ def add_menu_to_event(id1,id2):
     menu.events.append(event)
     db.session.commit()
     menu = Menu.query.filter_by(id=id2).first_or_404().events
-    return render_template('event.html', event=event)
+    #return render_template('event.html', event=event)
+    #return redirect('/event/1')
+    return redirect(url_for('event_details', ev_id=id1))
 
 @app.route('/menu/<string:id>/')
 @login_required
