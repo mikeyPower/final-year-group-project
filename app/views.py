@@ -36,6 +36,7 @@ from werkzeug.datastructures import MultiDict
 import time
 from datetime import datetime
 #global id_number_for_form = 0;
+ev_num = 0
 
 
 
@@ -187,7 +188,9 @@ def send_email(ev_id):
             index = index + 1
         else:
             break
-    return render_template('send_emails.html', myRecipient=answer)
+    flash('Email sent!!')
+    return redirect(url_for('guest_list', id =ev_id))
+    #return render_template('send_emails.html', myRecipient=answer)
 
 
 #Send group email
@@ -222,6 +225,12 @@ def group_email():
             server.login("event.management.tcd@gmail.com", "tcdtcd12")
             server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
             redirect('/events/')
+    #flash('Emails sent!!')
+        #string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+        string = "http://127.0.0.1:5000/mailing_lists"
+    #return redirect(url_for('select_users_to_emails_to_mailing_list'))
+        return render_template('send_emails.html', st = string)
+    #return redirect(url_for('guest_list', id =ev_id))
     return render_template('group_email.html', form = form)
 
 
@@ -230,6 +239,10 @@ def group_email():
 @login_required
 def group_email_to_guest_and_invite_lists(ev_id):
     form = GroupEmailForm()
+
+    str_of_redirect = "http://127.0.0.1:5000/event/ev_id/guests"
+    #string = "http://127.0.0.1:5000/select_users_foev_idoup_email_to_mailing_list"
+    string = "http://127.0.0.1:5000/mailing_lists"
     if form.validate_on_submit():#
         print("your in")
         title = form.title.data
@@ -264,8 +277,11 @@ def group_email_to_guest_and_invite_lists(ev_id):
             server.sendmail("event.management.tcd@gmail.com", answer[i], msg.as_string())
             #return redirect('/send_emails/{{ev_id}}')
             #return redirect(url_for('send_emails', id=ev_id))
-            return redirect(url_for('send_email', ev_id=ev_id))
-    return render_template('group_email_to_guest_invite_lists.html', form = form)
+        flash('Email sent!!')
+        return redirect(url_for('guest_list', id =ev_id))
+            #return render_template('send_emails.html', st = str_of_redirect, ev_id = ev_id)
+            #return redirect(url_for('send_email', ev_id=ev_id, st = str_of_redirect))
+    return render_template('group_email_to_guest_invite_lists.html', form = form, st = str_of_redirect)
 
 
 #Send group email to guest and invite lists
@@ -313,11 +329,12 @@ def customised_invitations(ev_id):
     return render_template('invite.html', form = form)
 
 
-@app.route('/send_emails', methods=['GET', 'POST'])
+@app.route('/send_emails/', methods=['GET', 'POST'])
 @login_required
 def email_sent_confirmation():
     #time.sleep(5)
-    string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+    #string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+    string = "http://127.0.0.1:5000/mailing_lists"
     #return redirect(url_for('select_users_to_emails_to_mailing_list'))
     return render_template('send_emails.html', st = string)
 
@@ -784,7 +801,7 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
 
 
     #events = Event.query.all()
-    return render_template('invite.html', form=form)
+    return render_template('invite2.html', form=form)
 
 @app.route('/create_mailing_list/add_emails_v2/<int:mailing_list_id>',methods=['GET', 'POST'])
 @login_required
@@ -1001,15 +1018,15 @@ def event():
     if form.validate_on_submit():
         title = form.title.data
         location = form.location.data
-        start_time = form.start_time.data
-        date = form.date.data
+        start_time = form.time.data
+        tmp = form.day.data + "-" + form.month.data + "-" + form.year.data
         description = form.description.data
 
         event = Event(
             title=title,
             location=location,
             start_time = start_time,
-            date = date,
+            date = tmp,
             description=description
         )
         db.session.add(event)
@@ -1041,8 +1058,9 @@ def edit_event(ev_id):
     if form.validate_on_submit():
         event.title = form.title.data
         event.location = form.location.data
-        event.date = form.date.data
-        event.start_time = form.start_time.data
+        tmp = form.day.data + "-"+ form.month.data + "-" + form.year.data
+        event.date = tmp
+        event.start_time = form.time.data
         event.description = form.description.data
         db.session.add(event)
         db.session.commit()
@@ -1051,8 +1069,11 @@ def edit_event(ev_id):
     else:
         form.title.data = event.title
         form.location.data = event.location
-        form.date.data = event.date
-        form.start_time.data = event.start_time
+        tmp = event.date.split("-")
+        form.month.data = tmp[1]
+        form.day.data = tmp[0]
+        form.year.data = tmp[2]
+        form.time.data = event.start_time
         form.description.data = event.description
     return render_template('add_event.html', form=form)
 
@@ -1161,6 +1182,16 @@ def invite_mailing_list_to_event(id):
         #print('hiiiiiiiiii')
         print(form.a.data)
         ml = form.a.data
+        st = "http://127.0.0.1:5000/event/"
+        print(st)
+        st += str(id)
+        st += "/guests"
+        print(ev_num)
+        global ev_num
+        ev_num = id
+        print(ev_num)
+
+        print(st)
         if not ml:
             print('ERROR 404 @@@@@@@@')
             flash('Please select a mailing list, or create one if you havent done so')
@@ -1222,7 +1253,10 @@ def invite_mailing_list_to_event(id):
         server.starttls()
         server.login("event.management.tcd@gmail.com", "tcdtcd12")
         server.sendmail("event.management.tcd@gmail.com", addresses2[i], msg.as_string())
-        return redirect(url_for('email_sent_confirmation'))
+        #return redirect(url_for('email_sent_confirmation'))
+        flash('Invitations sent!!')
+        return redirect(url_for('guest_list', id =ev_id))
+
     print(send_invitations_to)
     #return redirect(url_for('email_sent_confirmation'))
 

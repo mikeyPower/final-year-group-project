@@ -17,25 +17,37 @@
     <p><b>Start Time: </b> {{ event.start_time }}</p>
     <p><b>Description:</b></p>
     <p>{{ event.description }}</p>
-    {% if event.menu.id != Null %}
-  {% if event.menu.upload == False %}
 
-          <td> <a href="/menu/{{event.menu.id}}">{{event.menu.title}}</a></li> </td>
-  {% endif %}
-  {% if event.menu.upload == True %}
-
-          <td> <a href="/static/{{event.menu.title}}">{{event.menu.title}}</a></li> </td>
-  {% endif %}
-{% endif %}
 
     <input type="button" onclick="location.href='/event/ticket/{{event.id}}';" value="Get a ticket" />
     <input type="button" onclick="location.href='/total-raised/{{event.id}}';" value="View Total Money Raised" />
     <br><br><br>
 
+    {% if event.menu.id != Null %}
+    <h2>Menu</h2>
+
+  {% if event.menu.upload == False %}
+
+      <a href="/menu/{{event.menu.id}}">{{event.menu.title}}</a>
+  {% endif %}
+  {% if event.menu.upload == True %}
+
+      <a href="/static/{{event.menu.title}}">{{event.menu.title}}</a>
+  {% endif %}
+    <br><br><br>
+  {% endif %}
+
     <h4>Admin Tools:</h4>
     {% if session['admin'] %}
     <input type="button" onclick="location.href='/event/view-money-raised/{{event.id}}';" value="View donations" />
     <input type="button" onclick="location.href='/event/record-money-raised/{{event.id}}';" value="Record a donation" />
+      {% if event.menu.id == Null %}
+    <input type="button" onclick="location.href='/event/{{event.id}}/menu';" value="Add Menu" />
+    {% endif %}
+      {% if event.menu.id != Null %}
+    <input type="button" onclick="location.href='/event/{{event.id}}/delete_menu';" value="Delete Menu"/>
+      <input type="button" onclick="location.href='/event/{{event.id}}/menu';" value="Change Menu" />
+      {% endif %}
     {% endif %}
 </div>
 {% endblock %}

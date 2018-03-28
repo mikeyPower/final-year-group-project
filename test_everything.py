@@ -34,7 +34,8 @@ def test_try_register():
 def test_menu_added():
     title_data = "Brunch Test5"
     body_data = "Eggs and Toast Test5"
-    add_menu(title_data,body_data)
+    upload =False
+    add_menu(title_data,body_data,upload)
     menu = Menu.query.filter_by(title=title_data).first()
     db.session.delete(menu)
     db.session.commit()

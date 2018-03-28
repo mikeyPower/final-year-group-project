@@ -2,7 +2,12 @@
 
 {% block body %}
 <div class="container">
+  {% if request.path == "/menu" %}
   <h1>Add Menu</h1>
+  {% else %}
+  <h1>Edit Menu</h1>
+  {% endif %}
+
   {% from "_formhelpers.html" import render_field %}
   <form action="" method="post" name="menu">
     {{ form.hidden_tag() }}
@@ -12,7 +17,9 @@
     <div class="form-group">
       {{ render_field(form.body, class_="form-control", id="editor") }}
     </div>
-    <p><input type="submit" value="Submit">
+    <input type="submit" value="Submit">
+    
+      <input type="button" onclick="location.href='/menulist';" value="Cancel"/>
 
   </form>
   <!--  {% for message in get_flashed_messages() %}

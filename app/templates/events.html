@@ -16,7 +16,7 @@
           <th>Guest List</th>
           <th>Invite List</th>
           <th>Tickets</th>
-          <th>Add Menu<th>
+        <!--  <th>Add Menu<th>-->
         {% endif %}
       </tr>
       {% for ev in events %}
@@ -30,7 +30,7 @@
               <td><a class="nav-link"  href="event/{{ev.id}}/guests">Guest List</a></td>
               <td><a class="nav-link"  href="event/invite_list/{{ev.id}}">Invite List</a></td>
               <td><a class="nav-link"  href="event/event_tickets/{{ev.id}}">Show Tickets</a></td>
-              <td><input type="button" onclick="location.href='/event/{{ev.id}}/menu';" value="Add Menu" /></td>
+              <!--<td><input type="button" onclick="location.href='/event/{{ev.id}}/menu';" value="Add Menu" /></td>-->
             {% endif %}
         </tr>
       {% endfor %}
