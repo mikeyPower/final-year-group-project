@@ -17,6 +17,16 @@
     <p><b>Start Time: </b> {{ event.start_time }}</p>
     <p><b>Description</b></p>
     <p>{{ event.description }}</p>
+    {% if event.menu.id != Null %}
+  {% if event.menu.upload == False %}
+
+          <td> <a href="/menu/{{event.menu.id}}">{{event.menu.title}}</a></li> </td>
+  {% endif %}
+  {% if event.menu.upload == True %}
+
+          <td> <a href="/static/{{event.menu.title}}">{{event.menu.title}}</a></li> </td>
+  {% endif %}
+{% endif %}
 
     <input type="button" onclick="location.href='/event/ticket/{{event.id}}';" value="Get a ticket" />
     <input type="button" onclick="location.href='/total-raised/{{event.id}}';" value="View Total Money Raised" />
