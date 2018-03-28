@@ -108,7 +108,6 @@ class Event(db.Model):
     description = db.Column(db.String(1000))
     guests = db.relationship("Guest", backref = "event", cascade="all, delete-orphan")
     moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
-    #guests = db.relationship('User', secondary=guests, lazy='subquery', backref=db.backref('events', lazy=True))
 
 class Menu(db.Model):
     __tablename__ = 'menu'

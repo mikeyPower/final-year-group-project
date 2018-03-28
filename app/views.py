@@ -975,7 +975,7 @@ def event():
         title = form.title.data
         location = form.location.data
         start_time = form.start_time.data
-        date = form.date.data
+        #date = form.date.data
         description = form.description.data
 
         event = Event(
@@ -1014,7 +1014,8 @@ def edit_event(ev_id):
     if form.validate_on_submit():
         event.title = form.title.data
         event.location = form.location.data
-        event.date = form.date.data
+        tmp = form.day.data + "-"+ form.month.data + "-" + form.year.data
+        event.date = tmp
         event.start_time = form.start_time.data
         event.description = form.description.data
         db.session.add(event)
@@ -1024,7 +1025,10 @@ def edit_event(ev_id):
     else:
         form.title.data = event.title
         form.location.data = event.location
-        form.date.data = event.date
+        tmp = event.date.split("-")
+        form.month.data = tmp[1]
+        form.day.data = tmp[0]
+        form.year.data = tmp[2]
         form.start_time.data = event.start_time
         form.description.data = event.description
     return render_template('add_event.html', form=form)
