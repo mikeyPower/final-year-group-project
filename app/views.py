@@ -2,9 +2,9 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EmailAddresses2
 from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, EmailAddresses2
 from .models import User, Menu, Total, Event, Guest, MoneyRaised
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -724,8 +724,19 @@ class ChoiceForm(FlaskForm):
 @app.route('/create_mailing_list/add_emails/<int:mailing_list_id>',methods=['GET', 'POST'])
 @login_required
 def add_emails_manually_to_mailing_list(mailing_list_id):
-    form = EmailAddresses()
-    if form.validate_on_submit():#
+    form = EmailAddresses2()
+    print('FUUUUUUUUCK')
+    oo = Non_user_recipient.query.all()
+    print(oo)
+    #db.session.query(Non_user_recipient).delete()
+    #db.session.commit()
+    #oo = Non_user_recipient.query.all()
+    #print(oo)
+    if form.validate_on_submit():
+    #if request.method == 'POST':
+        print('FUCCCCCK2')
+        print(form.title.data)
+        tit = form.title.data
         adressess1 = form.addresses.data
         print("Maaaagic")
         print(form.addresses.data)
@@ -738,10 +749,13 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
         oo = Non_user_recipient.query.all()
         print(oo)
         mailing_list = Mailing_list(
-            title = 'tcd'
+            title = tit
         )
+        print('Mailing title is: ')
+        print(tit)
         db.session.add(mailing_list)
         db.session.commit()
+        #rr =
         for i in range(len(addresses2)):
             addr = addresses2[i]
             print(addresses2[i])
@@ -757,6 +771,8 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
         print('after loop')
         print(oo2)
         return redirect(url_for('mailing_lists'))
+    else:
+        print(form.errors)
 
 
 
@@ -817,6 +833,8 @@ def mailing_list_del(mailing_list_id):
     print(all_rec)
     mlist = Mailing_list.query.filter_by(id=mailing_list_id).first_or_404()
     recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+    non_user_recipient_list = db.session.query(Non_user_recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+
     print('content of query of rec list')
     print(recipient_list)
     index = 0;
@@ -824,6 +842,10 @@ def mailing_list_del(mailing_list_id):
         print('inside fooor loop')
         print(recipient_list[i])
         db.session.delete(recipient_list[i])
+        db.session.commit()
+
+    for i in range(len(non_user_recipient_list)):
+        db.session.delete(non_user_recipient_list[i])
         db.session.commit()
 
     db.session.delete(mlist)

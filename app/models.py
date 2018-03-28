@@ -31,8 +31,8 @@ class Recipient(db.Model):
 class Non_user_recipient(db.Model):
     __tablename__ = 'non_user_recipient'
     id = db.Column(db.Integer, primary_key=True)
-    mailing_list_idd = db.Column( db.Integer, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    mailing_list_idd = db.Column( db.Integer)
+    email = db.Column(db.String(120))
 
 
 
