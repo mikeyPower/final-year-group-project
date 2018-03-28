@@ -31,8 +31,8 @@ class Recipient(db.Model):
 class Non_user_recipient(db.Model):
     __tablename__ = 'non_user_recipient'
     id = db.Column(db.Integer, primary_key=True)
-    mailing_list_idd = db.Column( db.Integer, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    mailing_list_idd = db.Column( db.Integer)
+    email = db.Column(db.String(120))
 
 
 
@@ -47,7 +47,10 @@ class User(db.Model):
     deleted = db.Column(db.Boolean, default=False)
     last_name = db.Column(db.String(20), index=True)
     first_name = db.Column(db.String(20), index=True)
+    phone = db.Column(db.String(16))
     donations = db.relationship('MoneyRaised', backref='user_backref', lazy=True)
+    has_dietary_requirements = db.Column(db.Boolean, default=False)
+    dietary_requirements = db.Column(db.String(1000), default=None)
     #mailing_list = relationship('Mailing_list', secondary=association_table, lazy='dynamic', backref=backref('user', lazy='dynamic'))
     #mailing_list = relationship("Mailing_list", secondary="users_mailing_list")
     #users_in_mailing_list = db.relationship('Mailing_list', secondary=users_in_mailing_list,
