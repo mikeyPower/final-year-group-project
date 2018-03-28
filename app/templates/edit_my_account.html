@@ -31,7 +31,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
 $( document ).ready(function(){
-    $.getJSON('/get_dietary_bool', function(data) {
+    $.getJSON('/get_dietary_bool/{{user_id}}', function(data) {
         if(data.bool){
             $("#requirements_input").show();
         }else{

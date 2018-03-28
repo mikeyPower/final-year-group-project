@@ -1,0 +1,16 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<div class="container">
+    <body>
+        Name: {{ user.first_name }} {{ user.last_name }} <br>
+        Username: {{ user.username }}<br>
+        Email: {{ user.email }}<br>
+        Phone: {{ user.phone }}<br>
+        Dietary Requirements: {{ user.dietary_requirements }}<br>
+    </body>
+    <br><br>
+    <input type="button" onclick="location.href='/guests';" value="Back to All Users" />
+    <input type="button" onclick="location.href='/view_account/{{user.id}}/edit';" value="Edit Account Details" />
+</div>
+{% endblock %}

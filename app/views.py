@@ -1036,15 +1036,15 @@ def event():
     if form.validate_on_submit():
         title = form.title.data
         location = form.location.data
-        start_time = form.start_time.data
-        date = form.date.data
+        start_time = form.time.data
+        tmp = form.day.data + "-" + form.month.data + "-" + form.year.data
         description = form.description.data
 
         event = Event(
             title=title,
             location=location,
             start_time = start_time,
-            date = date,
+            date = tmp,
             description=description,
             use_default_invitation = True,
             invitation_template = " "
@@ -1078,8 +1078,9 @@ def edit_event(ev_id):
     if form.validate_on_submit():
         event.title = form.title.data
         event.location = form.location.data
-        event.date = form.date.data
-        event.start_time = form.start_time.data
+        tmp = form.day.data + "-"+ form.month.data + "-" + form.year.data
+        event.date = tmp
+        event.start_time = form.time.data
         event.description = form.description.data
         db.session.add(event)
         db.session.commit()
@@ -1088,8 +1089,11 @@ def edit_event(ev_id):
     else:
         form.title.data = event.title
         form.location.data = event.location
-        form.date.data = event.date
-        form.start_time.data = event.start_time
+        tmp = event.date.split("-")
+        form.month.data = tmp[1]
+        form.day.data = tmp[0]
+        form.year.data = tmp[2]
+        form.time.data = event.start_time
         form.description.data = event.description
     return render_template('add_event.html', form=form)
 
@@ -1160,7 +1164,9 @@ def add_guest_to_event(id):
             users.append(u)
 
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data,
+         form.confirm.data,form.first_name.data,form.last_name.data, form.has_dietary_requirements.data,
+         form.dietary_requirements.data, form.phone.data)
         if not error:
             user =  User.query.filter_by(username=form.username.data).first_or_404()
             assign_ticket(id,user.id)
@@ -1453,6 +1459,7 @@ def edit_my_account():
         if form.has_dietary_requirements.data == False:
             user.dietary_requirements=None
         db.session.commit()
+        return redirect('/my_account')
     else:
         print form.errors
 
@@ -1464,8 +1471,42 @@ def edit_my_account():
     form.has_dietary_requirements.data=user.has_dietary_requirements
     form.dietary_requirements.data=user.dietary_requirements
 
-    return render_template('edit_my_account.html',form=form)
+    return render_template('edit_my_account.html',form=form, user_id=g.user.id)
 
-@app.route('/get_dietary_bool')
-def get_dietary_bool():
-    return jsonify(bool=g.user.has_dietary_requirements)
+@app.route('/get_dietary_bool/<int:id>')
+def get_dietary_bool(id):
+    return jsonify(bool=User.query.filter_by(id=id).first_or_404().has_dietary_requirements)
+
+@app.route('/view_account/<int:id>')
+@login_required
+def view_account(id):
+    return render_template('view_account.html', user=User.query.filter_by(id=id).first_or_404())
+
+@app.route('/view_account/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_account(id):
+    form=EditAccountForm()
+    if form.validate_on_submit():
+        user=User.query.filter_by(id=id).first_or_404()
+        user.email=form.email.data
+        user.phone=form.phone.data
+        user.first_name=form.first_name.data
+        print form.first_name.data
+        user.last_name=form.last_name.data
+        user.has_dietary_requirements=form.has_dietary_requirements.data
+        user.dietary_requirements=form.dietary_requirements.data
+        if form.has_dietary_requirements.data == False:
+            user.dietary_requirements=None
+        db.session.commit()
+        return redirect('/view_account/'+str(id))
+    else:
+        print form.errors
+
+    user=User.query.filter_by(id=id).first_or_404()
+    form.email.data=user.email
+    form.phone.data=user.phone
+    form.first_name.data=user.first_name
+    form.last_name.data=user.last_name
+    form.has_dietary_requirements.data=user.has_dietary_requirements
+    form.dietary_requirements.data=user.dietary_requirements
+    return render_template('edit_account.html',form=form, user_id=id)

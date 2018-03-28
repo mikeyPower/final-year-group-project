@@ -10,7 +10,7 @@ import os
 
 UPLOAD_FOLDER = os.path.abspath("../GroupDesignProject/app/static/")
 #UPLOAD_FOLDER = '/home/michael/Desktop/gfyp/GroupDesignProject/app/static/'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['pdf'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def allowed_file(filename):
