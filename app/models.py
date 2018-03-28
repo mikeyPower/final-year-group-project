@@ -96,9 +96,8 @@ class Total(db.Model):
 #)
 class Guest(db.Model):
     __tablename__ = 'guest'
-    id = db.Column(db.Integer, primary_key=True)
-    event_id = db.Column( db.Integer, db.ForeignKey('event.id'))
-    user_id = db.Column( db.Integer, db.ForeignKey('user.id'))
+    event_id = db.Column( db.Integer, db.ForeignKey('event.id'), primary_key=True)
+    user_id = db.Column( db.Integer, db.ForeignKey('user.id'), primary_key=True)
     code = db.Column( db.String(64))
     user = db.relationship("User")
 
@@ -110,7 +109,7 @@ class Event(db.Model):
     date = db.Column(db.String(30))
     start_time = db.Column(db.String(30))
     description = db.Column(db.String(1000))
-    guests = db.relationship("Guest", backref = "event")
+    guests = db.relationship("Guest", backref = "event",cascade="all, delete-orphan")
     moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
     menu = db.relationship('Menu')
