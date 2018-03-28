@@ -61,7 +61,7 @@ class EventForm(Form):
                  ('2098', '2098'), ('2099', '2099'), ('2100', '2100'), ('2101', '2101'), ('2102', '2102'), ('2103', '2103'), ('2104', '2104'), ('2105', '2105'), ('2106', '2106')],
         validators=[DataRequired()]
     )
-    start_time = StringField('Start time', validators=[DataRequired()])
+    time = StringField('Start time', validators=[DataRequired()])
     description = TextAreaField('Desription')
 
 class GroupEmailForm(Form):
