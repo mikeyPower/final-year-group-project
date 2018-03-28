@@ -2,10 +2,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry
-from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm
-from .models import User, Menu, Total, Event, Guest, MoneyRaised
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm
+from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -508,7 +506,9 @@ def load_user(id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data,
+         form.confirm.data,form.first_name.data,form.last_name.data, form.has_dietary_requirements.data,
+         form.dietary_requirements.data, form.phone.data)
         if not error:
 
             #Need to decide on Database
@@ -517,7 +517,7 @@ def register():
     return render_template('register.html', form = form)
 
 #logic of how to register
-def try_register(email,name,password,confirm_pass,f_name,l_name):
+def try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone):
     #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
     if password != confirm_pass:
         flash(u'Password is incorrect', category='error')
@@ -533,12 +533,17 @@ def try_register(email,name,password,confirm_pass,f_name,l_name):
     if verifyEmailSynatax(email) == False:
         flash(u'Email is not correct', category='error')
         return True
+    if has_reqs == False:
+        reqs=None
     user = User(
       email = email,
       username = name,
       hashed_password = sha256_crypt.hash(str(password)), #password , #Hashing added
       first_name = f_name,
-      last_name = l_name
+      last_name = l_name,
+      has_dietary_requirements = has_reqs,
+      dietary_requirements = reqs,
+      phone = phone
     )
     db.session.add(user)
     db.session.commit()
@@ -550,7 +555,7 @@ def try_register(email,name,password,confirm_pass,f_name,l_name):
 def before_request():
     g.user = current_user
 
-@app.route('/setting', methods=['GET','POST'])
+@app.route('/my_account/change_password', methods=['GET','POST'])
 @login_required
 def settings():
     form = ChangePassForm()
@@ -1343,3 +1348,42 @@ class Donor(object):
     def __init__(self, user, total):
         self.user = user
         self.total = total
+
+@app.route('/my_account')
+@login_required
+def my_account():
+    return render_template('my_account.html', user=User.query.filter_by(id=current_user.id).first_or_404())
+
+
+@app.route('/my_account/edit', methods=['GET', 'POST'])
+@login_required
+def edit_my_account():
+    form=EditAccountForm()
+    if form.validate_on_submit():
+        user=g.user
+        user.email=form.email.data
+        user.phone=form.phone.data
+        user.first_name=form.first_name.data
+        print form.first_name.data
+        user.last_name=form.last_name.data
+        user.has_dietary_requirements=form.has_dietary_requirements.data
+        user.dietary_requirements=form.dietary_requirements.data
+        if form.has_dietary_requirements.data == False:
+            user.dietary_requirements=None
+        db.session.commit()
+    else:
+        print form.errors
+
+    user=g.user
+    form.email.data=user.email
+    form.phone.data=user.phone
+    form.first_name.data=user.first_name
+    form.last_name.data=user.last_name
+    form.has_dietary_requirements.data=user.has_dietary_requirements
+    form.dietary_requirements.data=user.dietary_requirements
+
+    return render_template('edit_my_account.html',form=form)
+
+@app.route('/get_dietary_bool')
+def get_dietary_bool():
+    return jsonify(bool=g.user.has_dietary_requirements)
