@@ -55,6 +55,7 @@
                   <td> <a href="/event/{{event}}/menu/{{menu.id}}">{{menu.title}}</a></li> </td>
                   <td> {{ menu.created_time }} </td>
         {% endif %}
+
         {% endif %}
     </tr>
     {% endfor %}
@@ -63,7 +64,10 @@
           <p><input type=file name=file>
          <input type=submit value="Upload Menu">
   </form>
-  <input type="button" onclick="location.href='/menu/';" value="Create Menu"/>
+  <p><input type="button" onclick="location.href='/menu/';" value="Create Menu"/>
   {% endif %}
+  {% if request.path != "/menulist" %}
+  <p><input type="button" onclick="location.href='{{ url_for('event_details', ev_id = event) }}';" value="Cancel"/>
+    {% endif %}
 </div>
 {% endblock %}

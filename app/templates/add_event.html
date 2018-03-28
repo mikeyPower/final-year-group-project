@@ -1,7 +1,11 @@
 {% extends 'index.html' %}
 
 {% block body %}
+{% if request.path == "/event" %}
   <h1>Add Event</h1>
+  {% else %}
+  <h1>Edit Event</h1>
+  {% endif %}
   {% from "_formhelpers.html" import render_field %}
   <form action="" method="post" name="event">
     {{ form.hidden_tag() }}
@@ -22,4 +26,5 @@
     </div>
     <p><input type="submit" value="Submit">
   </form>
+    <p><input type="button" onclick="location.href='{{request.referrer}}';" value="Cancel"/>
 {% endblock %}
