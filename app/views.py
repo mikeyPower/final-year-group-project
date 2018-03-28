@@ -159,6 +159,8 @@ def email():
 @login_required
 def send_email(ev_id):
     myRecipient = User.query.all()
+    ev = Event.query.filter_by(id = ev_id).all()
+    eventt = ev[0]
     me = "Event Company"
     you = "Wessam Gholam"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -167,16 +169,23 @@ def send_email(ev_id):
     msg['Subject'] = "Invitation"
     msg['From'] = me
     msg['To'] = you
-    text = "Hello!!!!!"
+    #text = "Hello!!!!!"
     guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
     myRecipient = User.query.all()
     answer = db.session.query(User).filter(~User.id.in_(guest_list))
     index = 0
     for item in answer:
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
-        part1 = MIMEText(text, 'plain')
-        part2 = MIMEText(render_template("invitation.html", myRecipient=answer[index], id = ev_id), 'html')
-        msg.attach(part1)
+        #part1 = MIMEText(text, 'plain')
+        #part2 = MIMEText(render_template("invitation.html", myRecipient=answer[index], id = ev_id), 'html')
+        if eventt.use_default_invitation is False:
+            print('mmm')
+            print(eventt.invitation_template)
+            part2 = MIMEText(eventt.invitation_template, 'plain')
+        else:
+            part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id, title = eventt.title, location = eventt.location, date = eventt.date), 'html')
+
+        #msg.attach(part1)
         msg.attach(part2)
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
@@ -989,6 +998,8 @@ def create_mailing_list(mailing_list_id):
         print('Validated')
     else: print(form.errors)
     if form.validate_on_submit():
+        if form.title.data is None or form.a.data is None:
+            flash('please type in title and pick mailing list ')
     #if request.method == 'POST':
         try:
             title_assigned = form.title.data
@@ -1024,6 +1035,11 @@ def create_mailing_list(mailing_list_id):
 
         except:
             print('error2')
+    else:
+        print('NOT SUBMITTED')
+        #if form.title.data is None or form.a.data is None:
+        if request.method == 'POST':
+            flash('please type in title and pick mailing list ')
 
     return render_template('create_mailing_list.html',form = form,id=mailing_list_id)
 

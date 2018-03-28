@@ -8,6 +8,19 @@
   <option value="3">Three</option>
 </select> -->
 {% block body %}
+
+{% block content %}
+  <div class="containter">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{message}}
+    </div>
+    {% endfor %}
+    {% block page_content %} {% endblock %}
+  </div>
+  {% endblock %}
+
 <form action="" method="post">
   {{ form.hidden_tag() }}
     <h1>Add email addresses to mailing list</h1>
