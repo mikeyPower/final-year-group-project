@@ -1123,7 +1123,9 @@ def add_guest_to_event(id):
             users.append(u)
 
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data,
+         form.confirm.data,form.first_name.data,form.last_name.data, form.has_dietary_requirements.data,
+         form.dietary_requirements.data, form.phone.data)
         if not error:
             user =  User.query.filter_by(username=form.username.data).first_or_404()
             assign_ticket(id,user.id)
@@ -1393,6 +1395,7 @@ def edit_my_account():
         if form.has_dietary_requirements.data == False:
             user.dietary_requirements=None
         db.session.commit()
+        return redirect('/my_account')
     else:
         print form.errors
 
@@ -1404,8 +1407,42 @@ def edit_my_account():
     form.has_dietary_requirements.data=user.has_dietary_requirements
     form.dietary_requirements.data=user.dietary_requirements
 
-    return render_template('edit_my_account.html',form=form)
+    return render_template('edit_my_account.html',form=form, user_id=g.user.id)
 
-@app.route('/get_dietary_bool')
-def get_dietary_bool():
-    return jsonify(bool=g.user.has_dietary_requirements)
+@app.route('/get_dietary_bool/<int:id>')
+def get_dietary_bool(id):
+    return jsonify(bool=User.query.filter_by(id=id).first_or_404().has_dietary_requirements)
+
+@app.route('/view_account/<int:id>')
+@login_required
+def view_account(id):
+    return render_template('view_account.html', user=User.query.filter_by(id=id).first_or_404())
+
+@app.route('/view_account/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_account(id):
+    form=EditAccountForm()
+    if form.validate_on_submit():
+        user=User.query.filter_by(id=id).first_or_404()
+        user.email=form.email.data
+        user.phone=form.phone.data
+        user.first_name=form.first_name.data
+        print form.first_name.data
+        user.last_name=form.last_name.data
+        user.has_dietary_requirements=form.has_dietary_requirements.data
+        user.dietary_requirements=form.dietary_requirements.data
+        if form.has_dietary_requirements.data == False:
+            user.dietary_requirements=None
+        db.session.commit()
+        return redirect('/view_account/'+str(id))
+    else:
+        print form.errors
+
+    user=User.query.filter_by(id=id).first_or_404()
+    form.email.data=user.email
+    form.phone.data=user.phone
+    form.first_name.data=user.first_name
+    form.last_name.data=user.last_name
+    form.has_dietary_requirements.data=user.has_dietary_requirements
+    form.dietary_requirements.data=user.dietary_requirements
+    return render_template('edit_account.html',form=form, user_id=id)

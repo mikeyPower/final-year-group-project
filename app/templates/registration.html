@@ -1,5 +1,5 @@
 {% extends 'index.html'%}
-
+{% import "bootstrap/wtf.html" as wtf %}
 {% block body %}
 <div>
 <p style="margin-left: 1%">
@@ -24,7 +24,14 @@
                 Please enter your password:<br>
                 {{ form.password(size=16) }}<br>
                 Please confirm your password:<br>
-                {{ form.confirm(size=16) }}
+                {{ form.confirm(size=16) }}<br>
+                Please enter your phone number <br>
+                {{ form.phone(size = 16) }} <br>
+                {{ wtf.form_field(form.has_dietary_requirements) }}<br>
+                <div id="requirements_input">
+                    Describe your dietary requirements:<br>
+                    {{ form.dietary_requirements }}
+                </div>
             </p>
             <p><input type="submit" value="register"></p>
         </form>
@@ -51,5 +58,22 @@
       {% endfor %}
     </table>
 </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+
+$( document ).ready(function(){
+    $("#requirements_input").hide();
+
+    $('#has_dietary_requirements').change(function(){
+        if(this.checked){
+            $("#requirements_input").show();
+        }else{
+            $("#requirements_input").hide();
+        }
+
+    });
+});
+</script>
 
 {% endblock %}
