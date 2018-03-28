@@ -109,6 +109,8 @@ class Event(db.Model):
     date = db.Column(db.String(30))
     start_time = db.Column(db.String(30))
     description = db.Column(db.String(1000))
+    use_default_invitation = db.Column(db.Boolean)
+    invitation_template = db.Column(db.String(1000))
     guests = db.relationship("Guest", backref = "event")
     moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))

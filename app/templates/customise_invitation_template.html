@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+
+{% block body %}
+  <h1>Customise invitation template</h1>
+  {% from "_formhelpers.html" import render_field %}
+  <form action="" method="post" name="menu">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ render_field(form.invitation, class_="form-control") }}
+    </div>
+    <p><input type="submit" value="Submit">
+  </form>
+{% endblock %}

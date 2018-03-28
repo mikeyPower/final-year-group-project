@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp
 from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -617,6 +617,25 @@ def changePass(old, new, confirm):
 
 
 
+@app.route('/event/<int:ev_id>/customise_invitation', methods=['GET','POST'])
+@login_required
+def customise_invitation(ev_id):
+    form = Invitation_temp()
+    #print(form.invitation.data)
+    event = Event.query.filter_by(id = ev_id).all()
+    print(event[0].invitation_template)
+    if form.validate_on_submit():
+    #if request.method == 'POST':
+        event[0].use_default_invitation = False
+        event[0].invitation_template = form.invitation.data
+        db.session.commit()
+        return redirect(url_for('guest_list', id=ev_id))
+    else: print(form.errors)
+    form.invitation.data = event[0].invitation_template
+
+
+    return render_template('customise_invitation_template.html', form=form)
+
 
 @app.route('/edit_mailing_list/<int:mailing_list_id>', methods=['GET','POST'])
 @login_required
@@ -737,7 +756,7 @@ def choice_query(columns='email'):
 def getUserFactory(columns='email'):
     return partial(choice_query, columns=columns)
 
-class ChoiceForm(FlaskForm):
+class ChoiceForm(Form):
     title = StringField('Title:', validators=[DataRequired()])
     a = QuerySelectMultipleField(query_factory=getUserFactory('email'), get_label='email')
 
@@ -747,7 +766,6 @@ class ChoiceForm(FlaskForm):
 @login_required
 def add_emails_manually_to_mailing_list(mailing_list_id):
     form = EmailAddresses2()
-    print('FUUUUUUUUCK')
     oo = Non_user_recipient.query.all()
     print(oo)
     #db.session.query(Non_user_recipient).delete()
@@ -756,7 +774,6 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
     #print(oo)
     if form.validate_on_submit():
     #if request.method == 'POST':
-        print('FUCCCCCK2')
         print(form.title.data)
         tit = form.title.data
         adressess1 = form.addresses.data
@@ -970,8 +987,9 @@ def create_mailing_list(mailing_list_id):
     user=None
     if form.validate_on_submit():
         print('Validated')
-    print(form.validate_on_submit())
-    if request.method == 'POST':
+    else: print(form.errors)
+    if form.validate_on_submit():
+    #if request.method == 'POST':
         try:
             title_assigned = form.title.data
             user = form.a.data
@@ -1027,7 +1045,9 @@ def event():
             location=location,
             start_time = start_time,
             date = date,
-            description=description
+            description=description,
+            use_default_invitation = True,
+            invitation_template = " "
         )
         db.session.add(event)
         db.session.commit()
@@ -1221,6 +1241,10 @@ def invite_mailing_list_to_event(id):
     ev_id = id
     ev = Event.query.filter_by(id = ev_id).all()
     eventt = ev[0]
+    if eventt.use_default_invitation is False:
+        print('FAAAAAAAAAAAAAAALSE')
+    else:
+        print('TRUEEEEEEEEEEE')
     me = "Event Company"
     you = "Wessam Gholam"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -1229,18 +1253,24 @@ def invite_mailing_list_to_event(id):
     msg['Subject'] = "Invitation to " + eventt.title + " event"
     msg['From'] = me
     msg['To'] = you
-    text = "Hello"
+    #text = " "
+    part2 = " "
     myRecipient = User.query.all()
     for i in range(len(addresses2)):
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
-        part1 = MIMEText(text, 'plain')
+        #part1 = MIMEText(text, 'plain')
         #ev = Event.query.filter_by(id = ev_id).all()
         print(ev)
         print(ev[0].title)
         print(eventt)
         #part2 = MIMEText(body, 'html')
-        part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id, title = eventt.title, location = eventt.location, date = eventt.date), 'html')
-        msg.attach(part1)
+        if eventt.use_default_invitation is False:
+            print('mmm')
+            print(eventt.invitation_template)
+            part2 = MIMEText(eventt.invitation_template, 'plain')
+        else:
+            part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id, title = eventt.title, location = eventt.location, date = eventt.date), 'html')
+        #msg.attach(part1)
         msg.attach(part2)
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()

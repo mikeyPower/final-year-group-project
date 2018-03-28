@@ -53,6 +53,9 @@ class EmailAddresses2(Form):
     title = StringField('Title:', validators=[DataRequired()])
     addresses = StringField('Email Addresses:', validators=[DataRequired()])
 
+class Invitation_temp(Form):
+    invitation = TextAreaField('Body of Invitation:', validators=[DataRequired()])
+
 class PastebinEntry(Form):
     language = SelectMultipleField(
         'Programming Language',
