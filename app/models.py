@@ -31,8 +31,8 @@ class Recipient(db.Model):
 class Non_user_recipient(db.Model):
     __tablename__ = 'non_user_recipient'
     id = db.Column(db.Integer, primary_key=True)
-    mailing_list_idd = db.Column( db.Integer, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    mailing_list_idd = db.Column( db.Integer)
+    email = db.Column(db.String(120))
 
 
 
@@ -111,6 +111,8 @@ class Event(db.Model):
     description = db.Column(db.String(1000))
     guests = db.relationship("Guest", backref = "event", cascade="all, delete-orphan")
     moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
+    menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
+    menu = db.relationship('Menu')
     #guests = db.relationship('User', secondary=guests, lazy='subquery', backref=db.backref('events', lazy=True))
 
 class Menu(db.Model):
@@ -119,6 +121,8 @@ class Menu(db.Model):
     title = db.Column(db.String(100)) #unique=True
     body = db.Column(db.String(1000))
     created_time = db.Column(db.String(100))
+    events = db.relationship("Event", backref="menus", cascade="all, delete-orphan")
+    upload = db.Column(db.Boolean)
 
 #money raised at an event and where it came from
 class MoneyRaised(db.Model):

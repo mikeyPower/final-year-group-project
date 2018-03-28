@@ -49,6 +49,10 @@ class SearchAdminForm(Form):
 class EmailAddresses(Form):
     addresses = StringField('Email Addresses:', validators=[DataRequired()])
 
+class EmailAddresses2(Form):
+    title = StringField('Title:', validators=[DataRequired()])
+    addresses = StringField('Email Addresses:', validators=[DataRequired()])
+
 class PastebinEntry(Form):
     language = SelectMultipleField(
         'Programming Language',
