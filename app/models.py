@@ -47,7 +47,10 @@ class User(db.Model):
     deleted = db.Column(db.Boolean, default=False)
     last_name = db.Column(db.String(20), index=True)
     first_name = db.Column(db.String(20), index=True)
+    phone = db.Column(db.String(16))
     donations = db.relationship('MoneyRaised', backref='user_backref', lazy=True)
+    has_dietary_requirements = db.Column(db.Boolean, default=False)
+    dietary_requirements = db.Column(db.String(1000), default=None)
     #mailing_list = relationship('Mailing_list', secondary=association_table, lazy='dynamic', backref=backref('user', lazy='dynamic'))
     #mailing_list = relationship("Mailing_list", secondary="users_mailing_list")
     #users_in_mailing_list = db.relationship('Mailing_list', secondary=users_in_mailing_list,
@@ -106,7 +109,7 @@ class Event(db.Model):
     date = db.Column(db.String(30))
     start_time = db.Column(db.String(30))
     description = db.Column(db.String(1000))
-    guests = db.relationship("Guest", backref = "event", cascade="all, delete-orphan")
+    guests = db.relationship("Guest", backref = "event")
     moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
     menu = db.relationship('Menu')
@@ -118,7 +121,7 @@ class Menu(db.Model):
     title = db.Column(db.String(100)) #unique=True
     body = db.Column(db.String(1000))
     created_time = db.Column(db.String(100))
-    events = db.relationship("Event", backref="menus", cascade="all, delete-orphan")
+    events = db.relationship("Event", backref="menus")
     upload = db.Column(db.Boolean)
 
 #money raised at an event and where it came from
