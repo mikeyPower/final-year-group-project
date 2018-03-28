@@ -4,6 +4,8 @@
 
   <form action="" method="post" name="event">
     <h1>Add emails to invite </h1>
+    Please enter title for the mailing list:<br>
+    {{ form.title(size=30) }}<br>
     <p>Please enter email addresses and separate them by a semicolon ";"</p>
     {% from "_formhelpers.html" import render_field %}
     {{ form.hidden_tag() }}

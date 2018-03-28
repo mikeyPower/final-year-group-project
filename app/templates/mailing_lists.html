@@ -1,7 +1,7 @@
 {% extends 'index.html'%}
 
 {% block body %}
-<h1> Event</h1>
+<h1> Mailing lists</h1>
     <h4><a href="/create_mailing_list/{{mailing_list_id}}">Add Mailing list</a></h4>
  <table style="width:100%">
       <tr>
@@ -23,4 +23,6 @@
         </tr>
       {% endfor %}
     </table>
+    <a class="nav-link" href="/select_users_for_group_email_to_mailing_list">Send email to users</a>
+
 {% endblock %}

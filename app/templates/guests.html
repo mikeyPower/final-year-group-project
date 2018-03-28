@@ -23,10 +23,9 @@
         </tr>
       {% endfor %}
     </table>
-    <input type="button" onclick="location.href='/group_email';" value="Send emails to registered users" />
     <input type="button" onclick="location.href='/group_email_to_guest_invite_lists/{{event.id}}';" value="Send email to guests" />
     <input type="button" onclick="location.href='/send_emails/{{event.id}}';" value="Send Invitations to non guests" />
-    <input type="button" onclick="location.href='/invite/{{event.id}}';" value="Send customised invitations" />
+    <!--<input type="button" onclick="location.href='/invite/{{event.id}}';" value="Send customised invitations" /-->
     <input type="button" onclick="location.href='/event/{{event.id}}/invite_mailing_list';" value="Send invitations to mailing list" />
     <a class="nav-link" href="/event/{{event.id}}/guests/register" style="color: rgb(0,255,0)">Add Guest</a>
 {% endblock %}
