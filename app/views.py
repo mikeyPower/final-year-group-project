@@ -2,10 +2,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry
-from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm
-from .models import User, Menu, Total, Event, Guest, MoneyRaised
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2
+from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -38,6 +36,7 @@ from werkzeug.datastructures import MultiDict
 import time
 from datetime import datetime
 #global id_number_for_form = 0;
+ev_num = 0
 
 
 
@@ -189,7 +188,9 @@ def send_email(ev_id):
             index = index + 1
         else:
             break
-    return render_template('send_emails.html', myRecipient=answer)
+    flash('Email sent!!')
+    return redirect(url_for('guest_list', id =ev_id))
+    #return render_template('send_emails.html', myRecipient=answer)
 
 
 #Send group email
@@ -224,6 +225,12 @@ def group_email():
             server.login("event.management.tcd@gmail.com", "tcdtcd12")
             server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
             redirect('/events/')
+    #flash('Emails sent!!')
+        #string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+        string = "http://127.0.0.1:5000/mailing_lists"
+    #return redirect(url_for('select_users_to_emails_to_mailing_list'))
+        return render_template('send_emails.html', st = string)
+    #return redirect(url_for('guest_list', id =ev_id))
     return render_template('group_email.html', form = form)
 
 
@@ -232,6 +239,10 @@ def group_email():
 @login_required
 def group_email_to_guest_and_invite_lists(ev_id):
     form = GroupEmailForm()
+
+    str_of_redirect = "http://127.0.0.1:5000/event/ev_id/guests"
+    #string = "http://127.0.0.1:5000/select_users_foev_idoup_email_to_mailing_list"
+    string = "http://127.0.0.1:5000/mailing_lists"
     if form.validate_on_submit():#
         print("your in")
         title = form.title.data
@@ -266,8 +277,11 @@ def group_email_to_guest_and_invite_lists(ev_id):
             server.sendmail("event.management.tcd@gmail.com", answer[i], msg.as_string())
             #return redirect('/send_emails/{{ev_id}}')
             #return redirect(url_for('send_emails', id=ev_id))
-            return redirect(url_for('send_email', ev_id=ev_id))
-    return render_template('group_email_to_guest_invite_lists.html', form = form)
+        flash('Email sent!!')
+        return redirect(url_for('guest_list', id =ev_id))
+            #return render_template('send_emails.html', st = str_of_redirect, ev_id = ev_id)
+            #return redirect(url_for('send_email', ev_id=ev_id, st = str_of_redirect))
+    return render_template('group_email_to_guest_invite_lists.html', form = form, st = str_of_redirect)
 
 
 #Send group email to guest and invite lists
@@ -315,11 +329,12 @@ def customised_invitations(ev_id):
     return render_template('invite.html', form = form)
 
 
-@app.route('/send_emails', methods=['GET', 'POST'])
+@app.route('/send_emails/', methods=['GET', 'POST'])
 @login_required
 def email_sent_confirmation():
     #time.sleep(5)
-    string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+    #string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+    string = "http://127.0.0.1:5000/mailing_lists"
     #return redirect(url_for('select_users_to_emails_to_mailing_list'))
     return render_template('send_emails.html', st = string)
 
@@ -508,7 +523,9 @@ def load_user(id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data,
+         form.confirm.data,form.first_name.data,form.last_name.data, form.has_dietary_requirements.data,
+         form.dietary_requirements.data, form.phone.data)
         if not error:
 
             #Need to decide on Database
@@ -517,7 +534,7 @@ def register():
     return render_template('register.html', form = form)
 
 #logic of how to register
-def try_register(email,name,password,confirm_pass,f_name,l_name):
+def try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone):
     #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
     if password != confirm_pass:
         flash(u'Password is incorrect', category='error')
@@ -533,12 +550,17 @@ def try_register(email,name,password,confirm_pass,f_name,l_name):
     if verifyEmailSynatax(email) == False:
         flash(u'Email is not correct', category='error')
         return True
+    if has_reqs == False:
+        reqs=None
     user = User(
       email = email,
       username = name,
       hashed_password = sha256_crypt.hash(str(password)), #password , #Hashing added
       first_name = f_name,
-      last_name = l_name
+      last_name = l_name,
+      has_dietary_requirements = has_reqs,
+      dietary_requirements = reqs,
+      phone = phone
     )
     db.session.add(user)
     db.session.commit()
@@ -550,7 +572,7 @@ def try_register(email,name,password,confirm_pass,f_name,l_name):
 def before_request():
     g.user = current_user
 
-@app.route('/setting', methods=['GET','POST'])
+@app.route('/my_account/change_password', methods=['GET','POST'])
 @login_required
 def settings():
     form = ChangePassForm()
@@ -724,8 +746,19 @@ class ChoiceForm(FlaskForm):
 @app.route('/create_mailing_list/add_emails/<int:mailing_list_id>',methods=['GET', 'POST'])
 @login_required
 def add_emails_manually_to_mailing_list(mailing_list_id):
-    form = EmailAddresses()
-    if form.validate_on_submit():#
+    form = EmailAddresses2()
+    print('FUUUUUUUUCK')
+    oo = Non_user_recipient.query.all()
+    print(oo)
+    #db.session.query(Non_user_recipient).delete()
+    #db.session.commit()
+    #oo = Non_user_recipient.query.all()
+    #print(oo)
+    if form.validate_on_submit():
+    #if request.method == 'POST':
+        print('FUCCCCCK2')
+        print(form.title.data)
+        tit = form.title.data
         adressess1 = form.addresses.data
         print("Maaaagic")
         print(form.addresses.data)
@@ -738,10 +771,13 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
         oo = Non_user_recipient.query.all()
         print(oo)
         mailing_list = Mailing_list(
-            title = 'tcd'
+            title = tit
         )
+        print('Mailing title is: ')
+        print(tit)
         db.session.add(mailing_list)
         db.session.commit()
+        #rr =
         for i in range(len(addresses2)):
             addr = addresses2[i]
             print(addresses2[i])
@@ -757,13 +793,15 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
         print('after loop')
         print(oo2)
         return redirect(url_for('mailing_lists'))
+    else:
+        print(form.errors)
 
 
 
 
 
     #events = Event.query.all()
-    return render_template('invite.html', form=form)
+    return render_template('invite2.html', form=form)
 
 @app.route('/create_mailing_list/add_emails_v2/<int:mailing_list_id>',methods=['GET', 'POST'])
 @login_required
@@ -817,6 +855,8 @@ def mailing_list_del(mailing_list_id):
     print(all_rec)
     mlist = Mailing_list.query.filter_by(id=mailing_list_id).first_or_404()
     recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+    non_user_recipient_list = db.session.query(Non_user_recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+
     print('content of query of rec list')
     print(recipient_list)
     index = 0;
@@ -824,6 +864,10 @@ def mailing_list_del(mailing_list_id):
         print('inside fooor loop')
         print(recipient_list[i])
         db.session.delete(recipient_list[i])
+        db.session.commit()
+
+    for i in range(len(non_user_recipient_list)):
+        db.session.delete(non_user_recipient_list[i])
         db.session.commit()
 
     db.session.delete(mlist)
@@ -1136,6 +1180,16 @@ def invite_mailing_list_to_event(id):
         #print('hiiiiiiiiii')
         print(form.a.data)
         ml = form.a.data
+        st = "http://127.0.0.1:5000/event/"
+        print(st)
+        st += str(id)
+        st += "/guests"
+        print(ev_num)
+        global ev_num
+        ev_num = id
+        print(ev_num)
+
+        print(st)
         if not ml:
             print('ERROR 404 @@@@@@@@')
             flash('Please select a mailing list, or create one if you havent done so')
@@ -1197,7 +1251,10 @@ def invite_mailing_list_to_event(id):
         server.starttls()
         server.login("event.management.tcd@gmail.com", "tcdtcd12")
         server.sendmail("event.management.tcd@gmail.com", addresses2[i], msg.as_string())
-        return redirect(url_for('email_sent_confirmation'))
+        #return redirect(url_for('email_sent_confirmation'))
+        flash('Invitations sent!!')
+        return redirect(url_for('guest_list', id =ev_id))
+
     print(send_invitations_to)
     #return redirect(url_for('email_sent_confirmation'))
 
@@ -1347,3 +1404,42 @@ class Donor(object):
     def __init__(self, user, total):
         self.user = user
         self.total = total
+
+@app.route('/my_account')
+@login_required
+def my_account():
+    return render_template('my_account.html', user=User.query.filter_by(id=current_user.id).first_or_404())
+
+
+@app.route('/my_account/edit', methods=['GET', 'POST'])
+@login_required
+def edit_my_account():
+    form=EditAccountForm()
+    if form.validate_on_submit():
+        user=g.user
+        user.email=form.email.data
+        user.phone=form.phone.data
+        user.first_name=form.first_name.data
+        print form.first_name.data
+        user.last_name=form.last_name.data
+        user.has_dietary_requirements=form.has_dietary_requirements.data
+        user.dietary_requirements=form.dietary_requirements.data
+        if form.has_dietary_requirements.data == False:
+            user.dietary_requirements=None
+        db.session.commit()
+    else:
+        print form.errors
+
+    user=g.user
+    form.email.data=user.email
+    form.phone.data=user.phone
+    form.first_name.data=user.first_name
+    form.last_name.data=user.last_name
+    form.has_dietary_requirements.data=user.has_dietary_requirements
+    form.dietary_requirements.data=user.dietary_requirements
+
+    return render_template('edit_my_account.html',form=form)
+
+@app.route('/get_dietary_bool')
+def get_dietary_bool():
+    return jsonify(bool=g.user.has_dietary_requirements)

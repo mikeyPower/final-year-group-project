@@ -1,6 +1,5 @@
 #Reducing typing load
 
-
 clean_all:
 	python -c "execfile('clean_db.py'); clean_all()"
 
@@ -18,3 +17,8 @@ clean_event:
 
 clean_total:
 	python -c "execfile('clean_db.py'); clean_total()"
+
+fresh:
+		rm -rf app.db
+		./db_create.py
+		./db_migrate.py
