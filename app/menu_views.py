@@ -68,11 +68,20 @@ def show_menu_to_event(id1):
 def add_menu_to_event(id1,id2):
     menu = Menu.query.filter_by(id=id2).first_or_404()
     event = Event.query.filter_by(id=id1).first_or_404()
+    #print(event.menu_id)
     menu.events.append(event)
     db.session.commit()
     menu = Menu.query.filter_by(id=id2).first_or_404().events
-    #return render_template('event.html', event=event)
-    #return redirect('/event/1')
+    event = Event.query.filter_by(id=id1).first_or_404()
+    #print(event.menu_id)
+    return redirect(url_for('event_details', ev_id=id1))
+
+@app.route('/event/<string:id1>/delete_menu')
+@login_required
+def delete_menu_from_event(id1):
+    event = Event.query.filter_by(id=id1).first_or_404()
+    event.menu_id=None
+    db.session.commit()
     return redirect(url_for('event_details', ev_id=id1))
 
 @app.route('/menu/<string:id>/')
@@ -115,8 +124,8 @@ def menus():
 
 
 # Edit Menu
-@app.route('/edit_menu/', methods=['GET', 'POST'])
-#@login_required
+@app.route('/editmenu/<string:id>', methods=['GET', 'POST'])
+@login_required
 def edit_menu(id):
     menu = Menu.query.filter_by(id=id).first()
     # Get form
@@ -138,7 +147,19 @@ def edit_menu(id):
         menu.body = form.body.data
         db.session.commit()
         flash('Menu Updated', 'success')
-
         return redirect('/menulist')
 
-    return render_template('menu.html', form=form)
+
+    return render_template('menu/menu.html', form=form)
+
+
+
+@app.route('/delete_menu/<string:id>')
+@login_required
+def delete_menu(id):
+    menu = Menu.query.filter_by(id=id).first()
+    db.session.delete(menu)
+    db.session.commit()
+    flash('Menu Deleted', 'success')
+
+    return redirect('/menulist')

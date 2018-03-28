@@ -106,7 +106,7 @@ class Event(db.Model):
     date = db.Column(db.String(30))
     start_time = db.Column(db.String(30))
     description = db.Column(db.String(1000))
-    guests = db.relationship("Guest", backref = "event", cascade="all, delete-orphan")
+    guests = db.relationship("Guest", backref = "event")
     moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
     menu = db.relationship('Menu')
@@ -118,7 +118,7 @@ class Menu(db.Model):
     title = db.Column(db.String(100)) #unique=True
     body = db.Column(db.String(1000))
     created_time = db.Column(db.String(100))
-    events = db.relationship("Event", backref="menus", cascade="all, delete-orphan")
+    events = db.relationship("Event", backref="menus")
     upload = db.Column(db.Boolean)
 
 #money raised at an event and where it came from
