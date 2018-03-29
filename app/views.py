@@ -1532,6 +1532,9 @@ def record_money_raised_view(eventid):
         m = MoneyRaised(other_source=form.source.data, user_source = form.user_source.data,
         amount=form.money_raised.data, from_other_source=form.checkbox.data, event_id=eventid,
         date_time = datetime.now())
+        if(form.user_source.data == 0 and form.checkbox.data== False):
+            flash("Please Select a User or Select Other Source!")
+            return redirect('/event/record-money-raised/' + str(eventid))
         db.session.add(m)
         db.session.commit()
         flash('Money Recorded! - Source: ' + form.source.data + ',  Amount: ' + str(form.money_raised.data))
