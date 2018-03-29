@@ -40,9 +40,11 @@ Steps:
       2. Click "Add Event"
       3. Input a title of your event
       4. Input a the location of the event
-      5. Input a description of your event
-      6. When satisfied with what you have entered hit "Submit"
-      5.You will know be brought back to the event list page with your event being added.
+      5. Select the day, month and year of the event
+      6. Input the time of the event e.g "15:00 - 20:00"
+      7. Input a description of your event
+      8. When satisfied with what you have entered hit "Submit"
+      9.You will know be brought back to the event list page with your event being added.
 
 Feature Number 5 | Administrator | I want to be able to update event information and submit event updates
 Steps:
@@ -144,15 +146,16 @@ Steps:
     2. Click "View"
     3. Click "Guest List"
     4. Click on "Add Guest"
-    5. Fill out Guest registration details
-    6. Submit
-    7. You will know be brought to the Guestlist page for that event with the updated list
-    8. To remove a guest from the list click remove on the row of the specific guest
+    5.1. To add existing users find the user in the table and click add on the user row
+    5.2  To view the guestlist click "Event" on the navbar then click the guestlist of the event you wish to view
+    6.1. To add an unregistered guest go back to the add guest page and fill out Guest registration details then click submit
+    6.2. You will know be brought to the Guestlist page for that event with the updated list
+    7. To remove a guest from the list click remove on the row of the specific guest
 
 Feature Number 6|Administrator|Keep Track of Possible/Previous Guests:
 Steps:
     1. Navigate and click on "Guests" in the navigation bar
-    2. You are now shown a list of all possible and previous guests
+    2. You are now shown a list of all possible and previous guestsA
 
 Feature Number 10 | Administrator| I want to see the invite list:
 Steps:
