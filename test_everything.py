@@ -4,6 +4,7 @@ from app.views import *
 from app.menu_views import *
 import pytest
 import unittest
+from datetime import datetime
 
 #Testing email syntax functionality
 def test_email_syntax():
@@ -302,3 +303,102 @@ def test_guests_add_and_remove():
 def test_admin():
     reg = User.query.filter_by(username='Admin').first_or_404()
     assert reg is not None
+
+def test_update_account_details():
+    email ='testemail20@gmail.com'
+    name ='testemail20@gmail.com'
+    password ='testPassword'
+    confirm_pass = 'testPassword'
+    f_name ='john'
+    l_name ='milsom'
+    has_reqs=False
+    reqs=None
+    phone='086666666'
+    assert try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone) == False
+    user=User.query.filter_by(email=email).first_or_404()
+    assert user.first_name == 'john'
+    user.first_name = 'Kevin'
+    db.session.commit()
+    userUpdated=User.query.filter_by(email=email).first_or_404()
+    assert user.first_name == 'Kevin'
+    reg = User.query.filter_by(email=email).first()
+    db.session.delete(reg)
+    db.session.commit()
+
+def test_total_amount_raised():
+    title_data = "Test Event somewhere in world"
+    location_data = "Mars in Mily Way Galaxy"
+    description_data = "Test yes indeed, it's a test... !!!"
+    event = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    db.session.add(event)
+    db.session.commit()
+    e = Event.query.all()[-1]
+    t_initial = get_total_raised_test(e.id)
+
+    m = MoneyRaised(other_source="Test Source", user_source = None,
+    amount=1000, from_other_source=True, event_id=e.id,
+    date_time = datetime.now())
+    db.session.add(m)
+    db.session.commit()
+
+    e = Event.query.all()[-1]
+    assert get_total_raised_test(e.id) == t_initial + 1000
+    db.session.delete(e)
+    db.session.commit()
+
+def test_top_donors():
+    title_data = "Test Event somewhere in world"
+    location_data = "Mars in Mily Way Galaxy"
+    description_data = "Test yes indeed, it's a test... !!!"
+    event = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    db.session.add(event)
+    db.session.commit()
+    e = Event.query.all()[-1]
+
+    email ='testemail40@gmail.com'
+    name ='testemail40@gmail.com'
+    password ='testPassword'
+    confirm_pass = 'testPassword'
+    f_name ='john'
+    l_name ='milsom'
+    has_reqs=False
+    reqs=None
+    phone='086666666'
+    assert try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone) == False
+    user1=User.query.filter_by(email=email).first_or_404()
+    email ='testemail41@gmail.com'
+    name ='testemail41@gmail.com'
+    password ='testPassword'
+    confirm_pass = 'testPassword'
+    f_name ='Dave'
+    l_name ='B'
+    has_reqs=False
+    reqs=None
+    phone='086666666'
+    assert try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone) == False
+    user2=User.query.filter_by(email=email).first_or_404()
+
+    m = MoneyRaised(other_source=None, user_source = user1.id,
+    amount=100, from_other_source=False, event_id=e.id,
+    date_time = datetime.now())
+    db.session.add(m)
+    db.session.commit()
+
+    m = MoneyRaised(other_source=None, user_source = user2.id,
+    amount=10000000, from_other_source=False, event_id=e.id,
+    date_time = datetime.now())
+    db.session.add(m)
+    db.session.commit()
+
+    assert top_donors_hidden()[0].user==user2
+    db.session.delete(user1)
+    db.session.delete(user2)
+    db.session.commit()
