@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp,SizeForm
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp,SizeForm, TableNameForm
 from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised, Event_Table, Table_Attendee
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -90,19 +90,33 @@ def editSeating(event_id,table_id):
     users = Guest.query.filter_by(event_id=event_id).filter_by(seated=False).all()
     form = SearchAdminForm()
     sizeForm = SizeForm()
+    nameForm = TableNameForm()
     table = Event_Table.query.filter_by(id=table_id).first()
     msg="that user isn't attending the event"
+    if nameForm.validate_on_submit():
+        name = nameForm.name.data
+        table.table_name = name
+        table.is_corprate = True
+        db.session.commit()
+        return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=None, users=users, event_id=event_id, t = table, nameForm=nameForm)
+
+    if nameForm.validate_on_submit():
+        name = nameForm.name.data
+        table.table_name = name
+        table.is_corprate = False
+        db.session.commit()
+        return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=None, users=users, event_id=event_id, t = table, nameForm=nameForm)
     if sizeForm.validate_on_submit():
         size = sizeForm.size.data
         table.free_seats = size - table.free_seats
-        return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=usr, users=users, event_id=event_id, t = table)
+        return render_template('seating.html', sizeForm=sizeForm,form=form,table_id=table_id,myUser=None, users=users, event_id=event_id, t = table, nameForm=nameForm)
     if form.validate_on_submit():
         usr = User.query.filter_by(username= form.username.data).first()
         myUser = Guest.query.filter_by(user_id=usr.id).first()
         if myUser != None:
-            return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=usr, users=users, event_id=event_id, t = table)
+            return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=usr, users=users, event_id=event_id, t = table,nameForm=nameForm)
         flash(msg)
-    return render_template('seating.html', sizeForm=sizeForm,form=form, table_id=table_id,myUser=None,users=users, event_id = event_id, t=table)
+    return render_template('seating.html', sizeForm=sizeForm,form=form, table_id=table_id,myUser=None,users=users, event_id = event_id, t=table,nameForm=nameForm)
 
 @app.route('/event/<string:event_id>/tableArrangement/<string:table_id>/edit/<string:user_id>/add', methods=['GET', 'POST'])
 def addUserToTable(event_id,table_id,user_id):

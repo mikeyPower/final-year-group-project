@@ -5,6 +5,9 @@ from wtforms.fields.html5 import EmailField
 from app import models, db
 from app.models import User
 
+class TableNameForm(Form):
+    name = StringField('TableName', validators=[DataRequired()])
+
 class SizeForm(Form):
     size = SelectField(
         'Programming Language',

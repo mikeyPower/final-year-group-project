@@ -26,6 +26,7 @@ class Event_Table(db.Model):
     __tablename__='event_table'
     id = db.Column(db.Integer, primary_key=True)
     free_seats = db.Column(db.Integer, default = 10)
+    table_name= db.Column(db.String(50), nullable=True)
     table_num = db.Column(db.Integer, nullable=False)
     corprate_table = db.Column(db.Boolean, default=False)
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))

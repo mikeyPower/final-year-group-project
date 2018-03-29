@@ -1,24 +1,24 @@
 {% extends 'index.html' %}
 
 {% block body %}
-
+<style>table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+}</style>
 <h1> Manage Seating </h1>
 <table style="width:100%">
   <tr>
     {% for t in tables %}
-    <th>Table {{ t.table_num }} <a class="nav=link" href='/event/{{event_id}}/tableArrangement/{{t.id}}/edit'/>Edit Table</a></th>
-      
-
-
+    <th>Table {%if t.table_name == None: %}
+                  {{ t.table_num }}
+              {% endif %}
+              {%if t.table_name != None: %}
+                  {{ t.table_name }}
+              {% endif %} 
+      <a class="nav=link" href='/event/{{event_id}}/tableArrangement/{{t.id}}/edit'/>Edit Table</a></th>
     {% endfor %}
   </tr>
-  {% for t in tables %}
-    <tr>
-      {% for usr in t.guests %}
-        <td> {{ usr.user.username }} </td>
-      {% endfor %}
-    </tr>
-  {% endfor %}
 </table>
 <input type="button"onclick="location.href='/event/{{event_id}}/tableArrangement/addtable';" value="Add table" />
 
@@ -30,4 +30,8 @@
   {% endif %}
 {% endfor %}
 </div>
+ <div>
+    <p>back to event<a href="/event/{{event_id}}"> here</a></p>
+
+  </div>
 {% endblock %}
