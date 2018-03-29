@@ -6,36 +6,38 @@
 <form action="" method="post" name="register">
     {{ form.hidden_tag() }}
     <p>
-        Please enter your email <br>
+        Email:
         {{ form.email(size = 16) }} <br>
-        Please enter your first name <br>
+        First Name:
         {{ form.first_name(size = 16) }} <br>
-        Please enter your last name <br>
+        Last Name:
         {{ form.last_name(size = 16) }} <br>
-        Please enter your username:<br>
-        {{ form.username(size=16) }}<br>
-        Please enter your password:<br>
-        {{ form.password(size=16) }}<br>
-        Please confirm your password:<br>
-        {{ form.confirm(size=16) }}<br>
-        Please enter your phone number <br>
+        Phone Number:
         {{ form.phone(size = 16) }} <br>
         {{ wtf.form_field(form.has_dietary_requirements) }}<br>
         <div id="requirements_input">
-            Describe your dietary requirements:<br>
+            Dietary Requirements:<br>
             {{ form.dietary_requirements }}
         </div>
+
+
+
     </p>
-    <p><input type="submit" value="register"></p>
+    <p><input type="submit" value="Update Account"></p>
     <p>
 </form>
 
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
-
 $( document ).ready(function(){
-    $("#requirements_input").hide();
+    $.getJSON('/get_dietary_bool/{{user_id}}', function(data) {
+        if(data.bool){
+            $("#requirements_input").show();
+        }else{
+            $("#requirements_input").hide();
+        }
+    });
 
     $('#has_dietary_requirements').change(function(){
         if(this.checked){

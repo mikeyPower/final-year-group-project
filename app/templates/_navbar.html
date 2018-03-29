@@ -12,12 +12,10 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link" href="/guests">Guests</a>
+        <a class="nav-link" href="/guests">Users</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/setting">Settings</a>
-      <li class="nav-item">
-        <a class="nav-link" href="menulist">Menu List</a>
+        <a class="nav-link" href="/menulist">Menu List</a>
       </li>
       {% endif %}
       {% if session['admin']: %}
@@ -30,8 +28,13 @@
           <a class="nav-link" href="/mailing_lists">Mailing lists</a>
         </li>
         <li class="nav_item">
-          <a class="nav-link" href="/select_users_for_group_email_to_mailing_list">Send email to users</a>
+          <!--<a class="nav-link" href="/select_users_for_group_email_to_mailing_list">Send email to users</a-->
         </li>
+      {% endif %}
+      {% if session['logged_in']: %}
+      <li class="nav-item">
+        <a class="nav-link" href="/my_account">My Account</a>
+      </li>
       {% endif %}
     </ul>
 

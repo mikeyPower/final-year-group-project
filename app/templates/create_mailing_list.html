@@ -1,6 +1,5 @@
+
 {% extends 'index.html'%}
-{% block body %}
-  <h1>Add email addresses to mailing list</h1>
 
 <!--<select class="custom-select" multiple>
   <option selected>Open this select menu</option>
@@ -8,14 +7,30 @@
   <option value="2">Two</option>
   <option value="3">Three</option>
 </select> -->
-<form action="" method="post" name="event">
+{% block body %}
+
+{% block content %}
+  <div class="containter">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      {{message}}
+    </div>
+    {% endfor %}
+    {% block page_content %} {% endblock %}
+  </div>
+  {% endblock %}
+
+<form action="" method="post">
+  {{ form.hidden_tag() }}
+    <h1>Add email addresses to mailing list</h1>
   <p>
       Please enter title for the mailing list:<br>
       {{ form.title(size=30) }}<br>
       please select emails you wish to add to mailing list:<br>
       {{ form.a }}
   </p>
-  <p><input type="submit" name="btn" value="Submit">
+  <p><input type="submit" value="Submit"></p>
 </form>
 
 <p>

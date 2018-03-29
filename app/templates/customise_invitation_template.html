@@ -1,0 +1,15 @@
+{% extends 'index.html' %}
+
+{% block body %}
+  <h1>Customise invitation template</h1>
+  <p><font color="red">Please note that once you set your customised invitation, you wouldn't be able to use the default one!!</font></p>
+    <font color="black"></font>
+  {% from "_formhelpers.html" import render_field %}
+  <form action="" method="post" name="menu">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ render_field(form.invitation, class_="form-control") }}
+    </div>
+    <p><input type="submit" value="Submit">
+  </form>
+{% endblock %}

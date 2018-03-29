@@ -23,7 +23,10 @@ def test_try_register():
     confirm_pass = 'testPassword'
     f_name ='michael'
     l_name ='power'
-    assert try_register(email,name,password,confirm_pass,f_name,l_name) == False
+    has_reqs=False
+    reqs=None
+    phone='086666666'
+    assert try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone) == False
     reg = User.query.filter_by(email=email).first()
     db.session.delete(reg)
     db.session.commit()
@@ -34,7 +37,8 @@ def test_try_register():
 def test_menu_added():
     title_data = "Brunch Test5"
     body_data = "Eggs and Toast Test5"
-    add_menu(title_data,body_data)
+    upload =False
+    add_menu(title_data,body_data,upload)
     menu = Menu.query.filter_by(title=title_data).first()
     db.session.delete(menu)
     db.session.commit()
@@ -117,7 +121,10 @@ def test_eticketing():
     confirm_pass = 'testPassword'
     f_name ='John'
     l_name ='M'
-    assert try_register(email,name,password,confirm_pass,f_name,l_name) == False
+    has_reqs=False
+    reqs=None
+    phone='086666666'
+    assert try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone) == False
     u = User.query.filter_by(email=email).first()
 
     title_data = "Cool Event"

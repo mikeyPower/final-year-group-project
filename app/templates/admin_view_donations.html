@@ -10,12 +10,14 @@
         <tr>
             <th>Source</th>
             <th>Amount Raised</th>
+            <th>Date</th>
 
         </tr>
         {% for d in donations %}
         <tr>
             <td>{{ d.source }}</td>
             <td>{{ d.amount }}</td>
+            <td>{{ d.date }}</td>
         </tr>
         {% endfor %}
     </table>

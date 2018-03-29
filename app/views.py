@@ -2,8 +2,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry,MoneyRaisedForm,SizeForm
-from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, Event_Table, Table_Attendee, MoneyRaised
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp,SizeForm
+from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised, Event_Table, Table_Attendee
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -20,7 +20,7 @@ from flask import jsonify
 import re
 import random
 import string
-from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField,SelectField,SelectMultipleField
+from wtforms import StringField, PasswordField, FileField, BooleanField, TextAreaField, IntegerField, DateTimeField,SelectField,SelectMultipleField, DecimalField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
 from flask.ext.wtf import Form
@@ -34,7 +34,9 @@ from flask import Flask, abort, request
 import json
 from werkzeug.datastructures import MultiDict
 import time
+from datetime import datetime
 #global id_number_for_form = 0;
+ev_num = 0
 
 
 
@@ -232,6 +234,8 @@ def email():
 @login_required
 def send_email(ev_id):
     myRecipient = User.query.all()
+    ev = Event.query.filter_by(id = ev_id).all()
+    eventt = ev[0]
     me = "Event Company"
     you = "Wessam Gholam"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -240,16 +244,23 @@ def send_email(ev_id):
     msg['Subject'] = "Invitation"
     msg['From'] = me
     msg['To'] = you
-    text = "Hello!!!!!"
+    #text = "Hello!!!!!"
     guest_list = db.session.query(Guest.user_id).filter_by(event_id = ev_id)
     myRecipient = User.query.all()
     answer = db.session.query(User).filter(~User.id.in_(guest_list))
     index = 0
     for item in answer:
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
-        part1 = MIMEText(text, 'plain')
-        part2 = MIMEText(render_template("invitation.html", myRecipient=answer[index], id = ev_id), 'html')
-        msg.attach(part1)
+        #part1 = MIMEText(text, 'plain')
+        #part2 = MIMEText(render_template("invitation.html", myRecipient=answer[index], id = ev_id), 'html')
+        if eventt.use_default_invitation is False:
+            print('mmm')
+            print(eventt.invitation_template)
+            part2 = MIMEText(eventt.invitation_template, 'plain')
+        else:
+            part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id, title = eventt.title, location = eventt.location, date = eventt.date), 'html')
+
+        #msg.attach(part1)
         msg.attach(part2)
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
@@ -261,7 +272,9 @@ def send_email(ev_id):
             index = index + 1
         else:
             break
-    return render_template('send_emails.html', myRecipient=answer)
+    flash('Email sent!!')
+    return redirect(url_for('guest_list', id =ev_id))
+    #return render_template('send_emails.html', myRecipient=answer)
 
 
 #Send group email
@@ -296,6 +309,12 @@ def group_email():
             server.login("event.management.tcd@gmail.com", "tcdtcd12")
             server.sendmail("event.management.tcd@gmail.com", myRecipient[i].email, msg.as_string())
             redirect('/events/')
+    #flash('Emails sent!!')
+        #string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+        string = "http://127.0.0.1:5000/mailing_lists"
+    #return redirect(url_for('select_users_to_emails_to_mailing_list'))
+        return render_template('send_emails.html', st = string)
+    #return redirect(url_for('guest_list', id =ev_id))
     return render_template('group_email.html', form = form)
 
 
@@ -304,6 +323,10 @@ def group_email():
 @login_required
 def group_email_to_guest_and_invite_lists(ev_id):
     form = GroupEmailForm()
+
+    str_of_redirect = "http://127.0.0.1:5000/event/ev_id/guests"
+    #string = "http://127.0.0.1:5000/select_users_foev_idoup_email_to_mailing_list"
+    string = "http://127.0.0.1:5000/mailing_lists"
     if form.validate_on_submit():#
         print("your in")
         title = form.title.data
@@ -338,8 +361,11 @@ def group_email_to_guest_and_invite_lists(ev_id):
             server.sendmail("event.management.tcd@gmail.com", answer[i], msg.as_string())
             #return redirect('/send_emails/{{ev_id}}')
             #return redirect(url_for('send_emails', id=ev_id))
-            return redirect(url_for('send_email', ev_id=ev_id))
-    return render_template('group_email_to_guest_invite_lists.html', form = form)
+        flash('Email sent!!')
+        return redirect(url_for('guest_list', id =ev_id))
+            #return render_template('send_emails.html', st = str_of_redirect, ev_id = ev_id)
+            #return redirect(url_for('send_email', ev_id=ev_id, st = str_of_redirect))
+    return render_template('group_email_to_guest_invite_lists.html', form = form, st = str_of_redirect)
 
 
 #Send group email to guest and invite lists
@@ -387,11 +413,12 @@ def customised_invitations(ev_id):
     return render_template('invite.html', form = form)
 
 
-@app.route('/send_emails', methods=['GET', 'POST'])
+@app.route('/send_emails/', methods=['GET', 'POST'])
 @login_required
 def email_sent_confirmation():
     #time.sleep(5)
-    string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+    #string = "http://127.0.0.1:5000/select_users_for_group_email_to_mailing_list"
+    string = "http://127.0.0.1:5000/mailing_lists"
     #return redirect(url_for('select_users_to_emails_to_mailing_list'))
     return render_template('send_emails.html', st = string)
 
@@ -580,7 +607,9 @@ def load_user(id):
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data,
+         form.confirm.data,form.first_name.data,form.last_name.data, form.has_dietary_requirements.data,
+         form.dietary_requirements.data, form.phone.data)
         if not error:
 
             #Need to decide on Database
@@ -589,7 +618,7 @@ def register():
     return render_template('register.html', form = form)
 
 #logic of how to register
-def try_register(email,name,password,confirm_pass,f_name,l_name):
+def try_register(email,name,password,confirm_pass,f_name,l_name,has_reqs,reqs,phone):
     #if (email is None) or (name is None) or (password is None) or (confirm_pass is None)
     if password != confirm_pass:
         flash(u'Password is incorrect', category='error')
@@ -605,12 +634,17 @@ def try_register(email,name,password,confirm_pass,f_name,l_name):
     if verifyEmailSynatax(email) == False:
         flash(u'Email is not correct', category='error')
         return True
+    if has_reqs == False:
+        reqs=None
     user = User(
       email = email,
       username = name,
       hashed_password = sha256_crypt.hash(str(password)), #password , #Hashing added
       first_name = f_name,
-      last_name = l_name
+      last_name = l_name,
+      has_dietary_requirements = has_reqs,
+      dietary_requirements = reqs,
+      phone = phone
     )
     db.session.add(user)
     db.session.commit()
@@ -622,7 +656,7 @@ def try_register(email,name,password,confirm_pass,f_name,l_name):
 def before_request():
     g.user = current_user
 
-@app.route('/setting', methods=['GET','POST'])
+@app.route('/my_account/change_password', methods=['GET','POST'])
 @login_required
 def settings():
     form = ChangePassForm()
@@ -666,6 +700,25 @@ def changePass(old, new, confirm):
     return error
 
 
+
+@app.route('/event/<int:ev_id>/customise_invitation', methods=['GET','POST'])
+@login_required
+def customise_invitation(ev_id):
+    form = Invitation_temp()
+    #print(form.invitation.data)
+    event = Event.query.filter_by(id = ev_id).all()
+    print(event[0].invitation_template)
+    if form.validate_on_submit():
+    #if request.method == 'POST':
+        event[0].use_default_invitation = False
+        event[0].invitation_template = form.invitation.data
+        db.session.commit()
+        return redirect(url_for('guest_list', id=ev_id))
+    else: print(form.errors)
+    form.invitation.data = event[0].invitation_template
+
+
+    return render_template('customise_invitation_template.html', form=form)
 
 
 @app.route('/edit_mailing_list/<int:mailing_list_id>', methods=['GET','POST'])
@@ -787,7 +840,7 @@ def choice_query(columns='email'):
 def getUserFactory(columns='email'):
     return partial(choice_query, columns=columns)
 
-class ChoiceForm(FlaskForm):
+class ChoiceForm(Form):
     title = StringField('Title:', validators=[DataRequired()])
     a = QuerySelectMultipleField(query_factory=getUserFactory('email'), get_label='email')
 
@@ -796,8 +849,17 @@ class ChoiceForm(FlaskForm):
 @app.route('/create_mailing_list/add_emails/<int:mailing_list_id>',methods=['GET', 'POST'])
 @login_required
 def add_emails_manually_to_mailing_list(mailing_list_id):
-    form = EmailAddresses()
-    if form.validate_on_submit():#
+    form = EmailAddresses2()
+    oo = Non_user_recipient.query.all()
+    print(oo)
+    #db.session.query(Non_user_recipient).delete()
+    #db.session.commit()
+    #oo = Non_user_recipient.query.all()
+    #print(oo)
+    if form.validate_on_submit():
+    #if request.method == 'POST':
+        print(form.title.data)
+        tit = form.title.data
         adressess1 = form.addresses.data
         print("Maaaagic")
         print(form.addresses.data)
@@ -810,10 +872,13 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
         oo = Non_user_recipient.query.all()
         print(oo)
         mailing_list = Mailing_list(
-            title = 'tcd'
+            title = tit
         )
+        print('Mailing title is: ')
+        print(tit)
         db.session.add(mailing_list)
         db.session.commit()
+        #rr =
         for i in range(len(addresses2)):
             addr = addresses2[i]
             print(addresses2[i])
@@ -829,13 +894,15 @@ def add_emails_manually_to_mailing_list(mailing_list_id):
         print('after loop')
         print(oo2)
         return redirect(url_for('mailing_lists'))
+    else:
+        print(form.errors)
 
 
 
 
 
     #events = Event.query.all()
-    return render_template('invite.html', form=form)
+    return render_template('invite2.html', form=form)
 
 @app.route('/create_mailing_list/add_emails_v2/<int:mailing_list_id>',methods=['GET', 'POST'])
 @login_required
@@ -889,6 +956,8 @@ def mailing_list_del(mailing_list_id):
     print(all_rec)
     mlist = Mailing_list.query.filter_by(id=mailing_list_id).first_or_404()
     recipient_list = db.session.query(Recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+    non_user_recipient_list = db.session.query(Non_user_recipient).filter_by(mailing_list_idd = mailing_list_id).all()
+
     print('content of query of rec list')
     print(recipient_list)
     index = 0;
@@ -896,6 +965,10 @@ def mailing_list_del(mailing_list_id):
         print('inside fooor loop')
         print(recipient_list[i])
         db.session.delete(recipient_list[i])
+        db.session.commit()
+
+    for i in range(len(non_user_recipient_list)):
+        db.session.delete(non_user_recipient_list[i])
         db.session.commit()
 
     db.session.delete(mlist)
@@ -998,8 +1071,11 @@ def create_mailing_list(mailing_list_id):
     user=None
     if form.validate_on_submit():
         print('Validated')
-    print(form.validate_on_submit())
-    if request.method == 'POST':
+    else: print(form.errors)
+    if form.validate_on_submit():
+        if form.title.data is None or form.a.data is None:
+            flash('please type in title and pick mailing list ')
+    #if request.method == 'POST':
         try:
             title_assigned = form.title.data
             user = form.a.data
@@ -1034,6 +1110,11 @@ def create_mailing_list(mailing_list_id):
 
         except:
             print('error2')
+    else:
+        print('NOT SUBMITTED')
+        #if form.title.data is None or form.a.data is None:
+        if request.method == 'POST':
+            flash('please type in title and pick mailing list ')
 
     return render_template('create_mailing_list.html',form = form,id=mailing_list_id)
 
@@ -1046,16 +1127,18 @@ def event():
     if form.validate_on_submit():
         title = form.title.data
         location = form.location.data
-        start_time = form.start_time.data
-        date = form.date.data
+        start_time = form.time.data
+        tmp = form.day.data + "-" + form.month.data + "-" + form.year.data
         description = form.description.data
 
         event = Event(
             title=title,
             location=location,
             start_time = start_time,
-            date = date,
-            description=description
+            date = tmp,
+            description=description,
+            use_default_invitation = True,
+            invitation_template = " "
         )
         db.session.add(event)
         db.session.commit()
@@ -1086,8 +1169,9 @@ def edit_event(ev_id):
     if form.validate_on_submit():
         event.title = form.title.data
         event.location = form.location.data
-        event.date = form.date.data
-        event.start_time = form.start_time.data
+        tmp = form.day.data + "-"+ form.month.data + "-" + form.year.data
+        event.date = tmp
+        event.start_time = form.time.data
         event.description = form.description.data
         db.session.add(event)
         db.session.commit()
@@ -1096,8 +1180,11 @@ def edit_event(ev_id):
     else:
         form.title.data = event.title
         form.location.data = event.location
-        form.date.data = event.date
-        form.start_time.data = event.start_time
+        tmp = event.date.split("-")
+        form.month.data = tmp[1]
+        form.day.data = tmp[0]
+        form.year.data = tmp[2]
+        form.time.data = event.start_time
         form.description.data = event.description
     return render_template('add_event.html', form=form)
 
@@ -1154,15 +1241,37 @@ def event_invite_list(ev_id):
 def add_guest_to_event(id):
     form = RegisterForm()
     event = Event.query.filter_by(id=id).first_or_404()
+
+    # Users not already signed up to event
+    guestlist = event.guests
+    users_list = User.query.all()
+    users = []
+    for u in users_list:
+        vis = 0
+        for g in guestlist:
+            if (u.id == g.user_id):
+                vis = 1
+        if (vis == 0):
+            users.append(u)
+
     if form.validate_on_submit():
-        error =try_register(form.email.data, form.username.data, form.password.data, form.confirm.data,form.first_name.data,form.last_name.data)
+        error =try_register(form.email.data, form.username.data, form.password.data,
+         form.confirm.data,form.first_name.data,form.last_name.data, form.has_dietary_requirements.data,
+         form.dietary_requirements.data, form.phone.data)
         if not error:
             user =  User.query.filter_by(username=form.username.data).first_or_404()
             assign_ticket(id,user.id)
             return redirect(url_for('guest_list', id=id))
-            #return redirect(url_for('guests',guests=usrs, event=event))
-            #return render_template('guests.html', guests=usrs, event=event)
-    return render_template('register.html', form = form)
+    return render_template('registration.html', form = form, event = event, usrs = users)
+
+
+# Add existing user to guestlist of an event
+@app.route('/event/<string:id>/guests/register/user/<int:user_id>')
+@login_required
+def add_user_to_guestlist(id, user_id):
+    assign_ticket(id, user_id)
+    return redirect(url_for('add_guest_to_event', id=id))
+
 
 
 @app.route('/event/<int:id>/guests')
@@ -1184,6 +1293,16 @@ def invite_mailing_list_to_event(id):
         #print('hiiiiiiiiii')
         print(form.a.data)
         ml = form.a.data
+        st = "http://127.0.0.1:5000/event/"
+        print(st)
+        st += str(id)
+        st += "/guests"
+        print(ev_num)
+        global ev_num
+        ev_num = id
+        print(ev_num)
+
+        print(st)
         if not ml:
             print('ERROR 404 @@@@@@@@')
             flash('Please select a mailing list, or create one if you havent done so')
@@ -1219,6 +1338,10 @@ def invite_mailing_list_to_event(id):
     ev_id = id
     ev = Event.query.filter_by(id = ev_id).all()
     eventt = ev[0]
+    if eventt.use_default_invitation is False:
+        print('FAAAAAAAAAAAAAAALSE')
+    else:
+        print('TRUEEEEEEEEEEE')
     me = "Event Company"
     you = "Wessam Gholam"
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
@@ -1227,25 +1350,34 @@ def invite_mailing_list_to_event(id):
     msg['Subject'] = "Invitation to " + eventt.title + " event"
     msg['From'] = me
     msg['To'] = you
-    text = "Hello"
+    #text = " "
+    part2 = " "
     myRecipient = User.query.all()
     for i in range(len(addresses2)):
         with open(os.path.join(APP_STATIC, 'invitation.html')) as f:html = f.read()
-        part1 = MIMEText(text, 'plain')
+        #part1 = MIMEText(text, 'plain')
         #ev = Event.query.filter_by(id = ev_id).all()
         print(ev)
         print(ev[0].title)
         print(eventt)
         #part2 = MIMEText(body, 'html')
-        part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id, title = eventt.title, location = eventt.location, date = eventt.date), 'html')
-        msg.attach(part1)
+        if eventt.use_default_invitation is False:
+            print('mmm')
+            print(eventt.invitation_template)
+            part2 = MIMEText(eventt.invitation_template, 'plain')
+        else:
+            part2 = MIMEText(render_template("invitation.html", myRecipient=myRecipient, id = ev_id, title = eventt.title, location = eventt.location, date = eventt.date), 'html')
+        #msg.attach(part1)
         msg.attach(part2)
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.ehlo()
         server.starttls()
         server.login("event.management.tcd@gmail.com", "tcdtcd12")
         server.sendmail("event.management.tcd@gmail.com", addresses2[i], msg.as_string())
-        return redirect(url_for('email_sent_confirmation'))
+        #return redirect(url_for('email_sent_confirmation'))
+        flash('Invitations sent!!')
+        return redirect(url_for('guest_list', id =ev_id))
+
     print(send_invitations_to)
     #return redirect(url_for('email_sent_confirmation'))
 
@@ -1331,12 +1463,17 @@ def ticket_view(eventid):
 @requires_roles('admin')
 def record_money_raised_view(eventid):
     form = MoneyRaisedForm()
+    form.user_source.choices = getChoices()
     if form.validate_on_submit():
-        m = MoneyRaised(source=form.source.data, amount=form.money_raised.data, event_id=eventid)
+        m = MoneyRaised(other_source=form.source.data, user_source = form.user_source.data,
+        amount=form.money_raised.data, from_other_source=form.checkbox.data, event_id=eventid,
+        date_time = datetime.now())
         db.session.add(m)
         db.session.commit()
         flash('Money Recorded! - Source: ' + form.source.data + ',  Amount: ' + str(form.money_raised.data))
         return redirect('/event/record-money-raised/' + str(eventid))
+    else:
+        print form.errors
     return render_template('input_money_raised.html', form=form,event = Event.query.get(eventid))
 
 @app.route('/event/view-money-raised/<int:eventid>')
@@ -1345,4 +1482,122 @@ def record_money_raised_view(eventid):
 def view_money_raised_view(eventid):
     d_list = Event.query.get(eventid).moneyraised
     totalraised = sum(x.amount for x in d_list)
-    return render_template('admin_view_donations.html', total = totalraised, event = Event.query.get(eventid),donations=d_list)
+    sources = []
+    for d in d_list:
+        if(d.from_other_source==True):
+            sources.append(Donation_Source(d.other_source,d.amount, d.date_time))
+        else:
+            sources.append(Donation_Source(d.user_backref.email,d.amount, d.date_time))
+    return render_template('admin_view_donations.html', total = totalraised, event = Event.query.get(eventid),donations=sources)
+
+class Donation_Source(object):
+    def __init__(self, source, amount, date):
+        self.source = source
+        self.amount = amount
+        self.date = date
+
+
+def getChoices():
+    try:
+        ls = User.query.all()
+        cs = [(0,None)]
+        for u in ls:
+            cs.append((u.id,u.email))
+        return cs
+    except:
+        print 'ok'
+
+class MoneyRaisedForm(Form):
+    money_raised = DecimalField('Money Raised:', validators=[DataRequired()])
+    checkbox = BooleanField('If from another source, click this box', default=False)
+    user_source = SelectField('Users:', choices=getChoices(), coerce=int)
+    source = StringField('Source:')
+
+@app.route('/top_donors')
+@login_required
+def top_donors():
+    u_list = User.query.all()
+    donors = []
+    for u in u_list:
+        donors.append(Donor(u,sum([d.amount for d in u.donations])))
+    newlist = sorted(donors, key=lambda x: x.total, reverse=True)
+    return render_template('top_donors.html', donors=newlist )
+
+class Donor(object):
+    def __init__(self, user, total):
+        self.user = user
+        self.total = total
+
+@app.route('/my_account')
+@login_required
+def my_account():
+    return render_template('my_account.html', user=User.query.filter_by(id=current_user.id).first_or_404())
+
+
+@app.route('/my_account/edit', methods=['GET', 'POST'])
+@login_required
+def edit_my_account():
+    form=EditAccountForm()
+    if form.validate_on_submit():
+        user=g.user
+        user.email=form.email.data
+        user.phone=form.phone.data
+        user.first_name=form.first_name.data
+        print form.first_name.data
+        user.last_name=form.last_name.data
+        user.has_dietary_requirements=form.has_dietary_requirements.data
+        user.dietary_requirements=form.dietary_requirements.data
+        if form.has_dietary_requirements.data == False:
+            user.dietary_requirements=None
+        db.session.commit()
+        return redirect('/my_account')
+    else:
+        print form.errors
+
+    user=g.user
+    form.email.data=user.email
+    form.phone.data=user.phone
+    form.first_name.data=user.first_name
+    form.last_name.data=user.last_name
+    form.has_dietary_requirements.data=user.has_dietary_requirements
+    form.dietary_requirements.data=user.dietary_requirements
+
+    return render_template('edit_my_account.html',form=form, user_id=g.user.id)
+
+@app.route('/get_dietary_bool/<int:id>')
+def get_dietary_bool(id):
+    return jsonify(bool=User.query.filter_by(id=id).first_or_404().has_dietary_requirements)
+
+@app.route('/view_account/<int:id>')
+@login_required
+def view_account(id):
+    return render_template('view_account.html', user=User.query.filter_by(id=id).first_or_404())
+
+@app.route('/view_account/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_account(id):
+    form=EditAccountForm()
+    if form.validate_on_submit():
+        user=User.query.filter_by(id=id).first_or_404()
+        user.email=form.email.data
+        user.phone=form.phone.data
+        user.first_name=form.first_name.data
+        print form.first_name.data
+        user.last_name=form.last_name.data
+        user.has_dietary_requirements=form.has_dietary_requirements.data
+        user.dietary_requirements=form.dietary_requirements.data
+        if form.has_dietary_requirements.data == False:
+            user.dietary_requirements=None
+        db.session.commit()
+        return redirect('/view_account/'+str(id))
+    else:
+        print form.errors
+
+    user=User.query.filter_by(id=id).first_or_404()
+    form.email.data=user.email
+    form.phone.data=user.phone
+    form.first_name.data=user.first_name
+    form.last_name.data=user.last_name
+    form.has_dietary_requirements.data=user.has_dietary_requirements
+    form.dietary_requirements.data=user.dietary_requirements
+    return render_template('edit_account.html',form=form, user_id=id)
