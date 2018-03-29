@@ -22,11 +22,27 @@ from sqlalchemy.orm import relationship, backref
 #    mailing_list_id = db.Column( db.Integer, db.ForeignKey('mailing_list.id'), primary_key=True)
 #    user = db.relationship("User")
 
+class Event_Table(db.Model):
+    __tablename__='event_table'
+    id = db.Column(db.Integer, primary_key=True)
+    free_seats = db.Column(db.Integer, default = 10)
+    table_num = db.Column(db.Integer, nullable=False)
+    corprate_table = db.Column(db.Boolean, default=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    guests = db.relationship("Table_Attendee", backref = "event_table", cascade="all, delete-orphan")
+
+class Table_Attendee(db.Model):
+    __tablename__='table_attendee'
+    table_id = db.Column( db.Integer, db.ForeignKey('event_table.id'))
+    user_id = db.Column( db.Integer, db.ForeignKey('user.id'),primary_key=True)
+    user = db.relationship("User")
+
+
 class Recipient(db.Model):
     __tablename__ = 'recipient'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column( db.Integer, unique=True)
-    mailing_list_idd = db.Column( db.Integer, unique=True)
+    user_id = db.Column(db.Integer, unique=True)
+    mailing_list_id = db.Column(db.Integer, unique=True)
 
 class Non_user_recipient(db.Model):
     __tablename__ = 'non_user_recipient'
@@ -98,6 +114,7 @@ class Guest(db.Model):
     __tablename__ = 'guest'
     event_id = db.Column( db.Integer, db.ForeignKey('event.id'), primary_key=True)
     user_id = db.Column( db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    seated = db.Column(db.Boolean, default=False)
     code = db.Column( db.String(64))
     user = db.relationship("User")
 
@@ -113,6 +130,7 @@ class Event(db.Model):
     invitation_template = db.Column(db.String(1000))
     guests = db.relationship("Guest", backref = "event",cascade="all, delete-orphan")
     moneyraised = db.relationship('MoneyRaised', backref='event', lazy=True)
+    tables = db.relationship("Event_Table", backref="event", cascade="all, delete-orphan")
     menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
     menu = db.relationship('Menu')
     #guests = db.relationship('User', secondary=guests, lazy='subquery', backref=db.backref('events', lazy=True))

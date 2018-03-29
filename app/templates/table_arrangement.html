@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+<h1> Manage Seating </h1>
+<table style="width:100%">
+  <tr>
+    {% for t in tables %}
+    <th>Table {{ t.table_num }} <a class="nav=link" href='/event/{{event_id}}/tableArrangement/{{t.id}}/edit'/>Edit Table</a></th>
+      
+
+
+    {% endfor %}
+  </tr>
+  {% for t in tables %}
+    <tr>
+      {% for usr in t.guests %}
+        <td> {{ usr.user.username }} </td>
+      {% endfor %}
+    </tr>
+  {% endfor %}
+</table>
+<input type="button"onclick="location.href='/event/{{event_id}}/tableArrangement/addtable';" value="Add table" />
+
+<div>
+<h3> Unseated guests </h3>
+{% for g in guests %}
+  {% if not g.seated %}
+  <li>  {{ g.user.username }}</li>
+  {% endif %}
+{% endfor %}
+</div>
+{% endblock %}

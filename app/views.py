@@ -2,8 +2,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp
-from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp,SizeForm
+from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised, Event_Table, Table_Attendee
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
 from functools import wraps
@@ -61,8 +61,83 @@ def add_menu(title,body):
     return
 
 
+########table management##############
 
-#######admin stuff########
+@app.route('/event/<string:event_id>/tableArrangement',methods=['GET', 'POST'])
+def tableArrangement(event_id):
+    tables = Event_Table.query.filter_by(event_id = event_id)
+    guests =db.session.query(Guest).filter_by(event_id = event_id)
+    return render_template('table_arrangement.html', guests=guests, tables = tables,event_id=event_id)
+
+@app.route('/event/<string:event_id>/tableArrangement/addtable',methods=['GET', 'POST'])
+def addTable(event_id):
+    tables = Event_Table.query.filter_by(event_id = event_id)
+    i = 1
+    for t in tables:
+        i = i+1
+    table= Event_Table(
+            event_id = event_id,
+            table_num = i
+            )
+    db.session.add(table)
+    db.session.commit()
+    guests =db.session.query(Guest).filter_by(event_id = event_id)
+    return redirect(url_for('tableArrangement', event_id=event_id))
+
+@app.route('/event/<string:event_id>/tableArrangement/<string:table_id>/edit', methods=['GET', 'POST'])
+def editSeating(event_id,table_id):
+    users = Guest.query.filter_by(event_id=event_id).filter_by(seated=False).all()
+    form = SearchAdminForm()
+    sizeForm = SizeForm()
+    table = Event_Table.query.filter_by(id=table_id).first()
+    msg="that user isn't attending the event"
+    if sizeForm.validate_on_submit():
+        size = sizeForm.size.data
+        table.free_seats = size - table.free_seats
+        return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=usr, users=users, event_id=event_id, t = table)
+    if form.validate_on_submit():
+        usr = User.query.filter_by(username= form.username.data).first()
+        myUser = Guest.query.filter_by(user_id=usr.id).first()
+        if myUser != None: 
+            return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=usr, users=users, event_id=event_id, t = table)
+        flash(msg)
+    return render_template('seating.html', sizeForm=sizeForm,form=form, table_id=table_id,myUser=None,users=users, event_id = event_id, t=table)
+
+@app.route('/event/<string:event_id>/tableArrangement/<string:table_id>/edit/<string:user_id>/add', methods=['GET', 'POST'])
+def addUserToTable(event_id,table_id,user_id):
+    table = Event_Table.query.filter_by(id = table_id).first()
+    if (table.free_seats==0)or(table.corprate_table):
+        flash("cannot add guest, table is booked or full")
+        return redirect(url_for('editSeating', event_id=event_id, table_id=table_id))
+    gst = Guest.query.filter_by(user_id = user_id).first()
+    if gst.seated:
+        gst.seated=True    
+        flash("user is already seated")
+        return redirect(url_for('editSeating', event_id=event_id, table_id=table_id))
+    atnd = Table_Attendee(table_id = table_id,
+                        user_id = user_id
+                        )
+    db.session.add(atnd)
+    table.free_seats-=1
+    gst.seated=True
+    db.session.commit()
+    return redirect(url_for('editSeating', event_id=event_id, table_id=table_id))
+@app.route('/event/<string:event_id>/tableArrangement/<string:table_id>/edit/<string:user_id>/remove', methods=['GET', 'POST'])
+def removeUserfromtable(user_id,table_id,event_id):
+    atnd = Table_Attendee.query.filter_by(user_id=user_id).first()
+    guest = Guest.query.filter_by(user_id=user_id).first()
+    table = Event_Table.query.filter_by(event_id=event_id).first()
+    guest.seated=False
+    table.free_seats+=1
+    db.session.delete(atnd)
+    db.session.commit()
+    return redirect(url_for('editSeating', event_id=event_id, table_id=table_id))
+
+    
+###########End Table management##########
+
+
+###########admin stuff############
 
 def requires_roles(*roles):
     def wrapper(f):
@@ -81,13 +156,13 @@ def requires_roles(*roles):
 def create_admin():
     users = User.query.filter_by(admin=False).all()
     form = SearchAdminForm()
-    msg="that user doesn't exist"
+    msg="that user doesn't exist, or is already an admin"
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user:
-            msg=None
-        flash(msg)
-        return render_template('create_admin.html',form=form, users=users,myUser=user)
+            return render_template('create_admin.html',form=form, users=users,myUser=user)
+        else:
+            flash(msg)
     return render_template('create_admin.html',form=form ,users = users,myUser=None)
 
 

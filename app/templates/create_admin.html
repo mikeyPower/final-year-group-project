@@ -16,8 +16,8 @@
       <div id ="user" method="post" name="made_admin" >
         <tr>
           <td>
-            <a class="nav-link" href="/make_admin/{{ myUser.username }}">
-            {{ myUser.username }}
+            <a data-confirm="Are you sure?" data-method="makeAdmin" href="/make_admin/{{ myUser.username }}">
+            Make {{ myUser.username }} an Admin
             </a>
           </td>
         </tr>

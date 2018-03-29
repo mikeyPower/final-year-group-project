@@ -5,6 +5,11 @@ from wtforms.fields.html5 import EmailField
 from app import models, db
 from app.models import User
 
+class SizeForm(Form):
+    size = SelectField(
+        'Programming Language',
+        choices=[(4, '4'), (5, '5'), (6, '6'), (7, '7'), (8, '8'), (9, '9'), (10, '10'), (11, '11'), (12, '12'), (13, '13'), (14, '14'), (15, '15'), (16, '16')]
+        )
 
 class LoginForm(Form):
     username = StringField('Username:', validators=[DataRequired()])
