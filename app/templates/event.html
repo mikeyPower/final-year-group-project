@@ -24,6 +24,7 @@
 
     <h4>Admin Tools:</h4>
     {% if session['admin'] %}
+    <input type="button" onclick="location.href='/event/{{event.id}}/tableArrangement';" value="Manage seating arrangement"/>
     <input type="button" onclick="location.href='/event/view-money-raised/{{event.id}}';" value="View donations" />
     <input type="button" onclick="location.href='/event/record-money-raised/{{event.id}}';" value="Record a donation" />
     {% endif %}

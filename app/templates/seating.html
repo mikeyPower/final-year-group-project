@@ -1,0 +1,54 @@
+{% extends 'index.html'%}
+
+{% block body %}
+<h1>Edit table {{table_id }}</h1>
+<body> 
+  <div id=search>
+    <form action="" method="post" name="search">
+      {{ form.hidden_tag() }}
+      <p>
+        Search user:
+        {{ form.username(size=30) }}
+        <input type = "submit" value="Search"></input>
+      </p>
+    </form>
+    {% if myUser != None %}
+      <div id ="user" method="post" name="add_to_table" >
+        <tr>
+          <td>
+             <a class="nav-link" href="/event/{{event_id}}/tableArrangement/{{table_id}}/edit/{{myUser.id}}/add">
+           add  {{ myUser.username }} to table
+            </a>
+          </td>
+        </tr>
+      </div> 
+    {% endif %}
+  </div>
+  <table style="width:100%">
+    <tr>
+      <td><table>
+        <tr>
+          <th>Awaiting Seat </th>
+        </tr>
+        <tr>
+          {% for usr in users: %}
+            {% if not usr.seated: %}
+              <td>{{ usr.user.username }}</li>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      </table></td>
+      <td><table>
+        <tr>
+          <th> Seated </th>
+        </tr>
+        <tr>
+          {% for usr in t.guests %}
+            <td> {{ usr.user.username }}  <a class="nav=link" href='/event/{{event_id}}/tableArrangement/{{t.id}}/edit/{{usr.user_id}}/remove'/>remove</a></td>
+          {% endfor %}
+        </tr>
+      </table></td>
+    </tr>
+  </table>
+</body>
+{% endblock %}
