@@ -48,7 +48,35 @@ def test_menu_added():
 
 def test_create_event():
 
-    title_data = "Test Event somewhere in world"
+    title_data = "hi 1"
+    location_data = "Mars in Mily Way Galaxy"
+    description_data = "Test yes indeed, it's a test... !!!"
+
+    event3 = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    title_data = "hi 2"
+    event2 = Event(
+        title=title_data,
+        location=location_data,
+        description=description_data
+    )
+    db.session.add(event3)
+    db.session.add(event2)
+    db.session.commit()
+    events = db.session.query(Event).filter_by(location = location_data).all()
+    db.session.delete(event3)
+    db.session.delete(event2)
+    db.session.commit()
+    print(events[0].location)
+    print(events[1].location)
+    #index = 10 / 0
+    assert events[0].location == events[0].location
+
+def test_event_delete():
+    title_data = "hi 3"
     location_data = "Mars in Mily Way Galaxy"
     description_data = "Test yes indeed, it's a test... !!!"
 
@@ -57,7 +85,7 @@ def test_create_event():
         location=location_data,
         description=description_data
     )
-    title_data = "Test Event somewhere in world 2"
+    title_data = "hi 4"
     event2 = Event(
         title=title_data,
         location=location_data,
@@ -66,17 +94,17 @@ def test_create_event():
     db.session.add(event)
     db.session.add(event2)
     db.session.commit()
-    events = db.session.query(Event).filter_by(location = location_data).all()
+    evid = event.id
+    assert db.session.query(Event).filter_by(id=evid).first()
     db.session.delete(event)
+    db.session.commit()
+    assert not db.session.query(Event).filter_by(id=evid).first()
     db.session.delete(event2)
     db.session.commit()
-    print(events[0].location)
-    print(events[1].location)
-    #index = 10 / 0
-    assert events[0].location == events[0].location
+
 
 def test_event_update():
-    title_data = "Test Event somewhere in world"
+    title_data = "hi 5"
     location_data = "Mars in Mily Way Galaxy"
     description_data = "Test yes indeed, it's a test... !!!"
 
@@ -92,9 +120,12 @@ def test_event_update():
     ev2.title = "this is a new title"
     db.session.add(ev2)
     db.session.commit()
+
     ev3 = db.session.query(Event).filter_by(title = "this is a new title").first_or_404()
     assert ev3.title != old_title
     db.session.delete(ev3)
+    db.session.delete(ev2)
+    db.session.delete(event)
     db.session.commit()
 
 def test_send_emails():
@@ -326,7 +357,7 @@ def test_update_account_details():
     db.session.commit()
 
 def test_total_amount_raised():
-    title_data = "Test Event somewhere in world"
+    title_data = "hi 6"
     location_data = "Mars in Mily Way Galaxy"
     description_data = "Test yes indeed, it's a test... !!!"
     event = Event(
@@ -351,7 +382,7 @@ def test_total_amount_raised():
     db.session.commit()
 
 def test_top_donors():
-    title_data = "Test Event somewhere in world"
+    title_data = "hi 7"
     location_data = "Mars in Mily Way Galaxy"
     description_data = "Test yes indeed, it's a test... !!!"
     event = Event(
@@ -401,4 +432,5 @@ def test_top_donors():
     assert top_donors_hidden()[0].user==user2
     db.session.delete(user1)
     db.session.delete(user2)
+    db.session.delete(event)
     db.session.commit()
