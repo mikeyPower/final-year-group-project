@@ -42,8 +42,8 @@ class Table_Attendee(db.Model):
 class Recipient(db.Model):
     __tablename__ = 'recipient'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, unique=True)
-    mailing_list_id = db.Column(db.Integer, unique=True)
+    user_id = db.Column(db.Integer)
+    mailing_list_id = db.Column(db.Integer)
 
 class Non_user_recipient(db.Model):
     __tablename__ = 'non_user_recipient'

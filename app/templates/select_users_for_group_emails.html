@@ -19,7 +19,9 @@
   </p>
   <p><input type="submit" name="btn" value="Submit">
 </form>
-<p>or you can send group emails to all registered users by clicking the button below</p>
-<input type="button" onclick="location.href='/group_email';" value="Send emails to all registered users" />
+<!--<p>or you can send group emails to all registered users by clicking the button below</p>-->
+<!--input type="button" onclick="location.href='/group_email';" value="Send emails to all registered users" /-->
+<p><input type="button" onclick="location.href='{{request.referrer}}';" value="Cancel"/></p>
+
 
 {% endblock %}
