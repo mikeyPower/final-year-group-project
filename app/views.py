@@ -1457,6 +1457,14 @@ def all_guests():
     return render_template('all_guests.html', guests=guests)
 
 
+def get_total_raised_test(eventid):
+    d_list = Event.query.get(eventid).moneyraised
+    t = sum(x.amount for x in d_list)
+    if t is None:
+        t2 = 0.0
+    else:
+        t2 = t
+    return t2
 
 def get_total_raised(eventid):
     d_list = Event.query.get(eventid).moneyraised
@@ -1571,13 +1579,17 @@ class MoneyRaisedForm(Form):
 
 @app.route('/top_donors')
 @login_required
+@requires_roles('admin')
 def top_donors():
+    return render_template('top_donors.html', donors=top_donors_hidden() )
+
+def top_donors_hidden():
     u_list = User.query.all()
     donors = []
     for u in u_list:
         donors.append(Donor(u,sum([d.amount for d in u.donations])))
     newlist = sorted(donors, key=lambda x: x.total, reverse=True)
-    return render_template('top_donors.html', donors=newlist )
+    return newlist
 
 class Donor(object):
     def __init__(self, user, total):
@@ -1626,11 +1638,13 @@ def get_dietary_bool(id):
 
 @app.route('/view_account/<int:id>')
 @login_required
+@requires_roles('admin')
 def view_account(id):
     return render_template('view_account.html', user=User.query.filter_by(id=id).first_or_404())
 
 @app.route('/view_account/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
+@requires_roles('admin')
 def edit_account(id):
     form=EditAccountForm()
     if form.validate_on_submit():
