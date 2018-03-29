@@ -4,6 +4,8 @@
   <div class="container">
       <h1>You already have a ticket, your ticket reference is:</h1>
       <h2 class = "text-center">{{code}}</h2>
+      <p><input type="button" onclick="location.href='{{request.referrer}}';" value="Back"/></p>
+
   </div>
 
 {% endblock %}

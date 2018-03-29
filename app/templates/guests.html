@@ -29,4 +29,6 @@
     <input type="button" onclick="location.href='/event/{{event.id}}/invite_mailing_list';" value="Send invitations to mailing list" />
     <input type="button" onclick="location.href='/event/{{event.id}}/customise_invitation';" value="Customise Invitations" />
     <a class="nav-link" href="/event/{{event.id}}/guests/register">Add Guest</a>
+    <p><input type="button" onclick="location.href='{{request.referrer}}';" value="Back"/></p>
+
 {% endblock %}
