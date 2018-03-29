@@ -2,8 +2,8 @@
 
 {% block body %}
 <h1>Edit table {{t.table_name }}</h1>
-<body> 
-  <div id=search>
+<body>
+   <div id=search>
     <form action="" method="post" name="search">
       {{ form.hidden_tag() }}
       <p>
@@ -24,26 +24,16 @@
       </div> 
     {% endif %}
   </div>
-  <div>
-    <h6> Make table owned by a corporate entity and give a table name</h6>
-    <form action="" method="post" name="ChangeName">
-      {{ nameForm.hidden_tag() }}
-      <p>
-        Enter name:
-        {{ nameForm.name(size=30) }}
-        <input type = "submit" value="Change name"></input>
-      </p>
-    </form>
-  </div>
+  
 
-  <div>
+  <div id = ChangeName>
     <h6>change table name of non corporate entity</h6>
     <form action="" method="post" name="ChangeName">
       {{ nameForm.hidden_tag() }}
       <p>
         Enter name:
         {{ nameForm.name(size=30) }}
-        <input type = "submit" value="ChangeName"></input>
+        <input type = "submit" name="btn2"  value="ChangeName"></input>
       </p>
     </form>
   </div>
@@ -74,7 +64,11 @@
       </table></td>
     </tr>
   </table>
+
+  <p> change table name and so it is owned by a corporate entity<a href="/event/{{event_id}}/tableArrangement/{{t.id}}/edit/corporate"> here</a></p>
   <div>
+
+
     <p>back to Table management<a href="/event/{{event_id}}/tableArrangement"> here</a></p>
 
   </div>

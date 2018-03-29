@@ -2,7 +2,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, menu_views
 from app.menu_views import *
 from flask import g,render_template, flash, redirect, session, Flask, url_for, request
-from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp,SizeForm, TableNameForm
+from .forms import LoginForm, RegisterForm, MenuForm,ChangePassForm, GroupEmailForm, EventForm, EmailAddresses, SearchAdminForm, PastebinEntry, EditAccountForm, EmailAddresses2, Invitation_temp,SizeForm, TableNameForm, CorpTableNameForm
 from .models import User, Menu, Total, Event, Guest, Choice, Mailing_list, Recipient, Non_user_recipient, MoneyRaised, Event_Table, Table_Attendee
 from flask_table import Table, Col, LinkCol
 from flask_wtf import Form as BaseForm
@@ -85,6 +85,20 @@ def addTable(event_id):
     guests =db.session.query(Guest).filter_by(event_id = event_id)
     return redirect(url_for('tableArrangement', event_id=event_id))
 
+@app.route('/event/<string:event_id>/tableArrangement/<string:table_id>/edit/corporate', methods=['GET', 'POST'])
+def corporate_table(event_id,table_id):
+    corpNameForm =CorpTableNameForm()
+    table = Event_Table.query.filter_by(id=table_id).first()
+    if corpNameForm.validate_on_submit():
+        name = corpNameForm.name.data
+        table.table_name = name
+        table.corprate_table = True
+        db.session.commit()
+        return redirect(url_for('editSeating', event_id=event_id, table_id=table_id))
+    return render_template('corpSeating.html', corpNameForm= corpNameForm,t=table_id)
+ 
+
+
 @app.route('/event/<string:event_id>/tableArrangement/<string:table_id>/edit', methods=['GET', 'POST'])
 def editSeating(event_id,table_id):
     users = Guest.query.filter_by(event_id=event_id).filter_by(seated=False).all()
@@ -96,14 +110,7 @@ def editSeating(event_id,table_id):
     if nameForm.validate_on_submit():
         name = nameForm.name.data
         table.table_name = name
-        table.is_corprate = True
-        db.session.commit()
-        return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=None, users=users, event_id=event_id, t = table, nameForm=nameForm)
- 
-    if nameForm.validate_on_submit():
-        name = nameForm.name.data
-        table.table_name = name
-        table.is_corprate = False
+        table.corprate_table = False
         db.session.commit()
         return render_template('seating.html',sizeForm=sizeForm,form=form,table_id=table_id,myUser=None, users=users, event_id=event_id, t = table, nameForm=nameForm)
     if sizeForm.validate_on_submit():
@@ -121,12 +128,16 @@ def editSeating(event_id,table_id):
 @app.route('/event/<string:event_id>/tableArrangement/<string:table_id>/edit/<string:user_id>/add', methods=['GET', 'POST'])
 def addUserToTable(event_id,table_id,user_id):
     table = Event_Table.query.filter_by(id = table_id).first()
-    if (table.free_seats==0)or(table.corprate_table):
+    print("hello")
+    print("hello")
+    print (table.corprate_table)
+    print("hello")
+    print("hello")
+    if table.corprate_table:
         flash("cannot add guest, table is booked or full")
         return redirect(url_for('editSeating', event_id=event_id, table_id=table_id))
     gst = Guest.query.filter_by(user_id = user_id).first()
     if gst.seated:
-        gst.seated=True    
         flash("user is already seated")
         return redirect(url_for('editSeating', event_id=event_id, table_id=table_id))
     atnd = Table_Attendee(table_id = table_id,
