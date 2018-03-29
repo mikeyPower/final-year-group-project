@@ -35,6 +35,7 @@ import json
 from werkzeug.datastructures import MultiDict
 import time
 from datetime import datetime
+from urllib import urlencode, quote, unquote
 #global id_number_for_form = 0;
 ev_num = 0
 
@@ -139,6 +140,29 @@ def removeUserfromtable(user_id,table_id,event_id):
 
 ###########admin stuff############
 
+def confirmation_required(desc_fn):
+    def inner(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if request.args.get('confirm') != '1':
+                desc = desc_fn()
+                return redirect(url_for('confirm', 
+                    desc=desc, action_url=quote(request.url)))
+            return f(*args, **kwargs)
+        return wrapper
+    return inner
+
+@app.route('/confirm')
+def confirm():
+    desc = request.args['desc']
+    action_url = unquote(request.args['action_url'])
+
+    return render_template('_confirm.html', desc=desc, action_url=action_url)
+
+def you_sure():
+    return "do you want to make this user an admin?"
+
+
 def requires_roles(*roles):
     def wrapper(f):
         @wraps(f)
@@ -167,6 +191,7 @@ def create_admin():
 
 
 @app.route("/make_admin/<usr_id>",methods=['GET','POST'])
+@confirmation_required(you_sure)
 def make_admin(usr_id):
     user = User.query.filter_by(username = usr_id).first()
     msg = "failed to create admin"
@@ -1401,14 +1426,6 @@ def all_guests():
     return render_template('all_guests.html', guests=guests)
 
 
-def get_total_raised_test(eventid):
-    d_list = Event.query.get(eventid).moneyraised
-    t = sum(x.amount for x in d_list)
-    if t is None:
-        t2 = 0.0
-    else:
-        t2 = t
-    return t2
 
 def get_total_raised(eventid):
     d_list = Event.query.get(eventid).moneyraised
@@ -1476,7 +1493,6 @@ def record_money_raised_view(eventid):
         m = MoneyRaised(other_source=form.source.data, user_source = form.user_source.data,
         amount=form.money_raised.data, from_other_source=form.checkbox.data, event_id=eventid,
         date_time = datetime.now())
-
         db.session.add(m)
         db.session.commit()
         flash('Money Recorded! - Source: ' + form.source.data + ',  Amount: ' + str(form.money_raised.data))
@@ -1524,17 +1540,13 @@ class MoneyRaisedForm(Form):
 
 @app.route('/top_donors')
 @login_required
-@requires_roles('admin')
 def top_donors():
-    return render_template('top_donors.html', donors=top_donors_hidden() )
-
-def top_donors_hidden():
     u_list = User.query.all()
     donors = []
     for u in u_list:
         donors.append(Donor(u,sum([d.amount for d in u.donations])))
     newlist = sorted(donors, key=lambda x: x.total, reverse=True)
-    return newlist
+    return render_template('top_donors.html', donors=newlist )
 
 class Donor(object):
     def __init__(self, user, total):
@@ -1583,13 +1595,11 @@ def get_dietary_bool(id):
 
 @app.route('/view_account/<int:id>')
 @login_required
-@requires_roles('admin')
 def view_account(id):
     return render_template('view_account.html', user=User.query.filter_by(id=id).first_or_404())
 
 @app.route('/view_account/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
-@requires_roles('admin')
 def edit_account(id):
     form=EditAccountForm()
     if form.validate_on_submit():
