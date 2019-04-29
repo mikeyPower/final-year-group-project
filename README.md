@@ -1,4 +1,4 @@
-## Open the terminal and navigate to the app’s root folder.
+## How to Run
 Setup:
 
        1: install pip using 'sudo apt install python-pip'
