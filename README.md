@@ -13,13 +13,13 @@ Run The Following Commands:
        7: in your web browser localhost:5000
 
 ## Running pytest:
-1. flask/bin/pytest
+     1. flask/bin/pytest
 Note: This only works with a clean db. To test locally do make fresh first (THIS WILL CLEAR THE DATABASE). For development purposes, the tests are executed automatically by Travis-CI
 
 
-Feature Number 1 | Administrator | I want to be able to login (change password/details/create account)
-Feature Number 62 | Attendee | Create an account/register
-Feature Number 63 | Attendee | Login to account
+Feature Number 1 | Administrator | I want to be able to login (change password/details/create account)<br />
+Feature Number 62 | Attendee | Create an account/register<br />
+Feature Number 63 | Attendee | Login to account<br />
 Steps:
       User:
       
@@ -68,7 +68,7 @@ Steps:
     5. Click Submit to submit the update, or cancel, to cancel any changes.
     6. You will return to the event page where you can view the changes you have just made
 
-Feature Number 29|Administrator|I want to create menus:
+Feature Number 29|Administrator| I want to create menus:
 Steps:
 
        1.Navigate and click on "Menu List" in the navigation bar
@@ -130,8 +130,8 @@ Steps:
 
 
 
-Feature Number 9 | Administrator | Send out invitations)
-Feature Number 14 | Administrator | I want to be able to send automated invitations, with link to register for the event
+Feature Number 9 | Administrator | Send out invitations)<br />
+Feature Number 14 | Administrator | I want to be able to send automated invitations, with link to register for the event<br />
 Steps:
 
   	1. Navigate and click on "Event" in the navigation bar
@@ -164,9 +164,9 @@ Steps:
   	8. Click Submit
   	9. Your email will be sent to the guest list
 
-Feature Number 13| Administrator|As staff, I need to register a guest for one event (including their details), so I can track what is needed for the event
-Feature Number 27 | Administrator | I want to be able to manage the guest list
-Feature Number 28 | Administrator | I want to be able to add/remove attendees from the guest list
+Feature Number 13| Administrator|As staff, I need to register a guest for one event (including their details), so I can track what is needed for the event<br />
+Feature Number 27 | Administrator | I want to be able to manage the guest list<br />
+Feature Number 28 | Administrator | I want to be able to add/remove attendees from the guest list<br />
 Steps:
 
     1. Navigate and click on "Event" in the navigation bar
@@ -189,7 +189,7 @@ Steps:
       4.Click on 'View Guest List'
       5.You should now be able to see all the Guest info including contact details
 
-Feature Number 6|Administrator|Keep Track of Possible/Previous Guests:
+Feature Number 6|Administrator| Keep Track of Possible/Previous Guests:
 Steps:
 
     1. Navigate and click on "Users" in the navigation bar
@@ -213,9 +213,9 @@ Steps:
             4.You will be presented with your ticket Reference code
 
 
-Feature Number 12 | Administrator | I need to be able to manage  the responses so I can know who is attending
-Feature Number 22 | Administrator | I want to be able to see the rsvp list
-Feature Number 24 | Administrator | I want to be able to see a report of who is attending an event
+Feature Number 12 | Administrator | I need to be able to manage  the responses so I can know who is attending<br />
+Feature Number 22 | Administrator | I want to be able to see the rsvp list<br />
+Feature Number 24 | Administrator | I want to be able to see a report of who is attending an event<br />
 Feature Number 25 | Administrator | I want confirmation that people are registered to attend (RSVP’d) in order to have the correct number of staff for the event
 
       1.In order to view who is attending an event, follow the following steps:
@@ -228,6 +228,7 @@ Feature Number 25 | Administrator | I want confirmation that people are register
 
 
 Feature Number 34 | Administrator | i want to be able to manage table setting
+Steps:
 
     1. click the Event tab in the nav bar
     2. at the bottom of the page under AdminTools is a button called manage seating arrangement, that will bring you the seating arrangement page
