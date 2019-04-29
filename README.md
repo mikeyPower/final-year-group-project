@@ -1,15 +1,16 @@
 ## Open the terminal and navigate to the app’s root folder.
 Setup:
-'''
+
        1: install pip using 'sudo apt install python-pip'
-       Run The Following Commands:
+       
+Run The Following Commands:
+       
        2: sudo pip install virtualenv
        3: virtualenv flask
        4: source flask/bin/activate (this starts the environment)
        5: ./install.sh
        6: ./run.py to run the app 
        7: in your web browser localhost:5000
-'''
 
 ## Running pytest:
 1. flask/bin/pytest
@@ -21,6 +22,7 @@ Feature Number 62 | Attendee | Create an account/register
 Feature Number 63 | Attendee | Login to account
 Steps:
       User:
+      
       1. To Register account click the ‘here’ button under sign-in as detailed and you can enter your details
       2. Once registered you can then login by typing in your username and password and clicking sign in.
       3. to change your password navigate to ‘My Account’ in the navbar and click ‘Change Password’
@@ -30,13 +32,14 @@ Steps:
       7. Change your details as desired, click the special dietary requirements checkbox if necessary. Click  ‘Update Account’ to save your changes
 
       Administrator:
-     If already logged in, click ‘Logout’ in the top right
+      If already logged in, click ‘Logout’ in the top right
       1. Login as an admin with,Username=Admin and password = password
       2. We recommend to change the password for this account immediately. The steps are the same as mentioned above.
 
 
 
 Feature Number 2|Administrator| I want to be able to give admin access to other people
+
       1. navigate to the admin page in the navbar
       2. here you will see a list of users, you can search for a name in the search bar.
       3. once you have searched for a user a button with “Make” name “an Admin” will appear under the search bar.
@@ -45,6 +48,7 @@ Feature Number 2|Administrator| I want to be able to give admin access to other 
 
 Feature Number 4 | Administrator | I would like to be able to create an event e.g. a dinner:
 Steps:
+
       1. Navigate and click on "Event" in the navigation bar
       2. Click "Add Event"
       3. Input a title for your event
@@ -56,6 +60,7 @@ Steps:
 
 Feature Number 5 | Administrator | I want to be able to update event information and submit event updates
 Steps:
+
     1. Navigate and click on "Event" in the navigation bar
     2. Click "View" on the desired event page
     3. Click ‘Edit Event’
@@ -65,24 +70,26 @@ Steps:
 
 Feature Number 29|Administrator|I want to create menus:
 Steps:
+
        1.Navigate and click on "Menu List" in the navigation bar
        3.Click "Create Menu"
        2.Input a title of your proposed Menu
        3.Input the contents/body of the Menu
        4.When satisfied with what you have entered hit "Submit"
-       5.You will know be brought back to the menu list page with your menu being added, you may click on this menu to see that the contents are the same as you have entered
+       5.You will know be brought back to the menu list page with your menu being added, you may click on this menu to see that the            contents are the same as you have entered
        6.In order to upload a pdf file of your menu click ‘Browse..’ button
-       7.a pop up of your file manager will appear, search your file manager and double click on your desired pdf file to add, the name of the file will appear beside the ‘Browse..’ button
+       7.a pop up of your file manager will appear, search your file manager and double click on your desired pdf file to add, the name        of the file will appear beside the ‘Browse..’ button
        8.Click ‘Upload Menu’ button to add the menu to the menulist    
        9.The menu should now be added to the menu list
        10. To view the menus you have created, click on the title of the menu to view it 
 
 Feature Number 51 | Administrator | I want to see how much is raised so far:
 Steps:
+
       1. First click on ‘Event’ on the navbar.
       2. Then click view, on the event you wish to see the money raised for.
       3. Then click “View total money raised”
-  To Test the feature:
+      To Test the feature:
       4. In a new tab, navigate to the same event page.
       5. Click ‘Record a Donation’
       6. Input the amount raised.
@@ -93,6 +100,7 @@ Steps:
 
 Feature Number 54 | Administrator | I want to track current amount raised:
 Steps:
+
       1. First click on ‘Event’ on the navbar.
       2. Then click view, on the event you wish to see the money raised for.
       3. Then in the Admin Tools section click “View donations”
@@ -102,46 +110,51 @@ Steps:
 
 Feature Number 7 | Administrator | Track which guests are big spenders and/or regular donors
 Steps:
+
       1. Click on the “Users” heading on the navbar
       2. Click the “View Top Donors” button
       3. You will be redirected to a list of all users showing how much each has donated
 
 Feature Number 8 | Administrator | I want to send invitations to a mailing list, so that people know to come and that they are invited
 Steps:
-1.  To create an mailing list,  navigate and click on “Mailing lists” in the navigation bar
-2. Click on “Add Mailing list”
-3. Enter a title of the mailing list and select email addresses you want to add to the mailing list then click on “Submit”, or click on “Add emails manually” to add emails that are not on the list and enter a title for the mailing list and type in emails addresses separated by a semicolon then click on “Submit”
-4. Navigate and click on “Event” in the navigation bar
-5. Click on “Guest List” for the particular event you want
-6. Click on “Send invitations to mailing list”
-7. Please select a mailing list from the list
-8. Click on “Submit”
-9. You will be brought back to guest list page for that particular event with a message on top says “Invitation sent”
+
+       1.  To create an mailing list,  navigate and click on “Mailing lists” in the navigation bar
+       2. Click on “Add Mailing list”
+       3. Enter a title of the mailing list and select email addresses you want to add to the mailing list then click on “Submit”, or click on “Add emails manually” to add emails that are not on the list and enter a title for the mailing list and type in emails addresses separated by a semicolon then click on “Submit”
+       4. Navigate and click on “Event” in the navigation bar
+       5. Click on “Guest List” for the particular event you want
+       6. Click on “Send invitations to mailing list”
+       7. Please select a mailing list from the list
+       8. Click on “Submit”
+       9. You will be brought back to guest list page for that particular event with a message on top says “Invitation sent”
 
 
 
 Feature Number 9 | Administrator | Send out invitations)
 Feature Number 14 | Administrator | I want to be able to send automated invitations, with link to register for the event
 Steps:
+
   	1. Navigate and click on "Event" in the navigation bar
   	2. Click "View" for the particular event you want
   	3. Click "Guest List"
   	4. Click “Send invitations to non guests” to send invitations.
-5. To customise the invitation that is sent out, click customise invitations button, and enter an email. Otherwise a default template is sent out.
+       5. To customise the invitation that is sent out, click customise invitations button, and enter an email. Otherwise a default template is sent out.
 
 Feature Number 20 | Administrator | I would like to email (legitimately) subscribed users:
 Steps:
+
   	1. Navigate and click on "Mailing lists" in the navigation bar
   	2. To send an email to all users, click ‘“Send emails to all registered users”
-3. Enter the title and body of the email, then click submit to send
-4. The email will be sent to all registered users.
-5. To email a mailing list, click on "Mailing lists" in the navigation bar
-6. Click “Send email to users”
-7. Select the mailing lists to which you want to send your email.
-8. Enter the title and body of the email, then click submit to send
+       3. Enter the title and body of the email, then click submit to send
+       4. The email will be sent to all registered users.
+       5. To email a mailing list, click on "Mailing lists" in the navigation bar
+       6. Click “Send email to users”
+       7. Select the mailing lists to which you want to send your email.
+       8. Enter the title and body of the email, then click submit to send
 
 Feature Number 21 | Administrator | I want to be able to contact attendees easily e.g. group emails:
 Steps:
+
   	1. Navigate and click on "Event" in the navigation bar
   	3. Click "View" for the particular event you want
   	4. Click "View Guest List"
@@ -155,6 +168,7 @@ Feature Number 13| Administrator|As staff, I need to register a guest for one ev
 Feature Number 27 | Administrator | I want to be able to manage the guest list
 Feature Number 28 | Administrator | I want to be able to add/remove attendees from the guest list
 Steps:
+
     1. Navigate and click on "Event" in the navigation bar
     2. Click "View"
     3. Click "Guest List"
@@ -168,6 +182,7 @@ Steps:
 
 Feature Number 11| Administrator | I want to see guests contact details:
 Steps:
+
       1.Navigate and Click on 'Event' in the navigation bar
       2.You should be now on the events page listing all the events
       3.Click on 'View' under 'Event Page’
@@ -176,17 +191,20 @@ Steps:
 
 Feature Number 6|Administrator|Keep Track of Possible/Previous Guests:
 Steps:
+
     1. Navigate and click on "Users" in the navigation bar
     2. You are now shown a list of all possible and previous guests that are not admins
 
 Feature Number 10 | Administrator| I want to see the invite list:
 Steps:
+
     1. Navigate and click on "Event" in the navigation bar
     2. Click "Invite List" for the particular event you want
     3. You will be brought to a page which contains the invite list for that particular event
 
 Feature Number 15 | Administrator | Set up a ticketing service, so people can buy tickets without human interaction
 Steps:
+
       1.Ensure an event is already created
       2.As a non-admin user, to get a ticket for yourself, follow the following steps:
             1.Click Event in the navbar
@@ -210,6 +228,7 @@ Feature Number 25 | Administrator | I want confirmation that people are register
 
 
 Feature Number 34 | Administrator | i want to be able to manage table setting
+
     1. click the Event tab in the nav bar
     2. at the bottom of the page under AdminTools is a button called manage seating arrangement, that will bring you the seating arrangement page
     3. once on this page you can add a table by clicking the add table button. this will create an empty table. This page also shows all the unseated guests.
@@ -226,6 +245,7 @@ Feature Number 34 | Administrator | i want to be able to manage table setting
 
 Feature Number 114 | Administrator | Admins can delete events
 Steps:
+
       1.Click “Event” on navbar
       2. Locate the event you wish to delete from list of events
       3.Click “Delete Event” on the event row
