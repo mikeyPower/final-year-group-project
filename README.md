@@ -17,6 +17,7 @@ Run The Following Commands:
 Note: This only works with a clean db. To test locally do make fresh first (THIS WILL CLEAR THE DATABASE). For development purposes, the tests are executed automatically by Travis-CI
 
 
+## Features
 Feature Number 1 | Administrator | I want to be able to login (change password/details/create account)<br />
 Feature Number 62 | Attendee | Create an account/register<br />
 Feature Number 63 | Attendee | Login to account<br />
@@ -38,7 +39,7 @@ Steps:
 
 
 
-Feature Number 2|Administrator| I want to be able to give admin access to other people
+Feature Number 2 | Administrator | I want to be able to give admin access to other people
 
       1. navigate to the admin page in the navbar
       2. here you will see a list of users, you can search for a name in the search bar.
@@ -68,7 +69,7 @@ Steps:
     5. Click Submit to submit the update, or cancel, to cancel any changes.
     6. You will return to the event page where you can view the changes you have just made
 
-Feature Number 29|Administrator| I want to create menus:
+Feature Number 29 | Administrator | I want to create menus:
 Steps:
 
        1.Navigate and click on "Menu List" in the navigation bar
@@ -164,7 +165,7 @@ Steps:
   	8. Click Submit
   	9. Your email will be sent to the guest list
 
-Feature Number 13| Administrator|As staff, I need to register a guest for one event (including their details), so I can track what is needed for the event<br />
+Feature Number 13| Administrator |As staff, I need to register a guest for one event (including their details), so I can track what is needed for the event<br />
 Feature Number 27 | Administrator | I want to be able to manage the guest list<br />
 Feature Number 28 | Administrator | I want to be able to add/remove attendees from the guest list<br />
 Steps:
@@ -180,7 +181,7 @@ Steps:
     7. To remove a guest from the list click remove on the row of the specific guest
     8. To edit a guests dietary needs as an Admin, go to Users on the navbar, click View Details for the user which you want to edit. Click edit account details, then add any changes. Click update, and the changes will be saved.
 
-Feature Number 11| Administrator | I want to see guests contact details:
+Feature Number 11 | Administrator | I want to see guests contact details:
 Steps:
 
       1.Navigate and Click on 'Event' in the navigation bar
@@ -189,13 +190,13 @@ Steps:
       4.Click on 'View Guest List'
       5.You should now be able to see all the Guest info including contact details
 
-Feature Number 6|Administrator| Keep Track of Possible/Previous Guests:
+Feature Number 6 | Administrator| Keep Track of Possible/Previous Guests:
 Steps:
 
     1. Navigate and click on "Users" in the navigation bar
     2. You are now shown a list of all possible and previous guests that are not admins
 
-Feature Number 10 | Administrator| I want to see the invite list:
+Feature Number 10 | Administrator | I want to see the invite list:
 Steps:
 
     1. Navigate and click on "Event" in the navigation bar
@@ -227,7 +228,7 @@ Feature Number 25 | Administrator | I want confirmation that people are register
 
 
 
-Feature Number 34 | Administrator | i want to be able to manage table setting
+Feature Number 34 | Administrator | I want to be able to manage table setting
 Steps:
 
     1. click the Event tab in the nav bar
