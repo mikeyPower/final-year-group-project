@@ -1,15 +1,17 @@
-Open the terminal and navigate to the app’s root folder.
+## Open the terminal and navigate to the app’s root folder.
 Setup:
+'''
        1: install pip using 'sudo apt install python-pip'
-Run The Following Commands:
+       Run The Following Commands:
        2: sudo pip install virtualenv
        3: virtualenv flask
        4: source flask/bin/activate (this starts the environment)
        5: ./install.sh
        6: ./run.py to run the app 
        7: in your web browser localhost:5000
+'''
 
-Running pytest:
+## Running pytest:
 1. flask/bin/pytest
 Note: This only works with a clean db. To test locally do make fresh first (THIS WILL CLEAR THE DATABASE). For development purposes, the tests are executed automatically by Travis-CI
 
